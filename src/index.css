@@ -1,0 +1,477 @@
+  .custom-datepicker {
+    /* padding: 3% !important; */
+  }
+
+  .custom-datepicker:hover {
+    border-color: #1F7494 !important
+  }
+
+  /* Override Ant Design DatePicker focused border color */
+
+  .custom-datepicker.ant-picker-focused {
+    border-color: #1F7494 !important;
+    box-shadow: 0 0 0 2px rgba(249, 109, 36, 0.2) !important;
+  }
+
+
+  /* Change background and text color for selected date */
+  :where(.ant-picker-cell-selected) .ant-picker-cell-inner {
+    background-color: #1F7494 !important;
+    /* your desired background color */
+    color: #fff !important;
+    /* text color */
+    border-radius: 4px;
+    /* optional: make it rounder */
+  }
+
+  /* Override Ant Design's today cell border color */
+  :where(.ant-picker-dropdown) .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+    border: 1px solid #1F7494 !important;
+    /* Change this color as needed */
+  }
+
+  .ant-picker-now-btn {
+    color: #1F7494 !important;
+  }
+
+  .color_hover:hover {
+    color: black !important;
+  }
+
+  .them-light {
+    background-color: #ebf1f6b0 !important;
+  }
+
+  html select {
+    appearance: auto !important;
+    /* covers all prefixes */
+    -webkit-appearance: auto !important;
+    -moz-appearance: auto !important;
+    cursor: pointer;
+  }
+
+  .text-danger {
+    color: #ff0000be !important;
+  }
+
+  .ant-picker-dropdown {
+    z-index: 9999 !important;
+  }
+
+  .paymnet-custom-datepicker {
+    padding: 2% !important;
+  }
+
+  .paymnet-custom-datepicker:hover {
+    border-color: #1F7494 !important
+  }
+
+  /* Override Ant Design DatePicker focused border color */
+  .paymnet-custom-datepicker.ant-picker-focused {
+    border-color: #1F7494 !important;
+    box-shadow: 0 0 0 2px rgba(249, 109, 36, 0.2) !important;
+  }
+
+  .row_2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .swal2-title-sm {
+    font-size: 1rem !important;
+    /* Normal size */
+    font-weight: 500;
+    /* Not too bold */
+  }
+
+
+  .disabled-btn {
+    color: #a0a0a0 !important;
+    /* grey color */
+    pointer-events: none !important;
+    /* make it unclickable */
+    opacity: 0.6 !important;
+    /* slightly faded */
+  }
+
+  .bg-primary-blue {
+    background-color: #2456a1;
+    /* Bootstrap 5 primary blue */
+    color: #ffffff;
+    /* Optional: white text for contrast */
+  }
+
+
+
+
+  .wave-effect {
+    width: 26px;
+    height: 26px;
+    position: relative;
+  }
+
+  .wave-effect::before,
+  .wave-effect::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    border-radius: 9999px;
+    background-color: #e4e8ff;
+    animation: wave-ping 2s infinite;
+    z-index: 0;
+  }
+
+  .wave-effect::after {
+    animation-delay: 2s;
+  }
+
+  @keyframes wave-ping {
+    0% {
+      transform: translate(-50%, -50%) scale(0.6);
+      opacity: 0.8;
+    }
+
+    80% {
+      transform: translate(-50%, -50%) scale(2.5);
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 10px 0;
+  }
+
+  .stepper-item {
+    text-align: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .stepper-item::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    /* aligns line with circle center */
+    left: 50%;
+    height: 2px;
+    width: 100%;
+    background-color: #dcdcdc;
+    z-index: 0;
+  }
+
+
+
+
+
+  .stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 10px 0;
+    flex-wrap: wrap;
+  }
+
+  .stepper-item {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    min-width: 100px;
+  }
+
+  .stepper-item::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    height: 2px;
+    width: 100%;
+    background-color: #dcdcdc;
+    z-index: 0;
+  }
+
+  .stepper-item:last-child::after {
+    display: none;
+  }
+
+  .step-counter {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e6e9ff;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 auto 10px;
+    z-index: 1;
+    position: relative;
+  }
+
+  .stepper-item.active .step-counter {
+    background-color: #1F7494;
+    /* Active step */
+    color: #fff;
+  }
+
+  .stepper-item .step-counter-rejected {
+    background-color: #f44336 !important;
+    color: #fff !important;
+  }
+
+  .step-label {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .step-label-rejected {
+    font-size: 14px;
+    font-weight: 500;
+    color: #f44336;
+  }
+
+  /* 📱 Mobile responsive layout */
+  @media (max-width: 768px) {
+    .stepper-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .stepper-item {
+      flex-direction: row;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .stepper-item::after {
+      position: absolute;
+      top: 45px;
+      left: 5px;
+      height: 2px;
+      width: calc(100% - 36px);
+    }
+
+    .step-counter {
+      margin: 0 15px 0 0;
+    }
+  }
+
+  .text-success {
+    color: green !important
+      /* Pure green */
+  }
+
+  .stepper-item.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #534e4e;
+  }
+
+  .bg-dark-green {
+    background-color: #2ea32e !important;
+    /* DarkGreen */
+    color: #fff !important;
+  }
+
+  /* .status-blue {
+    background-color: #1F7494 !important;
+    color: #fff !important;
+  } */
+
+  /* Custom soft badge colors if Bootstrap subtle shades aren’t enough */
+  .status-blue {
+    background-color: #eaf1ff;
+    /* pastel blue */
+    color: #1F7494 !important;
+    border: 0.5px solid #1F7494 !important;
+    /* dark blue text */
+  }
+
+  .status-warning {
+    background-color: #fff4e5;
+    /* light pastel orange background */
+    color: #ff9800 !important;
+    /* vivid amber/orange text */
+    border: 0.5px solid #ff980054 !important;
+    /* matching border */
+  }
+
+  .status-yellow {
+    background-color: #fffde7;
+    /* very light yellow */
+    color: #fbc02d !important;
+    /* sunflower yellow */
+    border:0.5px solid #fbc02d4d !important;
+  }
+
+  .status-info {
+    background-color: #fff9ef;
+    /* pastel orange background */
+    border: 0.5px solid #ffa500 !important;
+    color: #ffa500 !important;
+
+    /* orange text */
+  }
+
+  .status-success {
+    background-color: #e8f9f0;
+    /* pastel green */
+    color: #1d8149 !important;
+    border: 0.5px solid #1d81492e !important;
+
+  }
+
+  .status-danger {
+    background-color: #ffeaea;
+    color: #c82333 !important;
+    border: 0.5px solid #c8233333 !important;
+
+  }
+
+  .status-bounce {
+    color: #7c3aed !important;
+    background-color: #ffeaea;
+    /* border : 1px solid #7c3aed !important; */
+
+  }
+
+  .status-grey {
+    background-color: #ffeaea;
+    color: #6b7280 !important;
+    /* border : 1px solid #6b7280 !important; */
+
+  }
+
+  .transection-tab .accordion-button::after {
+    display: none !important;
+  }
+
+  .no-pointer {
+    cursor: default !important;
+    /* disable pointer */
+  }
+
+  .dotted-bottom {
+    border-bottom: 3px dotted #999;
+    /* dotted underline */
+  }
+
+  .noLogoShowing {
+    display: none !important;
+  }
+
+  body[data-sidebartype="mini-sidebar"] .left-sidebar>div:hover .noLogoShowing {
+    display: block !important;
+  }
+
+  body[data-sidebartype="mini-sidebar"] .left-sidebar>div:hover .noLogoShowing2 {
+    display: none !important;
+  }
+
+  html body .status_font>span {
+    font-weight: 500;
+    font-size: 11px !important;
+    line-height: 100%;
+    position: relative;
+    top: -2px;
+  }
+
+  html body .status_font {
+    padding: 5px 11px !important;
+  }
+
+  .disabled-status {
+    color: #8c95a7 !important;
+    /* cursor: none;; */
+  }
+
+
+  .toggle-switch {
+    position: relative;
+    display: inline-flex;
+    /* Use flex for alignment */
+    align-items: center;
+    /* Center items vertically */
+    justify-content: center;
+    /* Center items horizontally */
+    width: 40px;
+    /* Width of the switch */
+    height: 20px;
+    /* Height of the switch */
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    /* Hide the default checkbox */
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-switch-label {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    border-radius: 9999px;
+    /* Fully rounded for the pill shape */
+    background-color: #e5e7eb;
+    /* Default background color */
+    transition: background-color 0.3s ease-in-out;
+    /* Smooth background change */
+    cursor: pointer;
+  }
+
+  .toggle-switch-label.active {
+    background-color: #1F7494;
+    /* Background color when active */
+  }
+
+  .toggle-switch-slider {
+    position: absolute;
+    top: 2px;
+    /* Center the slider vertically */
+    left: 2px;
+    /* Start at the left */
+    width: 16px;
+    /* Diameter of the slider */
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    /* Fully rounded slider */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow */
+    transition: transform 0.3s ease-in-out;
+    /* Smooth sliding effect */
+  }
+
+  .toggle-switch-label.active .toggle-switch-slider {
+    transform: translateX(20px);
+    /* Slide the slider to the right */
+  }
+
+
+  .make-header {
+    position: sticky !important;
+    top: 10px !important;
+    z-index: 99 !important;
+    /* a bit higher for safety */
+    /* background: #fff !important; keep background solid */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    /* soft shadow */
+    /* border: 1px solid #ebf1f6 !important; */
+  }

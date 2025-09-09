@@ -1,0 +1,270 @@
+body,
+p,
+div,
+li,
+a,
+input,
+select,
+textarea,
+h3,
+.page-title,
+.pro-user-name,
+label,
+code {
+  font-family: "Manrope", !important;
+}
+
+.p-highlight {
+  color: rgb(32, 31, 31);
+  background-color: white;
+}
+
+.p-sortable-column-icon {
+  color: black;
+  height: 11px;
+  width: 11px;
+}
+
+.p-datatable-tbody tr {}
+
+.p-datatable-tbody .td {
+  padding: 2% !important;
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+  padding: 1% !important;
+  background-color: rgba(var(--bs-light-info-rgb),
+      var(--bs-bg-opacity)) !important;
+}
+
+.p-sortable-column-icon {
+  margin-left: 5px !important;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+  padding: 1% !important;
+  background-color: rgba(var(--bs-light-info-rgb),
+      var(--bs-bg-opacity)) !important;
+}
+
+.p-datatable .p-paginator-bottom {
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+.p-paginator-current {
+  font-size: small;
+}
+
+.p-paginator .p-dropdown {
+  height: 2rem !important;
+  margin: 10px !important;
+  padding: 3px !important;
+  border-color: #1F7494;
+}
+
+.cursor_pointer {
+  cursor: pointer;
+}
+
+/* .input_select:hover{
+  border: 1px solid blue !important;
+} */
+
+label.errorc {
+  font-size: 14px;
+  display: block;
+  margin-top: 1px;
+  font-weight: normal;
+  color: #ef5350;
+}
+
+
+.card .bg-light-info {
+  background-color: #ef5350 !important;
+}
+
+.header_logo {
+  margin-left: 70px !important;
+}
+
+.custom_dropzone :hover {
+  background-color: rgba(0, 0, 0, 0.055);
+  /* opacity: 0.2; */
+  font-weight: 600;
+}
+
+.centered-dropzone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+
+
+.showing-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  font-size: 50px !important;
+
+}
+
+.showing-text {
+  align-self: flex-end;
+  margin-right: 15px;
+  padding: 1%;
+  font-size: small;
+  text-wrap: nowrap;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.pagination {
+  display: flex;
+}
+
+.page-link {
+  font-size: 15px;
+  background: none;
+  /* padding: 10%; */
+}
+
+/* .page-item.disabled{
+  background-color: #5d87ff;
+}
+
+.page-item.active1{
+  color:#5d87ff ;
+} */
+
+.page-link {
+  font-size: 16px;
+  background: none;
+  /* padding: 10%; */
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 50%;
+  border: 1px solid gray;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  width: 32px;
+  justify-content: center;
+  height: 32px;
+  cursor: pointer;
+}
+
+.page-item:last-child .page-link {
+  border-radius: 50%;
+}
+
+.page-item:first-child .page-link {
+  border-radius: 50%;
+}
+
+.showing-text {
+  margin-bottom: 20px;
+}
+
+.disabled>.page-link,
+.page-link.disabled {
+  /* background-color: #1F7494 !important; */
+  color: #94989e !important;
+}
+
+.active-link-pagination {
+  color: #ffff !important;
+  background-color: #1F7494 !important;
+  border: 1px solid #1F7494 !important
+}
+
+/* .page-link span {
+  margin-bottom: 4px;
+} */
+
+.page-link:hover {
+  background-color: #EAECF4 !important;
+  color: black !important;
+  border: 1px solid gray;
+}
+
+.replies-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.replies-container.open {
+  max-height: 500px;
+  /* Adjust based on your content */
+  opacity: 1;
+}
+
+.replies-container.closed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.searchWrapper {
+  border: whitesmoke !important;
+}
+
+.custom-card {
+  margin-bottom: 10px !important;
+}
+
+.multiselect-container .chip {
+  background: #9454AA !important;
+  border-radius: 5px !important;
+}
+
+
+.multiselect-container .highlightOption {
+  background: #9454AA !important;
+
+}
+
+.multiSelectContainer ul {
+  border-radius: 10px !important;
+}
+
+.multiSelectContainer li:hover {
+  background: #9454AA !important;
+}
+
+.rounded-1 {
+  border-radius: 7px !important;
+}
+
+.p-datatable-tbody tr {
+  border-bottom: 0.1px solid #f1f1f1 !important
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+  padding: 0.5% !important;
+  font-size: 13px !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.p-column-title {
+  font-size: 14px !important;
+}
