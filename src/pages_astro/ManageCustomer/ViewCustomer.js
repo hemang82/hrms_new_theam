@@ -118,7 +118,7 @@ export default function DetailsCustomer() {
                                         { label: "Department", value: userDetails?.dept_name },
                                         { label: "Monthly Salary", value: userDetails?.salary_monthly },
                                         { label: "Senior Name", value: userDetails?.senior_name },
-                                        { label: "Create User", value: formatDate(userDetails?.created_at, DateFormat?.DATE_FORMAT) },
+                                        { label: "Create Employee", value: formatDate(userDetails?.created_at, DateFormat?.DATE_FORMAT) },
                                         { label: "Address", value: userDetails?.location },
                                     ].map((item, index) => (
 

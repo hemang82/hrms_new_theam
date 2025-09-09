@@ -117,7 +117,9 @@ export default function ManageLeaveBalance() {
     const [editBankDetailsModal, setBankDetailsLeave] = useState(false);
 
     useEffect(() => {
-        dispatch(getListBankDetailsThunk({}))
+        if (bankDetailsList?.length === 0) {
+            dispatch(getListBankDetailsThunk({}))
+        }
         setSelectedOption({})
     }, [addBankDetailsModal])
 

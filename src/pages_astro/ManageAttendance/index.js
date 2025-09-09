@@ -110,6 +110,7 @@ export default function ManageAttendance() {
         if (customerList?.length === 0) {
             dispatch(getCustomerListThunk({}));
         }
+
         setSelectedOption({})
     }, [])
 
@@ -173,14 +174,14 @@ export default function ManageAttendance() {
     }, [attendanceList, startDate, endDate]);
 
     useEffect(() => {
-        // let request = {
-        //     start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-        //     end_date: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-        //     status: selectedOption?.key || "",
-        //     is_active: ""
-        // };
-        // dispatch(getlistAttendanceThunk(request));
-    }, [selectedOption, endDate]);
+        let request = {
+            start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
+            end_date: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
+            status: selectedOption?.key || "",
+            is_active: ""
+        };
+        dispatch(getlistAttendanceThunk(request));
+    }, []);
 
     const handleStatus = async (id, changeChecked) => {
         setis_load(true)
@@ -553,7 +554,7 @@ export default function ManageAttendance() {
     };
 
     const onChangeApiCalling = async (data) => {
-        dispatch(setLoader(true)); // ✅ start loader
+        // dispatch(setLoader(true)); // ✅ start loader
         try {
             const request = {
                 start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
@@ -562,7 +563,7 @@ export default function ManageAttendance() {
             };
             await dispatch(getlistAttendanceThunk(request));
         } finally {
-            dispatch(setLoader(false));
+            // dispatch(setLoader(false));
         }
     };
 
@@ -644,10 +645,16 @@ export default function ManageAttendance() {
                                     >
                                         {selectedOption?.name || 'Select Employee'}
                                     </button>
-                                    <ul className="dropdown-menu w-100">
+                                    <ul
+                                        className="dropdown-menu w-100"
+                                        style={{
+                                            maxHeight: "300px", // adjust height as needed
+                                            overflowY: "auto",
+                                        }}
+                                    >
                                         <li key="all">
                                             <button
-                                                className="dropdown-item text-black-50 p-2"
+                                                className="dropdown-item text-black-50 p-2 fs-4"
                                                 type="button"
                                                 onClick={() => {
                                                     onChangeApiCalling({
@@ -673,8 +680,7 @@ export default function ManageAttendance() {
                                                             employee_id: option?.id
                                                         });
                                                         handleSelect(option);
-                                                    }
-                                                    }
+                                                    }}
                                                 >
                                                     {option?.name}
                                                 </button>
@@ -767,15 +773,15 @@ export default function ManageAttendance() {
 
                                 <Column field="checkInTimes" header="Check In" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className='me-2'>
-                                        {rowData?.checkInTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkInTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "N/A"} </span>
+                                        {rowData?.checkInTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkInTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
                                 )} />
 
                                 <Column field="checkInTimes" header="Check Out" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "N/A"} </span>
+                                    <span className='me-2'>{rowData?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
                                 )} />
 
                                 <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "N/A"} </span>
+                                    <span className=''>{rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "-"} </span>
                                 )} />
 
                                 <Column field="type" sortable data-pc-section="root" header="Day Type" style={{ minWidth: '8rem' }} body={(rowData) => (
@@ -900,7 +906,7 @@ export default function ManageAttendance() {
                                 </div>
 
                                 <div className="text-center mb-4">
-                                    <h3 className="fw-bold text-blue fs-6">Total Break</h3>
+                                    <h3 className="fw-bold text-blue fs-6">Break Timeline</h3>
                                 </div>
 
                                 <div className="timeline position-relative ms-4">

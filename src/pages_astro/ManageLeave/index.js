@@ -130,9 +130,8 @@ export default function ManageCoustomer() {
     const [updatedLeaveLeast, setupdatedLeavList] = useState(leaves);
 
     useEffect(() => {
-        // dispatch(getlistLeavesThunk({}))
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({}));
+        dispatch(getCustomerListThunk({}));
         }
         setSelectedOption({})
     }, [])

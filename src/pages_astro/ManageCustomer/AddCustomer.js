@@ -211,8 +211,7 @@ export default function AddCustomer() {
                                             </div>
                                         </div>
 
-                                        <div className='row col-12 col-md-10 '>
-
+                                        <div className='row col-12 '>
                                             <div className='col-md-6 '>
                                                 <div className="mb-4">
                                                     <label htmlFor="lastname" className="form-label fw-semibold">

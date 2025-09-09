@@ -287,7 +287,6 @@ export default function ManageCoustomer() {
                         </div>
                     </div>
 
-
                     <div className="card card-body">
                         <div className="table-responsive">
                             <DataTable
@@ -323,7 +322,6 @@ export default function ManageCoustomer() {
 
                                 <Column field="employee_id" header="Employee Id" style={{ minWidth: '8rem', whiteSpace: 'nowrap' }} body={(rowData) => (
                                     <span className='me-2'>{rowData.employee_id || '-'}</span>
-
                                 )} />
 
                                 <Column field="phone_number" header="Mobile No" style={{ minWidth: '8rem' }} body={(rowData) => (
@@ -333,7 +331,6 @@ export default function ManageCoustomer() {
                                 <Column
                                     field="name"
                                     header="Name"
-
                                     style={{ minWidth: '10rem', whiteSpace: 'nowrap', textTransform: 'capitalize' }}
                                     body={(rowData) => <span className='me-2'>{rowData.name || '-'}</span>}
                                 />

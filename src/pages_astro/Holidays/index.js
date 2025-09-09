@@ -294,7 +294,7 @@ export default function ManageEMISchedule() {
                                 )} />
 
                                 <Column field="date" header="Day" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span>{formatDate(rowData.date, DateFormat.DATE_WEEK_MONTH_NAME_FORMAT) || '-'}</span>
+                                    <span>{formatDate(rowData.date, DateFormat.DATE_WEEK_NAME_FORMAT) || '-'}</span>
                                 )} />
 
                                 <Column field="name" header="Name" sortable style={{ minWidth: '10rem' }} body={(rowData) => (

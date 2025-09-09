@@ -114,7 +114,9 @@ export default function ManageDepartnment() {
     const [editLeaveModal, setEditLeave] = useState(false);
 
     useEffect(() => {
-        dispatch(getListDepartnmentThunk({}))
+        if (departnmentList?.length === 0) {
+            dispatch(getListDepartnmentThunk({}))
+        }
         setSelectedOption({})
     }, [addLeaveModal])
 

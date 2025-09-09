@@ -16,9 +16,9 @@ export const getCustomerListThunk = createAsyncThunk("customerList", async (subm
 
 export const getlistAttendanceThunk = createAsyncThunk("listAttendance", async (submitData, { dispatch }) => {
     try {
-        // dispatch(setLoader(true))
+        dispatch(setLoader(true))
         const { data } = await API.listAttendance(submitData);
-        // dispatch(setLoader(false))
+        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;

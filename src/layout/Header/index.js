@@ -75,7 +75,7 @@ const Header = ({ page_name }) => {
                     is_active: "",
                 };
                 await Promise.all([
-                    dispatch(getlistAttendanceThunk(request)),
+                    // dispatch(getlistAttendanceThunk(request)),
                     dispatch(getCustomerListThunk({})),
                     dispatch(getListDepartnmentThunk({})),
                     dispatch(getListBankDetailsThunk({})),
