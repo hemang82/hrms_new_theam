@@ -345,11 +345,11 @@ export default function ManageCoustomer() {
                                 <Column field="emp_leave_company" data-pc-section="root" sortable header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>
                                         {rowData?.emp_leave_company == 0 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, 1) }} >
+                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, 1) }} >
                                                 <span className="p-tag-value" data-pc-section="value">Active</span>
                                             </span>
                                         ) : (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, 0) }}>
+                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, 0) }}>
                                                 <span className="p-tag-value" data-pc-section="value">Inactive</span>
                                             </span>
                                         )}
