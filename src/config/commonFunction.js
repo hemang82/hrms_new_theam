@@ -422,7 +422,32 @@ export const getBreakMinutes = (breaks = []) => {
     }, 0);
 };
 
+export function getSaturdayOrdinal(date) {
+    // Parse the given date
+    let dateMoment = moment(date);
 
+    // Check if it's a Saturday
+    if (dateMoment.day() !== 6) {
+        return 'The given date is not a Saturday.';
+    }
+
+    // Get the first Saturday of the month
+    let firstSaturday = moment(dateMoment).startOf('month').day(6);
+    
+    // If the first Saturday is in the previous month (it may happen), move it forward
+    if (firstSaturday.date() > 7) {
+        firstSaturday = firstSaturday.add(1, 'week');
+    }
+
+    // Count the Saturdays
+    let saturdayCount = 1;
+    while (firstSaturday.isBefore(dateMoment)) {
+        saturdayCount++;
+        firstSaturday.add(1, 'week');
+    }
+
+    return saturdayCount; // Return the ordinal (1st, 2nd, 3rd, 4th, etc.)
+}
 // --------------------------------- Input validation ------------------------------------
 
 export const handelInputText = (event) => {

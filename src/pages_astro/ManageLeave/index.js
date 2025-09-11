@@ -131,14 +131,13 @@ export default function ManageCoustomer() {
 
     useEffect(() => {
         if (customerList?.length === 0) {
-        dispatch(getCustomerListThunk({}));
+            dispatch(getCustomerListThunk({}));
         }
         setSelectedOption({})
     }, [])
 
     // useEffect(() => {
     //     dispatch(setLoader(true));
-
     //     let request = {
     //         // page: page,
     //         // search: globalFilterValue,

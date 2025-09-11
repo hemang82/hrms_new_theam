@@ -1527,12 +1527,16 @@ export const LOAN_TYPES = {
     MICRO: 'MICRO'
 }
 
-
 export const PAYMENT_CHARGE_TYPES = {
     BOUNCE_CHARGE: 'BOUNCE_CHARGE',
     FORECLOSURE_CHARGE: 'FORECLOSURE_CHARGE',
     PENALTY: 'PENALTY',
 }
+
+export const EMPLOYEE_STATUS = [
+    { key: "0", value: "Active" },
+    { key: "1", value: "Inactive" }
+];
 
 // export const ALL_LOAN_STATUS_LIST = [
 //     { key: "PENDING", value: "PENDING", color: "bg-warning text-white" },           // Yellow bg, dark text

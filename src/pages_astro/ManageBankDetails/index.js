@@ -22,7 +22,7 @@ import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameF
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, DateFormat, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -115,10 +115,14 @@ export default function ManageLeaveBalance() {
 
     const [addBankDetailsModal, setAddBankDetails] = useState(false);
     const [editBankDetailsModal, setBankDetailsLeave] = useState(false);
+    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     useEffect(() => {
         if (bankDetailsList?.length === 0) {
-            dispatch(getListBankDetailsThunk({}))
+            const request = {
+                emp_leave_company: employeeStatus?.key,
+            };
+            dispatch(getListBankDetailsThunk(request))
         }
         setSelectedOption({})
     }, [addBankDetailsModal])
@@ -362,14 +366,6 @@ export default function ManageLeaveBalance() {
         })
     }
 
-    const openActionModelFunc = (data, action) => {
-        setAction(true)
-        setSelectedBankDetails({
-            ...data,
-            actionType: action,
-        });
-    }
-
     const closeActionModelFunc = () => {
         setAction(false)
         setSelectedBankDetails({});
@@ -398,76 +394,6 @@ export default function ManageLeaveBalance() {
         reset()
     }
 
-    const funcStatusChange = (rowData) => {
-        // setIs_loading(true)
-        // loanDetails({ loan_id: rowData?.id }).then((response) => {
-        //     if (response?.status_code === Codes.SUCCESS) {
-        //         let responseDetails = response?.data?.loan_application;
-        //         if (!responseDetails?.aadhaar_verified) {
-        //             SWIT_FAILED("Aadhaar card verification is pending.");
-        //         } else if (responseDetails?.status === "DISBURSED") {
-        //             return
-        //         } else if (responseDetails?.status === "DISBURSEMENT_APPROVAL_PENDING") {
-        //             const bankDetails = responseDetails?.bank_accounts[0]
-        //             const approvalDetails = responseDetails?.approval_details[0]
-        //             const disbursementDetails = responseDetails?.loan_disbursement[0]
-        //             setSelecteLoan(responseDetails)
-        //             // if (responseDetails?.status === "DISBURSED") {
-
-        //             //     if (disbursementDetails?.payment_type === "BANK_TRANSFER") {
-        //             //         setValue('bank_name', disbursementDetails?.bank_name)
-        //             //         setValue('account_number', disbursementDetails?.account_number)
-        //             //         setValue('ifsc_code', disbursementDetails?.ifsc_code)
-        //             //         setValue('account_holder_name', disbursementDetails?.account_holder_name)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "UPI") {
-        //             //         setValue('upi_id', disbursementDetails?.upi_id)
-        //             //         setValue('transaction_id', disbursementDetails?.transaction_id)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "CHEQUE") {
-        //             //         setValue('cheque_number', disbursementDetails?.cheque_number)
-        //             //     }
-        //             //     setValue('approved_amount', Number(disbursementDetails?.transferred_amount || 0).toFixed(2))
-        //             //     setValue('payment_status', PAYMENT_STATUS.find(item => item.key === disbursementDetails?.payment_type)?.key)
-        //             //     setProofFileName(getFileNameFromUrl(disbursementDetails?.payment_file))
-        //             //     setShowProofImage(disbursementDetails?.payment_file)
-        //             //     setPaymentDate(dayjs(disbursementDetails?.payment_date))
-        //             //     //  setPaymentDate(dayjs(disbursementDetails?.payment_date).format("YYYY-MM-DD HH:mm:ss"));
-        //             // } else {
-        //             setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        //             setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        //             setValue('bank_name', bankDetails?.bank_name)
-        //             setValue('account_number', bankDetails?.account_number)
-        //             setValue('ifsc_code', bankDetails?.ifsc_code)
-        //             setValue('account_holder_name', bankDetails?.account_holder_name)
-        //             // }
-        //             setIs_loading(false)
-        //             setStatusModal(true)
-        //         }
-        //     } else {
-        //         setIs_loading(false)
-        //     }
-        // })
-    }
-
-    const changeStatusFunction = (data) => {
-        setValue('payment_status', PAYMENT_STATUS.find(item => item.key === data)?.key)
-        const statusExists = selectedBankDetails?.status === data;
-        setValue('remarks', statusExists ? selectedBankDetails?.remarks : '')
-        const bankDetails = selectedBankDetails?.bank_accounts[0]
-        const approvalDetails = selectedBankDetails?.approval_details[0]
-        // setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        setValue('bank_name', bankDetails?.bank_name)
-        setValue('account_number', bankDetails?.account_number)
-        setValue('ifsc_code', bankDetails?.ifsc_code)
-        setValue('account_holder_name', bankDetails?.account_holder_name)
-    }
-
-    const handleSelect = (option) => {
-        setSelectedOption(option);
-        setPage(1);
-    };
 
     const handleSort = (event) => {
         console.log("Sort event triggered:", event);
@@ -476,11 +402,6 @@ export default function ManageLeaveBalance() {
     };
 
     // ---------------------------------- Formate date filter----------------------------------------
-
-    const disabledEndDate = (current) => {
-        if (!startDate) return false;
-        return current.isBefore(startDate, 'day');
-    };
 
     const handleInputChange = async (key, value) => {
         let filteredValue = value;
@@ -516,20 +437,26 @@ export default function ManageLeaveBalance() {
         clearErrors('proof_image');
     };
 
+    const onChangeApiCalling = async (data) => {
+        try {
+            const request = {
+                emp_leave_company: data?.key,
+            };
+            await dispatch(getListBankDetailsThunk(request));
+        } finally {
+        }
+    };
+
     return (
         <>
-
-            {/* <Slidebar /> */}
-            {/* <div className="body-wrapper"> */}
-            {/* <Header /> */}
-
             <div className="container-fluid mw-100">
                 <SubNavbar title={"Bank Details List"} header={'Bank Details List'} />
 
                 <div className="widget-content searchable-container list">
                     <div className="card card-body">
                         <div className="row border-bottom pb-3">
-                            <div className="col-12 col-md-6 col-lg-3">
+
+                            <div className="col-12 col-md-6 col-lg-4">
                                 <div className="position-relative">
                                     <input type="text" className="form-control product-search ps-5" id="input-search" placeholder="Search Bank Details ..."
                                         value={globalFilterValue}
@@ -538,7 +465,41 @@ export default function ManageLeaveBalance() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-9">
+                            <div className="col-12 col-md-6 col-lg-4">
+                            </div>
+
+                            {/* Status Dropdown */}
+                            <div className="col-12 col-md-6 col-lg-2 ">
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling(option)
+                                                        setEmployeeStatus(option)
+                                                    }}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="col-12 col-md-6 col-lg-2">
                                 <div className="d-flex flex-column flex-md-row justify-content-end align-items-stretch gap-2 ">
                                     <Link
                                         // to="/emi_schedule_list/add_emi_schedule"
@@ -553,8 +514,6 @@ export default function ManageLeaveBalance() {
                                         <span className="fw-semibold">Add Bank Details</span>
                                     </Link>
                                 </div>
-                            </div>
-                            <div className="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0 gap-3">
                             </div>
                         </div>
 
@@ -607,7 +566,7 @@ export default function ManageLeaveBalance() {
                                     <span className='me-2'>{rowData?.bank_name || '-'} </span>
                                 )} />
 
-                                <Column field="branch" header="Bank Branch" style={{ minWidth: '16rem' }} body={(rowData) => (
+                                <Column field="branch" header="Bank Branch" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.branch || '-'}</span>
                                 )} />
 

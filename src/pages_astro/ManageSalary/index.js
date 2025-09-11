@@ -22,7 +22,7 @@ import { closeModel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStat
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { DateFormat, STATUS_COLORS } from '../../config/commonVariable';
+import { DateFormat, EMPLOYEE_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { IoAddCircleOutline } from 'react-icons/io5';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
@@ -51,6 +51,7 @@ export default function ManageSalary() {
     const [sortOrder, setSortOrder] = useState(-1);
     const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
+    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     const hasInitialLoaded = useRef(false);
 
@@ -208,6 +209,7 @@ export default function ManageSalary() {
         const request = {
             month: data?.date ? formatDateDyjs(data.date, 'MM') : null,
             year: data?.date ? formatDateDyjs(data.date, 'YYYY') : null,
+            emp_leave_company: data?.emp_leave_company ? data?.emp_leave_company : "0"
         };
         dispatch(getSalaryListThunk(request));
     };
@@ -219,7 +221,7 @@ export default function ManageSalary() {
                 <div className="widget-content searchable-container list">
                     <div className="card card-body mb-2 p-3">
                         <div className="row g-3 ">
-                            <div className="col-12 col-md-6 col-lg-8">
+                            <div className="col-12 col-md-6 col-lg-6">
                                 <div className="position-relative w-50">
                                     <input
                                         type="text"
@@ -234,6 +236,7 @@ export default function ManageSalary() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2">
+                                {/* <label className="form-label fw-semibold mb-1">Date Filter</label> */}
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
                                     picker="month"
@@ -246,6 +249,39 @@ export default function ManageSalary() {
                                         });
                                     }}
                                 />
+                            </div>
+
+                            <div className="col-12 col-md-6 col-lg-2 mb-2 mb-md-0">
+                                {/* <label className="form-label fw-semibold mb-1">Status</label> */}
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling({
+                                                            emp_leave_company: option?.key
+                                                        });
+                                                        setEmployeeStatus(option)
+                                                    }}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2 ">
@@ -270,6 +306,8 @@ export default function ManageSalary() {
                                     </li>
                                 </ul>
                             </div>
+
+
                         </div>
                     </div>
 
@@ -303,21 +341,28 @@ export default function ManageSalary() {
                                 />
 
                                 <Column
+                                    field="emp_id"
+                                    header="Employee ID"
+                                    style={{ minWidth: '10rem', whiteSpace: 'nowrap', textTransform: 'capitalize' }}
+                                    body={(rowData) => <span>{rowData?.emp_id || '-'}</span>}
+                                />
+
+                                <Column
                                     field="name"
                                     header="Employee Name"
                                     style={{ minWidth: '10rem', whiteSpace: 'nowrap', textTransform: 'capitalize' }}
                                     body={(rowData) => <span>{rowData?.name}</span>}
                                 />
 
-                                <Column field="fullDays" header="FullDays" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="fullDays" header="FD" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.fullDays}</span>
                                 )} />
 
-                                <Column field="halfDays" header="HalfDays" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="halfDays" header="HD" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.halfDays}</span>
                                 )} />
 
-                                <Column field="absences" header="Absent" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="absences" header="Ab" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.absences}</span>
                                 )} />
 
@@ -325,15 +370,15 @@ export default function ManageSalary() {
                                     <span className='me-2'>{rowData?.email }</span>
                                 )} /> */}
 
-                                <Column field="offDayCount" header="OffDays" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="offDayCount" header="OD" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.offDayCount}</span>
                                 )} />
 
-                                <Column field="sundays" header="Sunday" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="sundays" header="Sun" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.sundays}</span>
                                 )} />
 
-                                <Column field="BirthdayLeave" header="Birthday" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="BirthdayLeave" header="BD" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.BirthdayLeave}</span>
                                 )} />
 
@@ -349,11 +394,11 @@ export default function ManageSalary() {
                                     <span className='me-2'>{rowData?.LWPLeave}</span>
                                 )} />
 
-                                <Column field="monthlySalary" header="MonthlySalary" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                <Column field="monthlySalary" header="Salary" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.monthlySalary}</span>
                                 )} />
 
-                                <Column field="payableDays" header="PayableDays" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                <Column field="payableDays" header="Day" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.payableDays}</span>
                                 )} />
 

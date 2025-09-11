@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from "react-i18next";
 import Model from '../../component/Model';
 import { LogoutComponent } from '../../pages/CommonPages/CommonComponent';
-import { DateFormat, ModelName } from '../../config/commonVariable';
+import { DateFormat, EMPLOYEE_STATUS, ModelName } from '../../config/commonVariable';
 
 // /dist/images/logos/lone_logo.png
 import { getCustomerListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
@@ -69,19 +69,16 @@ const Header = ({ page_name }) => {
             dispatch(setLoader(true));
             try {
                 const request = {
-                    start_date: formatDateDyjs(dayjs(), DateFormat.DATE_LOCAL_DASH_TIME_FORMAT),
-                    end_date: formatDateDyjs(dayjs(), DateFormat.DATE_LOCAL_DASH_TIME_FORMAT),
-                    status: "",
-                    is_active: "",
+                    emp_leave_company: EMPLOYEE_STATUS[0]?.key
                 };
                 await Promise.all([
                     // dispatch(getlistAttendanceThunk(request)),
-                    dispatch(getCustomerListThunk({})),
+                    dispatch(getCustomerListThunk({ request })),
                     dispatch(getListDepartnmentThunk({})),
-                    dispatch(getListBankDetailsThunk({})),
-                    dispatch(getlistLeavesThunk({})),
-                    dispatch(getEmpLeaveBalanceListThunk({})),
-                    dispatch(getSaturdayListThunk({ year: new Date().getFullYear() })),
+                    dispatch(getListBankDetailsThunk({ request })),
+                    dispatch(getlistLeavesThunk({ request })),
+                    dispatch(getEmpLeaveBalanceListThunk({ request })),
+                    dispatch(getSaturdayListThunk({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 })),
                     dispatch(getHolidayListThunk())
                 ]);
             } finally {

@@ -22,7 +22,7 @@ import { closeModel, formatDate, getAllStatusObject, getLoanStatusObject, openMo
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { DateFormat, STATUS_COLORS } from '../../config/commonVariable';
+import { DateFormat, EMPLOYEE_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { IoAddCircleOutline } from 'react-icons/io5';
 
 export default function ManageCoustomer() {
@@ -49,6 +49,9 @@ export default function ManageCoustomer() {
     const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
 
+    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
+
+
     const hasInitialLoaded = useRef(false);
 
     const fetchData = async () => {
@@ -60,9 +63,10 @@ export default function ManageCoustomer() {
             // search: globalFilterValue || "",
             // order_by: sortField,
             // order_direction: sortOrder === 1 ? 'asc' : 'desc',
+            emp_leave_company: employeeStatus
         };
         try {
-            // await dispatch(getCustomerListThunk(request));
+            await dispatch(getCustomerListThunk(request));
         } finally {
             // dispatch(setLoader(false));
         }
@@ -73,7 +77,6 @@ export default function ManageCoustomer() {
         //     hasInitialLoaded.current = true;
         //     return; // Skip first effect run
         // }
-
         if (customerList?.length === 0) {
             fetchData();
         }
@@ -198,7 +201,15 @@ export default function ManageCoustomer() {
         setSortOrder(event.sortOrder);
     };
 
-    console.log('customerList', customerList);
+    const onChangeApiCalling = async (data) => {
+        try {
+            const request = {
+                emp_leave_company: data?.key,
+            };
+            await dispatch(getCustomerListThunk(request));
+        } finally {
+        }
+    };
 
     return (
         <>
@@ -210,23 +221,62 @@ export default function ManageCoustomer() {
 
                     <div className="card card-body p-3 mb-2">
                         <div className="row">
-                            <div className="col-12 col-md-6 col-lg-3">
+                            {/* Search Input */}
+                            <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
                                 <div className="position-relative">
-                                    <input type="text" className="form-control product-search ps-5" id="input-search" placeholder="Search Employee..."
+                                    <input
+                                        type="text"
+                                        className="form-control product-search ps-5"
+                                        id="input-search"
+                                        placeholder="Search Employee..."
                                         value={globalFilterValue}
-                                        onChange={onGlobalFilterChange} />
+                                        onChange={onGlobalFilterChange}
+                                    />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-9">
-                                <div className="d-flex flex-column flex-md-row justify-content-end align-items-stretch gap-2 ">
-                                    {/* Add User Button */}
+                            <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
+                            </div>
+
+                            {/* Status Dropdown */}
+                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling(option)
+                                                        setEmployeeStatus(option)
+                                                    }}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Add Employee Button */}
+                            <div className="col-12 col-md-6 col-lg-2">
+                                <div className="d-flex justify-content-end">
                                     <Link
                                         to="/user_list/add_user"
                                         id="btn-add-contact"
-                                        // className="btn btn-info d-flex align-items-center justify-content-center mt-3 w-md-auto"
-                                        className="btn btn-info d-flex align-items-center justify-content-center mt-3 mt-md-0  w-md-auto "
+                                        className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto"
                                         style={{ height: '40px' }}
                                     >
                                         <span className="me-1">
@@ -236,55 +286,8 @@ export default function ManageCoustomer() {
                                     </Link>
                                 </div>
                             </div>
-
-
-                            <div className="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0 gap-3">
-
-                                {/* <Link to={'/astrologer_list/request_astrologer'} id="btn-add-contact" className="btn btn-info d-flex align-items-center" style={{ height: '40px' }}>
-                                    <span className='me-2' >
-                                        < RiUserReceivedLine style={{ fontSize: '1.2rem' }} />
-                                    </span> Request Loan
-                                </Link> */}
-
-                                {/* <Link to={'/astrologer_list/add_astrologer'} id="btn-add-contact" className="btn btn-info d-flex align-items-center" style={{ height: '40px' }}>
-                                    <i className="ti ti-category me-1 fs-6" />Add Astrologer
-                                </Link> */}
-
-                                {/* <div className="btn-group mb-2 ms-2"> */}
-
-                                {/* <button type="button" className="btn btn-info dropdown-toggle " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style={{ height: '40px' }}>
-                                        {selectedOption?.value || 'Select Status'}
-                                    </button> */}
-
-                                {/* <ul className="dropdown-menu animated flipInx w-50">
-                                        {screenOptions?.length > 0 && screenOptions?.map((option) => (
-                                            <li key={option?.value}>
-                                                <a
-                                                    className="dropdown-item cursor_pointer text-black-50"
-                                                    onClick={() => handleSelect(option)}
-                                                >
-                                                    {option?.label}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul> */}
-
-                                {/* <ul className="dropdown-menu animated flipInx w-50">
-                                        {ALLSTATUS_LIST?.map((option) => (
-                                            <li key={option.value}>
-                                                <a
-                                                    className="dropdown-item cursor_pointer text-black-50"
-                                                    onClick={() => handleSelect(option)}
-                                                >
-                                                    {option?.value}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul> */}
-                                {/* </div> */}
-
-                            </div>
                         </div>
+
                     </div>
 
                     <div className="card card-body">
@@ -341,12 +344,12 @@ export default function ManageCoustomer() {
 
                                 <Column field="emp_leave_company" data-pc-section="root" sortable header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>
-                                        {rowData?.emp_leave_company == 0 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, 1) }} >
+                                        {rowData?.emp_leave_company == "0" ? (
+                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, "1") }} >
                                                 <span className="p-tag-value" data-pc-section="value">Active</span>
                                             </span>
                                         ) : (
-                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, 0) }}>
+                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, "0") }}>
                                                 <span className="p-tag-value" data-pc-section="value">Inactive</span>
                                             </span>
                                         )}

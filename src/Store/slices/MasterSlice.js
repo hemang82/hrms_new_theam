@@ -5,9 +5,9 @@ import * as API from '../../utils/api.services';
 
 export const getCustomerListThunk = createAsyncThunk("customerList", async (submitData, { dispatch }) => {
     try {
-        // dispatch(setLoader(true))
+        dispatch(setLoader(true))
         const { data } = await API.CustomerList(submitData);
-        // dispatch(setLoader(false))
+        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;
@@ -19,7 +19,7 @@ export const getlistAttendanceThunk = createAsyncThunk("listAttendance", async (
         dispatch(setLoader(true))
         const { data } = await API.listAttendance(submitData);
         dispatch(setLoader(false))
-        return data;
+        return data?.length > 0 ? data : [];
     } catch (error) {
         throw error;
     }
@@ -69,9 +69,9 @@ export const getEmpLeaveBalanceListThunk = createAsyncThunk("empLeaveBalanceList
 
 export const getListBankDetailsThunk = createAsyncThunk("listBankDetails", async (submitData, { dispatch }) => {
     try {
-        // dispatch(setLoader(true))
+        dispatch(setLoader(true))
         const { data } = await API.listBankDetails(submitData);
-        // dispatch(setLoader(false))
+        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;
@@ -380,9 +380,8 @@ const masterSlice = createSlice({
             })
 
 
-
             .addCase(getlistAttendanceThunk.fulfilled, (state, action) => {
-                state.attendanceList.data = action.payload;
+                state.attendanceList.data = action.payload || [];
             })
             .addCase(getlistAttendanceThunk.rejected, (state, action) => {
                 state.attendanceList.error = action.error.message;
@@ -421,5 +420,5 @@ const masterSlice = createSlice({
     },
 });
 
-export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateAttendanceList ,updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateCustomerList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
+export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateCustomerList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
 export default masterSlice.reducer;

@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updateCustomerList, updateSaterdayList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, openModel } from '../../config/commonFunction';
+import { closeModel, formatDate, formatDateDyjs, getAllStatusObject, getLoanStatusObject, getSaturdayOrdinal, openModel } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -59,6 +59,7 @@ export default function ManageSaturday() {
         const request = {
             // "month": startDate ? formatDateDyjs(startDate, 'MM') : null,
             year: startDate ? formatDateDyjs(startDate, 'YYYY') : null,
+            month: startDate ? formatDateDyjs(startDate, 'MMMM') : null,
             // "page": 1,
             // "limit": 10
         }
@@ -260,13 +261,15 @@ export default function ManageSaturday() {
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
+
                             <div className="col-12 col-md-6 col-lg-2">
                             </div>
+
                             <div className="col-12 col-md-6 col-lg-2">
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
                                     picker="year"   // ✅ only year picker
-                                    format="YYYY"   // ✅ show only year
+                                    format="YYYY-MM"   // ✅ show only year
                                     value={startDate}
                                     onChange={(date) => {
                                         setStartDate(date);
@@ -307,19 +310,22 @@ export default function ManageSaturday() {
                                     sortable
                                     showFilterMenu={true}
                                 />
-
                                 <Column field="date" header="Date" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.date}</span>
+                                    <span className='me-2'>{formatDate(rowData.date, DateFormat.DATE_FORMAT) || '-'}</span>
+                                )} />
+
+                                <Column field="date" header="Week Day" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                    <span className='ms-4 me-2'>{getSaturdayOrdinal(rowData.date) || '-'}</span>
                                 )} />
 
                                 <Column field="type" data-pc-section="root" header="Day Type" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>
                                         <span
-                                            className={`p-tag p-component badge  text-light fw-semibold px-2 rounded-4 py-1 status_font ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
+                                            className={`p-tag p-component badge me-2 text-light fw-semibold px-2 rounded-4 py-1 status_font ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
                                             data-pc-name="tag"
                                             data-pc-section="root"
                                         >
-                                            <span className="p-tag-value fs-2" data-pc-section="value">
+                                            <span className="p-tag-value fs-2 " data-pc-section="value">
                                                 {getStatus(rowData?.type) || "-"}
                                             </span>
                                         </span>

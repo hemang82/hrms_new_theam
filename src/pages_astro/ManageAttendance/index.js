@@ -22,7 +22,7 @@ import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, AttendanceStatus, DateFormat, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TimeFormat } from '../../config/commonVariable';
+import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TimeFormat } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -99,12 +99,12 @@ export default function ManageAttendance() {
     const [endDate, setEndDate] = useState(dayjs());
     const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
-
     const [showProofImage, setShowProofImage] = useState(null);
     const [proofFileName, setProofFileName] = useState('');
     const [is_loding, setIs_loading] = useState(false);
     const [updatedAttendanceList, setUpdateAttendanceList] = useState([]);
     const [attendanceEditModal, setAttendanceEditModel] = useState(false);
+    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     useEffect(() => {
         if (customerList?.length === 0) {
@@ -142,8 +142,6 @@ export default function ManageAttendance() {
     }
 
     useEffect(() => {
-        console.log("updatedList");
-
         if (attendanceList && attendanceList?.length > 0 && startDate && endDate) {
             updatedData(attendanceList, startDate, endDate)
             // const start = new Date(startDate);
@@ -170,15 +168,17 @@ export default function ManageAttendance() {
             //     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
             // );
             // setUpdateAttendanceList(sorted);
+        } else {
+            setUpdateAttendanceList([])
         }
-    }, [attendanceList, startDate, endDate]);
+    }, [attendanceList, startDate, endDate, employeeStatus]);
 
     useEffect(() => {
         let request = {
             start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
             end_date: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
             status: selectedOption?.key || "",
-            is_active: ""
+            emp_leave_company: employeeStatus?.key,
         };
         dispatch(getlistAttendanceThunk(request));
     }, []);
@@ -554,16 +554,15 @@ export default function ManageAttendance() {
     };
 
     const onChangeApiCalling = async (data) => {
-        // dispatch(setLoader(true)); // ✅ start loader
         try {
             const request = {
                 start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 end_date: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 employee_id: data?.employee_id || "",
+                emp_leave_company: data?.emp_leave_company || "0"
             };
             await dispatch(getlistAttendanceThunk(request));
         } finally {
-            // dispatch(setLoader(false));
         }
     };
 
@@ -582,9 +581,9 @@ export default function ManageAttendance() {
                     {/* --------------------- start Contact ---------------- */}
 
                     <div className="card card-body mb-2 p-3">
-                        <div className="row g-3">
+                        <div className="row g-2">
 
-                            <div className="col-12 col-md-6 col-lg-4">
+                            <div className="col-12 col-md-6 col-lg-3">
                                 <div className="position-relative mt-4 w-75">
                                     <input
                                         type="text"
@@ -690,7 +689,44 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
+                            <div className="col-12 col-md-6 col-lg-2 mb-2 mb-md-0">
+                                <label className="form-label fw-semibold mb-1">Status</label>
+
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling({
+                                                            start_date: startDate,
+                                                            end_date: endDate,
+                                                            employee_id: "",
+                                                            emp_leave_company: option?.key
+                                                        });
+                                                        setEmployeeStatus(option)
+                                                    }}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="col-12 col-md-6 col-lg-1 d-flex flex-column">
                                 <label className="form-label fw-semibold mb-1">&nbsp;</label> {/* placeholder for alignment */}
                                 <button
                                     type="button"
@@ -699,7 +735,7 @@ export default function ManageAttendance() {
                                     onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
                                 >
                                     <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
-                                    <span className="fw-semibold">Add Attendance</span>
+                                    <span className="fw-semibold">Add</span>
                                 </button>
                             </div>
 

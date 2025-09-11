@@ -418,6 +418,7 @@ sup {
 
 a {
   color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+  /* color: #1F7494 !important; */
   text-decoration: underline;
 }
 
