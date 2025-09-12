@@ -73,11 +73,11 @@ const Header = ({ page_name }) => {
                 };
                 await Promise.all([
                     // dispatch(getlistAttendanceThunk(request)),
-                    dispatch(getCustomerListThunk({ request })),
+                    dispatch(getCustomerListThunk(request)),
                     dispatch(getListDepartnmentThunk({})),
-                    dispatch(getListBankDetailsThunk({ request })),
-                    dispatch(getlistLeavesThunk({ request })),
-                    dispatch(getEmpLeaveBalanceListThunk({ request })),
+                    dispatch(getListBankDetailsThunk(request)),
+                    dispatch(getlistLeavesThunk(request)),
+                    dispatch(getEmpLeaveBalanceListThunk(request)),
                     dispatch(getSaturdayListThunk({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 })),
                     dispatch(getHolidayListThunk())
                 ]);
