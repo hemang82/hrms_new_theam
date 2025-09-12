@@ -22,7 +22,7 @@ import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameF
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, DateFormat, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -128,10 +128,14 @@ export default function ManageCoustomer() {
     const [is_loding, setIs_loading] = useState(false);
 
     const [updatedLeaveLeast, setupdatedLeavList] = useState(leaves);
+    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     useEffect(() => {
+        const request = {
+            emp_leave_company: EMPLOYEE_STATUS[0]?.key,
+        };
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({}));
+            dispatch(getCustomerListThunk(request));
         }
         setSelectedOption({})
     }, [])
@@ -500,6 +504,16 @@ export default function ManageCoustomer() {
         clearErrors('proof_image');
     };
 
+    const onChangeApiCalling = async (data) => {
+        try {
+            const request = {
+                emp_leave_company: data?.key,
+            };
+            await dispatch(getlistLeavesThunk(request));
+        } finally {
+        }
+    };
+
     return (
         <>
             <div className="container-fluid mw-100">
@@ -511,8 +525,8 @@ export default function ManageCoustomer() {
                         <div className="row g-3">
 
                             {/* Search Bar */}
-                            <div className="col-12 col-md-6 col-lg-6">
-                                <div className="position-relative mt-4 w-50">
+                            <div className="col-12 col-md-6 col-lg-4">
+                                <div className="position-relative mt-4 w-75">
                                     <input
                                         type="text"
                                         className="form-control ps-5  "
@@ -556,7 +570,7 @@ export default function ManageCoustomer() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2">
-                                <label className="d-block mb-1 fw-semibold">Status</label>
+                                <label className="d-block mb-1 fw-semibold">Leave Status</label>
                                 <div className="btn-group w-100">
                                     <button
                                         type="button"
@@ -574,6 +588,38 @@ export default function ManageCoustomer() {
                                                 <a
                                                     className="dropdown-item cursor_pointer text-black-50"
                                                     onClick={() => handleSelect(option)}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
+                                <label className="d-block mb-1 fw-semibold">Employee Status</label>
+                                <div className="btn-group w-100">
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling(option)
+                                                        setEmployeeStatus(option)
+                                                    }}
                                                 >
                                                     {option?.value}
                                                 </a>
@@ -651,7 +697,14 @@ export default function ManageCoustomer() {
                                     sortable
                                 />
 
-                                <Column field="name" header="Name" sortable style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                <Column
+                                    field="show_employee_id"
+                                    header="Employee ID"
+                                    style={{ minWidth: '10rem', whiteSpace: 'nowrap', textTransform: 'capitalize' }}
+                                    body={(rowData) => <span>{rowData?.show_employee_id || '-'}</span>}
+                                />
+
+                                <Column field="name" header="Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
                                     <span className='me-2'>{truncateWords(rowData.name) || '-'} </span>
                                 )} />
 
@@ -862,7 +915,6 @@ export default function ManageCoustomer() {
                     <div className="modal-backdrop fade show"></div>
                 )
             }
-
 
             <div className={`modal custom-modal  ${actionModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">

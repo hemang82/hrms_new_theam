@@ -22,7 +22,7 @@ import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameF
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, DateFormat, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -121,8 +121,11 @@ export default function ManageDepartnment() {
     }, [addLeaveModal])
 
     useEffect(() => {
+        const request = {
+            emp_leave_company: EMPLOYEE_STATUS[0]?.key,
+        };
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({}));
+            dispatch(getCustomerListThunk(request));
         }
     }, [])
 
@@ -507,34 +510,42 @@ export default function ManageDepartnment() {
 
     return (
         <>
-
-            {/* <Slidebar /> */}
-            {/* <div className="body-wrapper"> */}
-            {/* <Header /> */}
-
             <div className="container-fluid mw-100">
                 <SubNavbar title={"Department List"} header={'Department List'} />
 
                 <div className="widget-content searchable-container list">
-                    <div className="card card-body">
-                        <div className="row border-bottom pb-3">
-                            <div className="col-12 col-md-6 col-lg-3">
+
+                    <div className="card card-body p-3 mb-2">
+                        <div className="row">
+
+                            <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
                                 <div className="position-relative">
-                                    <input type="text" className="form-control product-search ps-5" id="input-search" placeholder="Search Department ..."
+                                    <input
+                                        type="text"
+                                        className="form-control product-search ps-5"
+                                        id="input-search"
+                                        placeholder="Search Department ..."
                                         value={globalFilterValue}
-                                        onChange={onGlobalFilterChange} />
+                                        onChange={onGlobalFilterChange}
+                                    />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-9">
-                                <div className="d-flex flex-column flex-md-row justify-content-end align-items-stretch gap-2 ">
+                            <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
+                            </div>
+
+                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
+                            </div>
+
+                            <div className="col-12 col-md-6 col-lg-2">
+                                <div className="d-flex justify-content-end">
                                     <Link
-                                        // to="/emi_schedule_list/add_emi_schedule"
                                         id="btn-add-contact"
-                                        className="btn btn-info d-flex align-items-center justify-content-center mt-3 mt-md-0  w-md-auto "
+                                        className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto"
                                         style={{ height: '40px' }}
                                         onClick={() => { openBankDetailsModelFunc() }}
+
                                     >
                                         <span className="me-1">
                                             <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
@@ -543,10 +554,11 @@ export default function ManageDepartnment() {
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0 gap-3">
-                            </div>
-                        </div>
 
+                        </div>
+                    </div>
+
+                    <div className="card card-body">
                         <div className="table-responsive">
                             <DataTable
                                 value={updatedLeaveLeast?.length > 0 ? updatedLeaveLeast : []}

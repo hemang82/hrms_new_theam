@@ -307,7 +307,6 @@ export default function ManageSalary() {
                                 </ul>
                             </div>
 
-
                         </div>
                     </div>
 
@@ -341,10 +340,10 @@ export default function ManageSalary() {
                                 />
 
                                 <Column
-                                    field="emp_id"
+                                    field="employee_id"
                                     header="Employee ID"
                                     style={{ minWidth: '10rem', whiteSpace: 'nowrap', textTransform: 'capitalize' }}
-                                    body={(rowData) => <span>{rowData?.emp_id || '-'}</span>}
+                                    body={(rowData) => <span>{rowData?.employee_id || '-'}</span>}
                                 />
 
                                 <Column
@@ -394,11 +393,11 @@ export default function ManageSalary() {
                                     <span className='me-2'>{rowData?.LWPLeave}</span>
                                 )} />
 
-                                <Column field="monthlySalary" header="Salary" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                <Column field="monthlySalary" header="Salary" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.monthlySalary}</span>
                                 )} />
 
-                                <Column field="payableDays" header="Day" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                <Column field="payableDays" header="Day" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.payableDays}</span>
                                 )} />
 

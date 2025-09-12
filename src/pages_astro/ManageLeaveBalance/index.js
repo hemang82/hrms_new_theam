@@ -22,7 +22,7 @@ import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameF
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, DateFormat, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -125,13 +125,18 @@ export default function ManageLeaveBalance() {
     const [paymentDate, setPaymentDate] = useState(dayjs());
     const [is_loding, setIs_loading] = useState(false);
     const [updatedLeaveLeast, setupdatedLeavList] = useState(empLeaveBalanceList);
+    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
+
 
     useEffect(() => {
+        const request = {
+            emp_leave_company: EMPLOYEE_STATUS[0]?.key,
+        };
         if (empLeaveBalanceList?.length === 0) {
-            dispatch(getEmpLeaveBalanceListThunk({}))
+            dispatch(getEmpLeaveBalanceListThunk(request))
         }
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({}));
+            dispatch(getCustomerListThunk(request));
         }
         setSelectedOption({})
     }, [])
@@ -505,6 +510,15 @@ export default function ManageLeaveBalance() {
         clearErrors('proof_image');
     };
 
+    const onChangeApiCalling = async (data) => {
+        try {
+            const request = {
+                emp_leave_company: data?.key,
+            };
+            await dispatch(getEmpLeaveBalanceListThunk(request));
+        } finally {
+        }
+    };
     return (
         <>
             {/* <Slidebar /> */}
@@ -515,36 +529,81 @@ export default function ManageLeaveBalance() {
                 <SubNavbar title={"Leave Balance List"} header={'Leave Balance List'} />
 
                 <div className="widget-content searchable-container list">
-                    <div className="card card-body">
-                        <div className="row border-bottom pb-3">
-                            <div className="col-12 col-md-6 col-lg-3">
+
+                    <div className="card card-body p-3 mb-2">
+                        <div className="row">
+                            {/* Search Input */}
+                            <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
                                 <div className="position-relative">
-                                    <input type="text" className="form-control product-search ps-5" id="input-search" placeholder="Search leave balance ..."
+                                    <input
+                                        type="text"
+                                        className="form-control product-search ps-5"
+                                        id="input-search"
+                                        placeholder="Search leave balance ..."
                                         value={globalFilterValue}
-                                        onChange={onGlobalFilterChange} />
+                                        onChange={onGlobalFilterChange}
+                                    />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-9">
-                                <div className="d-flex flex-column flex-md-row justify-content-end align-items-stretch gap-2 ">
+                            <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
+                            </div>
+
+                            {/* Status Dropdown */}
+                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling(option)
+                                                        setEmployeeStatus(option)
+                                                    }}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Add Employee Button */}
+                            <div className="col-12 col-md-6 col-lg-2">
+                                <div className="d-flex justify-content-end">
                                     <Link
-                                        // to="/emi_schedule_list/add_emi_schedule"
+                                        // to="/user_list/add_user"
                                         id="btn-add-contact"
-                                        className="btn btn-info d-flex align-items-center justify-content-center mt-3 mt-md-0  w-md-auto "
+                                        className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto"
                                         style={{ height: '40px' }}
                                         onClick={() => { funcStatusChange() }}
+
                                     >
                                         <span className="me-1">
                                             <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
                                         </span>
-                                        <span className="fw-semibold">Add Leave Balance</span>
+                                        <span className="fw-semibold">Add Balance</span>
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0 gap-3">
-                            </div>
                         </div>
+
+                    </div>
+
+                    <div className="card card-body">
 
                         <div className="table-responsive">
                             <DataTable
@@ -575,8 +634,12 @@ export default function ManageLeaveBalance() {
                                     sortable
                                 />
 
-                                <Column field="name" header="Name" sortable style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
-                                    <span className='ms-2 me-2'>{truncateWords(rowData.name) || '-'} </span>
+                                <Column field="employee_id" header="Employee ID" style={{ minWidth: '10rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                    <span className=' me-2'>{truncateWords(rowData.employee_id) || '-'} </span>
+                                )} />
+
+                                <Column field="name" header="Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                    <span className='me-2'>{truncateWords(rowData.name) || '-'} </span>
                                 )} />
 
                                 {/* <Column field="start_date" header="From" style={{ minWidth: '6rem' }} body={(rowData) => (
@@ -596,7 +659,7 @@ export default function ManageLeaveBalance() {
                                 )} />
 
                                 <Column field="total_balance" header="Total Leave" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <span className='ms-5 me-2'>{rowData?.total_balance || '-'}</span>
+                                    <span className='ms-4 me-2'>{rowData?.total_balance || '0'}</span>
                                 )} />
 
                             </DataTable>

@@ -13,7 +13,7 @@ import { uploadImageOnAWS } from '../../utils/aws.service';
 import Constatnt, { AwsFolder, Codes } from '../../config/constant';
 import { SketchPicker } from 'react-color';
 import { formatDate, formatDateDyjs, getBreakMinutes, getCommaSeparatedNames, getFileNameFromUrl, getWorkingHours, handelInputText, selectOption, selectOptionCustomer, textInputValidation, textValidation } from '../../config/commonFunction';
-import { AstroInputTypesEnum, DateFormat, HALF_DAY_TYPE, InputRegex, InputTypesEnum, LEAVE_DAY, LEAVE_TYPE_LIST, TimeFormat } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, HALF_DAY_TYPE, InputRegex, InputTypesEnum, LEAVE_DAY, LEAVE_TYPE_LIST, TimeFormat } from '../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerListThunk, setLoader } from '../../Store/slices/MasterSlice';
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -71,8 +71,11 @@ export default function AddCustomer() {
     var attendanceData = location?.state;
 
     useEffect(() => {
+        const request = {
+            emp_leave_company: EMPLOYEE_STATUS[0]?.key
+        };
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({}));
+            dispatch(getCustomerListThunk(request));
         }
     }, [])
 

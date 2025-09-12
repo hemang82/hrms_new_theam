@@ -110,7 +110,7 @@ export const InputTypesEnum = {
 };
 
 export const AstroInputTypesEnum = {
-
+    ID : 'id',
     CATEGORY_EN: 'category_en',
     CATEGORY_GU: 'category_gu',
     CATEGORY_HI: 'category_hi',

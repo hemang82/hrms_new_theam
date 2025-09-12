@@ -22,18 +22,20 @@ import { closeModel, formatDate, getAllStatusObject, getLoanStatusObject, openMo
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { DateFormat, EMPLOYEE_STATUS, STATUS_COLORS } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { IoAddCircleOutline } from 'react-icons/io5';
+import { Controller, useForm } from 'react-hook-form';
+import { DatePicker } from 'antd';
+import dayjs from 'dayjs';
 
 export default function ManageCoustomer() {
 
     let navigat = useNavigate();
     const dispatch = useDispatch();
 
-    const [totalRows, setTotalRows] = useState(0);
+    const { register, handleSubmit, setValue, clearErrors, reset, watch, trigger, control, formState: { errors } } = useForm();
 
-    const [checked, setChecked] = useState('');
-    const [is_load, setis_load] = useState(false);
+    const [totalRows, setTotalRows] = useState(0);
 
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
@@ -50,20 +52,13 @@ export default function ManageCoustomer() {
     const [page, setPage] = useState(1);
 
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
-
+    const [addLeaveModal, setAddLeave] = useState(false);
 
     const hasInitialLoaded = useRef(false);
 
     const fetchData = async () => {
         const request = {
-            // limit: perPage,
-            // offset: page,
-            // per_page: 15,
-            // page: page,
-            // search: globalFilterValue || "",
-            // order_by: sortField,
-            // order_direction: sortOrder === 1 ? 'asc' : 'desc',
-            emp_leave_company: employeeStatus
+            emp_leave_company: employeeStatus?.key
         };
         try {
             await dispatch(getCustomerListThunk(request));
@@ -83,7 +78,6 @@ export default function ManageCoustomer() {
     }, [debounce, page, sortField, sortOrder]);
 
     const handleStatus = async (id, changeChecked) => {
-        setis_load(true)
         let submitData = {
             action: "admin",
             emp_leave_company: changeChecked,
@@ -103,7 +97,6 @@ export default function ManageCoustomer() {
                 });
                 dispatch(updateCustomerList(updatedList))
             } else {
-                setis_load(false)
                 TOAST_ERROR(response?.message)
             }
         })
@@ -124,6 +117,7 @@ export default function ManageCoustomer() {
                     closeModel(dispatch)
                     dispatch(setLoader(false))
                     TOAST_SUCCESS(response?.message);
+                    // fetchData()
                 } else {
                     closeModel(dispatch)
                     TOAST_ERROR(response?.message)
@@ -201,6 +195,40 @@ export default function ManageCoustomer() {
         setSortOrder(event.sortOrder);
     };
 
+    const openLeaveModelFunc = (data) => {
+        setValue(AstroInputTypesEnum.ID, data?.id)
+        setAddLeave(true)
+    }
+
+    const closeLeaveModelFunc = () => {
+        reset()
+        setAddLeave(false)
+    }
+
+    const onSubmitData = async (data) => {
+        console.log('datadata onSubmitData', data);
+        dispatch(setLoader(true))
+        let submitData = {
+            action: "admin",
+            emp_leave_company: "1",
+            emp_leave_date: data[AstroInputTypesEnum.DATE],
+            emp_leave_reason: data[AstroInputTypesEnum.REASON],
+            employee_id: data[AstroInputTypesEnum.ID],
+        }
+        EditUser(submitData).then((response) => {
+            if (response.code == Codes.SUCCESS) {
+                TOAST_SUCCESS(response?.message)
+                const updatedList = customerList?.filter((item) => item.id !== data[AstroInputTypesEnum.ID]);
+                dispatch(updateCustomerList(updatedList))
+                dispatch(setLoader(false))
+                closeLeaveModelFunc()
+            } else {
+                dispatch(setLoader(false))
+                TOAST_ERROR(response?.message)
+            }
+        })
+    }
+
     const onChangeApiCalling = async (data) => {
         try {
             const request = {
@@ -236,7 +264,7 @@ export default function ManageCoustomer() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0 mb-2">
                             </div>
 
                             {/* Status Dropdown */}
@@ -345,11 +373,12 @@ export default function ManageCoustomer() {
                                 <Column field="emp_leave_company" data-pc-section="root" sortable header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>
                                         {rowData?.emp_leave_company == "0" ? (
-                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, "1") }} >
+                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root" onClick={() => { openLeaveModelFunc(rowData) }} >
                                                 <span className="p-tag-value" data-pc-section="value">Active</span>
                                             </span>
                                         ) : (
-                                            <span className={`p-tag p-component cursor_pointer badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" onClick={() => { handleStatus(rowData?.id, "0") }}>
+                                            // onClick={() => { handleStatus(rowData?.id, "0") }}
+                                            <span className={`p-tag p-component badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2  ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
                                                 <span className="p-tag-value" data-pc-section="value">Inactive</span>
                                             </span>
                                         )}
@@ -369,6 +398,7 @@ export default function ManageCoustomer() {
                                         </a>
                                     </div>
                                 )} />
+
                             </DataTable>
 
                             {/* <div className=''>
@@ -381,6 +411,83 @@ export default function ManageCoustomer() {
             </div>
 
             {/* </div> */}
+
+            <div className={`modal custom-modal  ${addLeaveModal ? "fade show d-block " : "d-none"}`}
+                id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
+                <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
+                    <div className="modal-content border-0">
+                        <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
+                            <h6 className="modal-title text-dark fs-5">{'Leave Employee Details'} </h6>
+                            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveModelFunc() }} />
+                        </div>
+
+                        <div className="modal-body">
+                            <form onSubmit={handleSubmit(onSubmitData)}>
+                                <div className="col-lg-12">
+                                    <div className="card-body p-2">
+                                        <div className="row g-3">
+                                            <input type="hidden" value="some_default_value" {...register(AstroInputTypesEnum.ID)} />
+                                            <div className="">
+                                                <div className="col-12 ">
+                                                    <label htmlFor="dob1" className="form-label fw-semibold">
+                                                        Date <span className="text-danger ms-1">*</span>
+                                                    </label>
+                                                    <Controller
+                                                        name={AstroInputTypesEnum.DATE}
+                                                        control={control}
+                                                        rules={{ required: "Date is required" }}
+                                                        render={({ field }) => (
+                                                            <DatePicker
+                                                                id={AstroInputTypesEnum.DATE}
+                                                                picker="date"
+                                                                className="form-control custom-datepicker w-100"
+                                                                format={DateFormat?.DATE_FORMAT}
+                                                                value={field.value ? dayjs(field.value, DateFormat?.DATE_FORMAT) : null}
+                                                                onChange={(date) => field.onChange(date ? dayjs(date).format(DateFormat?.DATE_FORMAT) : null)}
+                                                            />
+                                                        )}
+                                                    />
+                                                    {errors.dob1 && (
+                                                        <small className="text-danger">{errors.dob1.message}</small>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="">
+                                                <label htmlFor="leave_reason" className="form-label fw-semibold">
+                                                    Reason<span className="text-danger ms-1">*</span>
+                                                </label>
+                                                <div className="input-group border rounded-1">
+                                                    <textarea
+                                                        className="form-control ps-2"
+                                                        rows={3}
+                                                        placeholder="Enter reason for leave"
+                                                        {...register(AstroInputTypesEnum.REASON, {
+                                                            required: "Enter reason for leave",
+                                                        })}
+                                                    ></textarea>
+                                                </div>
+                                                <label className="errorc ps-1 pt-1">
+                                                    {errors[AstroInputTypesEnum.REASON]?.message}
+                                                </label>
+                                            </div>
+
+                                            <div className="modal-footer justify-content-center">
+                                                <button type="button" className="btn btn-danger" onClick={() => { closeLeaveModelFunc() }}>Cancel</button>
+                                                <button type="submit" className="btn btn-primary">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div >
+            {
+                addLeaveModal && (
+                    <div className="modal-backdrop fade show"></div>
+                )
+            }
 
             {
                 customModel.isOpen && customModel?.modalType === ModelName.DELETE_MODEL && (

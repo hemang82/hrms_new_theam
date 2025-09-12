@@ -47,9 +47,9 @@ export const getAllLoanListThunk = createAsyncThunk("allLoanList", async (submit
 
 export const getlistLeavesThunk = createAsyncThunk("listLeaves", async (submitData, { dispatch }) => {
     try {
-        // dispatch(setLoader(true))
+        dispatch(setLoader(true))
         const { data } = await API.listLeaves(submitData);
-        // dispatch(setLoader(false))
+        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;
@@ -58,9 +58,9 @@ export const getlistLeavesThunk = createAsyncThunk("listLeaves", async (submitDa
 
 export const getEmpLeaveBalanceListThunk = createAsyncThunk("empLeaveBalanceList", async (submitData, { dispatch }) => {
     try {
-        // dispatch(setLoader(true))
+        dispatch(setLoader(true))
         const { data } = await API.listEmpLeaveBalance(submitData);
-        // dispatch(setLoader(false))
+        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;

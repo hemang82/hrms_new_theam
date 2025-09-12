@@ -15,7 +15,7 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getCustomerListThunk, getHolidayListThunk, getSalaryListThunk, setLoader, updateCustomerList, updateHolidayList, updateIntrestList } from '../../Store/slices/MasterSlice';
+import { getHolidayListThunk, getSalaryListThunk, setLoader, updateCustomerList, updateHolidayList, updateIntrestList } from '../../Store/slices/MasterSlice';
 import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, formatDate, formatDateDyjs, openModel, textInputValidation } from '../../config/commonFunction';

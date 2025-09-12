@@ -128,8 +128,11 @@ export default function ManageLeaveBalance() {
     }, [addBankDetailsModal])
 
     useEffect(() => {
+        const request = {
+            emp_leave_company: employeeStatus?.key,
+        };
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({}));
+            dispatch(getCustomerListThunk(request));
         }
     }, [])
 
@@ -451,25 +454,30 @@ export default function ManageLeaveBalance() {
         <>
             <div className="container-fluid mw-100">
                 <SubNavbar title={"Bank Details List"} header={'Bank Details List'} />
-
                 <div className="widget-content searchable-container list">
-                    <div className="card card-body">
-                        <div className="row border-bottom pb-3">
 
-                            <div className="col-12 col-md-6 col-lg-4">
+                    <div className="card card-body p-3 mb-2">
+                        <div className="row">
+                            {/* Search Input */}
+                            <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
                                 <div className="position-relative">
-                                    <input type="text" className="form-control product-search ps-5" id="input-search" placeholder="Search Bank Details ..."
+                                    <input
+                                        type="text"
+                                        className="form-control product-search ps-5"
+                                        id="input-search"
+                                        placeholder="Search Bank Details ..."
                                         value={globalFilterValue}
-                                        onChange={onGlobalFilterChange} />
+                                        onChange={onGlobalFilterChange}
+                                    />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-4">
+                            <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
                             </div>
 
                             {/* Status Dropdown */}
-                            <div className="col-12 col-md-6 col-lg-2 ">
+                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
                                 <div className="btn-group w-100">
                                     <button
                                         type="button"
@@ -499,12 +507,13 @@ export default function ManageLeaveBalance() {
                                 </div>
                             </div>
 
+                            {/* Add Employee Button */}
                             <div className="col-12 col-md-6 col-lg-2">
-                                <div className="d-flex flex-column flex-md-row justify-content-end align-items-stretch gap-2 ">
+                                <div className="d-flex justify-content-end">
                                     <Link
-                                        // to="/emi_schedule_list/add_emi_schedule"
+                                        // to="/user_list/add_user"
                                         id="btn-add-contact"
-                                        className="btn btn-info d-flex align-items-center justify-content-center mt-3 mt-md-0  w-md-auto "
+                                        className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto"
                                         style={{ height: '40px' }}
                                         onClick={() => { openBankDetailsModelFunc() }}
                                     >
@@ -517,6 +526,8 @@ export default function ManageLeaveBalance() {
                             </div>
                         </div>
 
+                    </div>
+                    <div className="card card-body">
                         <div className="table-responsive">
                             <DataTable
                                 value={updatedLeaveLeast?.length > 0 ? updatedLeaveLeast : []}

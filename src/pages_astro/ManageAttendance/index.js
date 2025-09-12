@@ -107,10 +107,12 @@ export default function ManageAttendance() {
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     useEffect(() => {
+        const request = {
+            emp_leave_company: employeeStatus?.key,
+        };
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({}));
+            dispatch(getCustomerListThunk({ request }));
         }
-
         setSelectedOption({})
     }, [])
 
