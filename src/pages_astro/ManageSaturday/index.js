@@ -59,7 +59,7 @@ export default function ManageSaturday() {
         const request = {
             // "month": startDate ? formatDateDyjs(startDate, 'MM') : null,
             year: startDate ? formatDateDyjs(startDate, 'YYYY') : null,
-            month: startDate ? formatDateDyjs(startDate, 'MMMM') : null,
+            month: startDate ? formatDateDyjs(startDate, 'MM') : null,
             // "page": 1,
             // "limit": 10
         }
@@ -210,6 +210,7 @@ export default function ManageSaturday() {
     const onChangeApiCalling = (data) => {
         const request = {
             year: data?.date ? formatDateDyjs(data.date, 'YYYY') : null,
+            month: data?.date ? formatDateDyjs(data.date, 'MM') : null
         };
         dispatch(getSaturdayListThunk(request));
     };
@@ -268,8 +269,8 @@ export default function ManageSaturday() {
                             <div className="col-12 col-md-6 col-lg-2">
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
-                                    picker="year"   // ✅ only year picker
-                                    format="YYYY-MM"   // ✅ show only year
+                                    picker="month"   // ✅ only year picker
+                                    format="YYYY-MMM"   // ✅ show only year
                                     value={startDate}
                                     onChange={(date) => {
                                         setStartDate(date);

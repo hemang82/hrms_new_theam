@@ -892,7 +892,7 @@ export default function ManageAttendance() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark ">{'Attendance Details'} </h6>
+                            <h6 className="modal-title text-dark fs-5">{'Attendance Details'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeModelFunc() }} />
                         </div>
 
@@ -914,17 +914,16 @@ export default function ManageAttendance() {
                                                             label: "Check In",
                                                             value: selectedAttendance?.checkInTimes?.[0]
                                                                 ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                                : null
+                                                                : '-'
                                                         },
                                                         {
                                                             label: "Check Out",
                                                             value: selectedAttendance?.checkOutTimes?.[0]
                                                                 ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                                : null
+                                                                : '-'
                                                         },
-                                                        { label: "Total Break", value: getBreakMinutes(selectedAttendance?.breaks) + 'm' },
-                                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || 0)) || 0 },
-
+                                                        { label: "Total Break", value: selectedAttendance?.breaks?.length > 0 ? getBreakMinutes(selectedAttendance?.breaks) + 'm' : "-" },
+                                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
                                                     ].map((item, index) => (
                                                         <div className='col-12 col-sm-6'>
                                                             <div key={index} className="card border-1  them-light shadow-sm mt-2 ">
@@ -967,7 +966,6 @@ export default function ManageAttendance() {
                                         </div>
                                     ))}
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -1001,7 +999,7 @@ export default function ManageAttendance() {
                                                     // { label: "Name", value: selectedEmployee?.name },
                                                     // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
                                                     { label: "Work Hours", value: getWorkingHours(watch('checkIn') ? dayjs(watch('checkIn')).format("HH:mm:ss") : 0, dayjs(watch('checkOut') || dayjs()).format("HH:mm:ss"), getBreakMinutes(watch('breaks') || 0)) || 0 },
-                                                    { label: "Total Break", value: getBreakMinutes(watch('breaks')) + 'm' },
+                                                    { label: "Total Break", value: getBreakMinutes(watch('breaks')) + 'm' || '-' },
                                                 ].map((item, index) => (
                                                     <div className='col-12 col-sm-6'>
                                                         <div key={index} className="card border-1 zoom-in them-light shadow-sm m-1 ">

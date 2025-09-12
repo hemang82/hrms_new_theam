@@ -355,7 +355,7 @@ export const openModel = (dispatch, type) => {
 }
 
 export const momentTimeFormate = (time, timeFormat) => {
-    if (!time) return "";
+    if (!time) return "-";
     return moment.utc(time, timeFormat ? timeFormat : "HH:mm:ss").local().format(timeFormat);
 };
 
