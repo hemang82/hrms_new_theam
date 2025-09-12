@@ -111,7 +111,7 @@ export default function ManageAttendance() {
             emp_leave_company: employeeStatus?.key,
         };
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk({ request }));
+            dispatch(getCustomerListThunk(request));
         }
         setSelectedOption({})
     }, [])
