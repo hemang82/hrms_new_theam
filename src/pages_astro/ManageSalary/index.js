@@ -32,7 +32,7 @@ export default function ManageSalary() {
     let navigat = useNavigate();
     const dispatch = useDispatch();
     const dateFormat = "MMM-YYYY";
-    const [startDate, setStartDate] = useState(dayjs()); // ✅ start of previous month
+    const [startDate, setStartDate] = useState(dayjs().subtract(1, 'month'));
 
     const [totalRows, setTotalRows] = useState(0);
     const [checked, setChecked] = useState('');
@@ -59,6 +59,7 @@ export default function ManageSalary() {
         const request = {
             "month": startDate ? formatDateDyjs(startDate, 'MM') : null,
             "year": startDate ? formatDateDyjs(startDate, 'YYYY') : null,
+            emp_leave_company: "0"
             // "page": 1,
             // "limit": 10
         }
@@ -207,8 +208,8 @@ export default function ManageSalary() {
 
     const onChangeApiCalling = (data) => {
         const request = {
-            month: data?.date ? formatDateDyjs(data.date, 'MM') : null,
-            year: data?.date ? formatDateDyjs(data.date, 'YYYY') : null,
+            month: startDate ? formatDateDyjs(startDate, 'MM') : null,
+            year: startDate ? formatDateDyjs(startDate, 'YYYY') : null,
             emp_leave_company: data?.emp_leave_company ? data?.emp_leave_company : "0"
         };
         dispatch(getSalaryListThunk(request));
@@ -311,6 +312,27 @@ export default function ManageSalary() {
                     </div>
 
                     <div className="card card-body">
+                        <div className="flex flex-wrap items-center p-4 bg-white border border-gray-200 rounded-md shadow-sm text-sm mb-2">
+                            <span className="text-gray-700"><strong>FD</strong>: Full Day</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>HD</strong>: Half Day</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>AB</strong>: Absent</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>OD</strong>: Off Day</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>SUN</strong>: Sunday</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>BD</strong>: Birthday Leave</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>CL</strong>: Casual Leave</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>CO</strong>: Comp Off</span>
+                            <span className="px-3 text-gray-400">|</span>
+                            <span className="text-gray-700"><strong>LWP</strong>: Leave Without Pay</span>
+                        </div>
+
+
                         <div className="table-responsive">
                             <DataTable
                                 value={salaryList}
@@ -361,7 +383,7 @@ export default function ManageSalary() {
                                     <span className='me-2'>{rowData?.halfDays}</span>
                                 )} />
 
-                                <Column field="absences" header="Ab" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="absences" header="AB" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.absences}</span>
                                 )} />
 
@@ -373,7 +395,7 @@ export default function ManageSalary() {
                                     <span className='me-2'>{rowData?.offDayCount}</span>
                                 )} />
 
-                                <Column field="sundays" header="Sun" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="sundays" header="SUN" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.sundays}</span>
                                 )} />
 

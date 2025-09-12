@@ -130,13 +130,13 @@ export default function ManageLeaveBalance() {
 
     useEffect(() => {
         const request = {
-            emp_leave_company: EMPLOYEE_STATUS[0]?.key,
+            emp_leave_company: employeeStatus?.key,
         };
         if (empLeaveBalanceList?.length === 0) {
             dispatch(getEmpLeaveBalanceListThunk(request))
         }
         if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk(request));
+            dispatch(getCustomerListThunk({ emp_leave_company: EMPLOYEE_STATUS[0]?.key }));
         }
         setSelectedOption({})
     }, [])
@@ -605,7 +605,11 @@ export default function ManageLeaveBalance() {
 
                     <div className="card card-body">
 
+
+
                         <div className="table-responsive">
+                           
+
                             <DataTable
                                 value={updatedLeaveLeast?.length > 0 ? updatedLeaveLeast : []}
                                 paginator

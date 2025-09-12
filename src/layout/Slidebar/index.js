@@ -10,7 +10,7 @@ import { GiKnightBanner } from "react-icons/gi";
 import { FaRegCalendarAlt, FaRegNewspaper, FaStackExchange, FaUsers } from "react-icons/fa";
 import { TbBuildingBank, TbCoinRupee, TbDashboardFilled, TbMoneybag } from "react-icons/tb";
 import { GrBlog, GrMoney, GrSettingsOption } from "react-icons/gr";
-import { RiCoupon3Line } from "react-icons/ri";
+import { RiCoupon3Line, RiScalesLine } from "react-icons/ri";
 import { PiFlagBannerFoldThin } from "react-icons/pi";
 import { FiUsers } from "react-icons/fi";
 import { TfiDashboard } from "react-icons/tfi";
@@ -24,7 +24,7 @@ import { FaMoneyBillTransfer } from "react-icons/fa6";
 import Model from '../../component/Model';
 import { LogoutComponent } from '../../pages/CommonPages/CommonComponent';
 import { IoCalendarOutline, IoLogOutOutline } from "react-icons/io5";
-import { LuHandCoins } from "react-icons/lu";
+import { LuCalendarSync, LuHandCoins } from "react-icons/lu";
 import { updateSlidebarToggle } from '../../Store/slices/MasterSlice';
 import { PATHS } from '../../Router/PATHS';
 import { FcLeave } from "react-icons/fc";
@@ -239,12 +239,28 @@ const Slidebar = () => {
                             <li className={`sidebar-item ${path === PATHS.ATTENDANCE_LIST ? "selected" : ""}`}>
                                 <Link to={PATHS.ATTENDANCE_LIST} className={`sidebar-link ${path === PATHS.ATTENDANCE_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
-                                        <MdOutlineCoPresent style={{ fontSize: '1.2rem' }} />
+                                        <LuCalendarSync  style={{ fontSize: '1.2rem' }} />
                                     </span>
                                     <span className="hide-menu">Attendance</span>
                                 </Link>
                             </li>
-
+                            
+                            <li className={`sidebar-item ${path === PATHS.LEAVE_LIST ? "selected" : ""}`}>
+                                <Link to={PATHS.LEAVE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <MdOutlineCoPresent style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Leave</span>
+                                </Link>
+                            </li>
+                            <li className={`sidebar-item ${path === PATHS.LEAVE_BALANCE_LIST ? "selected" : ""}`}>
+                                <Link to={PATHS.LEAVE_BALANCE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_BALANCE_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <RiScalesLine  style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Leave Balance</span>
+                                </Link>
+                            </li>
 
                             <li className={`sidebar-item ${path === PATHS.SALARY_LIST ? "selected" : ""}`}>
                                 <Link to={PATHS.SALARY_LIST} className={`sidebar-link ${path === PATHS.SALARY_LIST ? "active" : ""}`} aria-expanded="false">
@@ -256,7 +272,25 @@ const Slidebar = () => {
                             </li>
 
 
+                            <li className={`sidebar-item ${path === PATHS?.HOLIDAYS_LIST ? "selected" : ""}`}>
+                                <Link to={PATHS?.HOLIDAYS_LIST} className={`sidebar-link ${path === PATHS?.HOLIDAYS_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <IoCalendarOutline style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Holidays</span>
+                                </Link>
+                            </li>
 
+
+
+                            <li className={`sidebar-item ${path === PATHS.SATERDAY_LIST ? "selected" : ""}`}>
+                                <Link to={PATHS.SATERDAY_LIST} className={`sidebar-link ${path === PATHS.SATERDAY_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <MdOutlineDateRange style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Saturday</span>
+                                </Link>
+                            </li>
 
                             <li className={`sidebar-item ${path === PATHS.BANK_DETAILS_LIST ? "selected" : ""}`}>
                                 <Link to={PATHS.BANK_DETAILS_LIST} className={`sidebar-link ${path === PATHS.BANK_DETAILS_LIST ? "active" : ""}`} aria-expanded="false">
@@ -275,43 +309,6 @@ const Slidebar = () => {
                                     <span className="hide-menu">Department</span>
                                 </Link>
                             </li>
-
-                            <li className={`sidebar-item ${path === PATHS.LEAVE_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.LEAVE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <FcLeave style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Leave</span>
-                                </Link>
-                            </li>
-                            <li className={`sidebar-item ${path === PATHS.LEAVE_BALANCE_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.LEAVE_BALANCE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_BALANCE_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <FcLeave style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Leave Balance</span>
-                                </Link>
-                            </li>
-
-                            <li className={`sidebar-item ${path === PATHS?.HOLIDAYS_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS?.HOLIDAYS_LIST} className={`sidebar-link ${path === PATHS?.HOLIDAYS_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <IoCalendarOutline style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Holidays</span>
-                                </Link>
-                            </li>
-
-
-                            <li className={`sidebar-item ${path === PATHS.SATERDAY_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.SATERDAY_LIST} className={`sidebar-link ${path === PATHS.SATERDAY_LIST ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <MdOutlineDateRange style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Saturday</span>
-                                </Link>
-                            </li>
-
 
                             {/* <li className={`sidebar-item ${path === "/contact_us_list" ? "selected" : ""}`}>
                                 <Link to={'/contact_us_list'} className={`sidebar-link ${path === "/contact_us_list" ? "active" : ""}`} aria-expanded="false">
