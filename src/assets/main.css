@@ -57,10 +57,10 @@ code {
 }
 
 .p-paginator .p-dropdown {
-  height: 2rem !important;
-  margin: 10px !important;
-  padding: 3px !important;
-  border-color: #1F7494;
+    height: 1.5rem !important;
+    margin: 10px !important;
+    padding-left: 7px !important;
+    border-color: #1F7494;
 }
 
 .cursor_pointer {
@@ -267,4 +267,10 @@ input[type=number] {
 
 .p-column-title {
   font-size: 14px !important;
+}
+
+.p-dropdown:not(.p-disabled).p-focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid #1F7494 !important /* your desired border color */
 }

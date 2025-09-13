@@ -1,24 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
-import Swal from 'sweetalert2'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Controller, useForm } from 'react-hook-form';
-import Header from '../../layout/Header';
-import Slidebar from '../../layout/Slidebar';
-import Footer from '../../layout/Footer';
+import {  useForm } from 'react-hook-form';
 import { Language, TOAST_ERROR, TOAST_SUCCESS, allowLettersAndSpaces } from '../../config/common';
 import { AddUser, CustomerDetails, departnmentList, EditUser, } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
-import categoryImage from '../../assets/Images/Group 48096953.png'
-import { uploadImageOnAWS } from '../../utils/aws.service';
-import { AwsFolder, Codes } from '../../config/constant';
-import { SketchPicker } from 'react-color';
-import { formatDate, formatDateDyjs, getCommaSeparatedNames, getFileNameFromUrl, handelInputText, selectOption, textInputValidation, textValidation } from '../../config/commonFunction';
+import {Codes } from '../../config/constant';
+import { formatDateDyjs,handelInputText,textInputValidation, textValidation } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, InputRegex, InputTypesEnum } from '../../config/commonVariable';
 import { useDispatch } from 'react-redux';
 import { setLoader } from '../../Store/slices/MasterSlice';
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import CountryMobileNumber from '../../pages/CommonPages/CountryMobileNumber';
-import Spinner from '../../component/Spinner';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { PATHS } from '../../Router/PATHS';
@@ -26,28 +16,18 @@ import { PATHS } from '../../Router/PATHS';
 export default function AddCustomer() {
     const navigation = useNavigate();
     const dispatch = useDispatch();
-
     const location = useLocation();
-    const [showPanCardImage, setShowPanCardImage] = useState(null);
-    const [panCardFileName, setPanCardFileName] = useState('');
-    const [showadhaarCardImage, setShowadhaarCardImage] = useState(null);
-    const [adhaarCardFileName, setAdhaarCardFileName] = useState('');
-    const [is_loding, setIs_loading] = useState(false);
-    const [newPassVisible, setNewPassVisible] = useState(false);
+    var userData = location?.state;
+
     const [selectedBirthDate, setSelectedBirthDate] = useState(dayjs()); // Default to today
     const [selectedJoiningDate, setSelectedJoiningDate] = useState(dayjs()); // Default to today
     const [departnmentlistArray, setDepartnmentlistArray] = useState([]);
-
-    var userData = location?.state;
 
     const {
         register,
         handleSubmit,
         setValue,
         clearErrors,
-        reset,
-        watch,
-        control,
         trigger,
         formState: { errors },
     } = useForm();
@@ -55,28 +35,21 @@ export default function AddCustomer() {
     useEffect(() => {
         if (userData) {
             dispatch(setLoader(true))
-
             CustomerDetails({ employee_id: userData?.id.toString() }).then((response) => {
                 if (response?.code == Codes.SUCCESS) {
                     let responseDetails = response?.data;
-                    console.log('responseDetailsresponseDetails', responseDetails);
-
                     setValue(AstroInputTypesEnum?.NAME, responseDetails?.name);
                     setValue(AstroInputTypesEnum?.EMAIL, responseDetails?.email);
                     setValue(AstroInputTypesEnum?.MOBILE, responseDetails?.phone_number);
                     setValue(AstroInputTypesEnum?.CURRENT_ADDRESH, responseDetails?.location);
                     setValue(AstroInputTypesEnum?.GENDER, responseDetails?.gender || 'M');
                     setSelectedBirthDate(responseDetails?.birth_date ? dayjs(responseDetails.birth_date) : null);
-
                     setValue(AstroInputTypesEnum?.PASSWORD, responseDetails?.password);
                     setValue(AstroInputTypesEnum?.MONTHLY_SALARY, responseDetails?.salary_monthly);
                     setValue(AstroInputTypesEnum?.SENIOR_NAME, responseDetails?.senior_name);
                     setValue(AstroInputTypesEnum?.DESIGNATION, responseDetails?.designation);
                     setSelectedJoiningDate(responseDetails?.joining_date ? dayjs(responseDetails.joining_date) : null)
-                    // profile_photo
                     dispatch(setLoader(false))
-                    // if (departnmentlistArray.length > 0) {
-                    // }
                 }
             })
         }
@@ -84,7 +57,6 @@ export default function AddCustomer() {
             if (response?.code == Codes.SUCCESS) {
                 setDepartnmentlistArray(response?.data)
                 if (userData) {
-                    console.log('response?.data?.find((dept) => dept.id == userData?.department)?.dept_name', response?.data?.find((dept) => dept.id == userData?.department)?.id);
                     const departmentId = response?.data?.find((dept) => dept.id == userData.department)?.id;
                     if (departmentId) {
                         setValue(AstroInputTypesEnum?.DEPARTMENT, departmentId.toString());
@@ -94,24 +66,9 @@ export default function AddCustomer() {
         })
     }, [userData]);
 
-    var onChangeMobileNumber = (mobileNumber) => {
-        setValue('mobile_number', mobileNumber)
-        clearErrors('mobile_number', '')
-    }
-
-    var onChangeCountryCode = (countryCode) => {
-        setValue('country_code', countryCode?.country_code)
-        clearErrors('country_code', '')
-    }
-
     const onSubmitData = async (data) => {
         try {
-
             dispatch(setLoader(true))
-
-            // let adhaarImage = showadhaarCardImage;
-            // if (adhaarImage instanceof Blob) adhaarImage = await uploadImageOnAWS(adhaarImage, AwsFolder?.ADHAR_IMAGE);
-
             let request = {
                 name: data[AstroInputTypesEnum.NAME],
                 email: data[AstroInputTypesEnum.EMAIL],
@@ -129,10 +86,8 @@ export default function AddCustomer() {
             }
 
             if (userData) {
-
                 request.employee_id = userData?.id?.toString();
                 request.action = "admin";
-
                 EditUser(request).then((response) => {
                     if (response?.code == Codes.SUCCESS) {
                         TOAST_SUCCESS(response?.message)
@@ -160,23 +115,6 @@ export default function AddCustomer() {
         }
     }
 
-    const handlePanImageChange = (e) => {
-        // const file = info?.file?.originFileObj
-        const image = e.target.files[0]
-        // setValue(AstroInputTypesEnum.PANCARD_FILE, image);
-        setShowPanCardImage(image)
-        setPanCardFileName(image?.name)
-        clearErrors(AstroInputTypesEnum.PANCARD_FILE);
-    };
-
-    const handleAdhaarImageChange = async (e) => {
-        const image = e.target.files?.[0];
-        // setValue(AstroInputTypesEnum?.PROFILE_IMAGE, image);
-        setShowadhaarCardImage(image)
-        setAdhaarCardFileName(image.name)
-        clearErrors(AstroInputTypesEnum?.PROFILE_IMAGE);
-    }
-
     const handleInputChange = async (key, value) => {
         let filteredValue = value;
         if (key === AstroInputTypesEnum.PANCARD) {
@@ -187,13 +125,13 @@ export default function AddCustomer() {
             filteredValue = value.replace(InputRegex.ONCHANGE_MOBILE_REGEX, '');
         }
         setValue(key, filteredValue)
-        clearErrors(key);               // Clear error message (if any)
+        clearErrors(key);              
         await trigger(key);
     };
 
     return (
         <>
-            {/* {<Spinner isActive={is_loding} message={'Please Wait'} />} */}
+            {/* {<Spinner isActive={is_loding} message={'Please Wait'} />}  */}
             <div className="container-fluid mw-100">
                 <SubNavbar title={userData ? 'Edit Employee' : 'Add Employee'} header={'Employee List'} subHeaderOnlyView={userData ? 'Edit Employee' : 'Add Employee'} />
                 <div className="row m-2">
@@ -224,7 +162,6 @@ export default function AddCustomer() {
                                                             placeholder="Enter Full Name"
                                                             onKeyPress={allowLettersAndSpaces}
                                                             autoComplete='nope'
-                                                            // {...register('category_en', { required: "Enter category" })}
                                                             {...register(AstroInputTypesEnum.NAME, textInputValidation(AstroInputTypesEnum.NAME, Language('Enter full name')))}
                                                         />
                                                     </div>
@@ -286,7 +223,6 @@ export default function AddCustomer() {
                                                             type="text"
                                                             className="form-control ps-2"
                                                             placeholder="Enter Designation"
-                                                            // onKeyPress={allowLettersAndSpaces}
                                                             autoComplete='nope'
                                                             {...register(AstroInputTypesEnum.DESIGNATION, textInputValidation(AstroInputTypesEnum.DESIGNATION, Language('Enter Designation')))}
                                                         />
@@ -316,59 +252,6 @@ export default function AddCustomer() {
                                                         {errors[AstroInputTypesEnum.MONTHLY_SALARY]?.message}
                                                     </label>
                                                 </div>
-
-                                                {/* <div className="mb-4"> */}
-                                                {/* <label htmlFor="exampleInputPassword1" className="form-label fw-semibold">Phone no<spna className="text-danger"> *</spna></label>
-                                                    <CountryMobileNumber onChangeMobileNumber={onChangeMobileNumber} onChangeCountryCode={onChangeCountryCode} setDefaultData={customerData} imageIcon={false} />
-                                                    <input type='hidden' {...register(AstroInputTypesEnum?.MOBILE, { required: "Please Enter Phone number" })} />
-                                                    <input type='hidden' {...register(AstroInputTypesEnum?.COUNTRYCODE)} />
-                                                    <label className="errorc ps-1 pt-1" >{errors.mobile_number?.message}</label> */}
-                                                {/* </div> */}
-
-                                                {/* <div className="mb-4">
-                                                    <label htmlFor="lastname" className="form-label fw-semibold">
-                                                        Gender <span className="text-danger ms-1">*</span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <select
-                                                            className="form-control ps-2"
-                                                            autoComplete="nope"
-                                                            {...register(AstroInputTypesEnum.GENDER, {
-                                                                required: "Please Enter Gender",
-                                                            })}
-                                                        >
-                                                            <option value="">Select Gender</option>
-                                                            <option value="M">Male</option>
-                                                            <option value="F">Female</option>
-                                                            <option value="O">Other</option>
-                                                        </select>
-                                                    </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.GENDER]?.message}
-                                                    </label>
-                                                </div> */}
-
-                                                {/* <div className="mb-4">
-                                                    <label htmlFor="product_name" className="form-label fw-semibold">
-                                                        City <span className="text-danger ms-1">*</span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control ps-2"
-                                                            placeholder="Enter city"
-                                                            autoComplete='nope'
-                                                            // {...register('category_ara', { required: "Enter category arabic" })}
-                                                            {...register(AstroInputTypesEnum.CITY, textInputValidation(AstroInputTypesEnum.CITY, Language('Please enter city')))}
-                                                        />
-                                                    </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.CITY]?.message}
-                                                    </label>
-                                                </div> */}
-
-
-
                                             </div>
 
                                             <div className='col-md-6'>
@@ -432,7 +315,7 @@ export default function AddCustomer() {
                                                         {errors[AstroInputTypesEnum.DEPARTMENT]?.message}
                                                     </label>
                                                 </div>
-                                                <div className="row mb-4 g-3"> {/* ✅ Bootstrap row with spacing */}
+                                                <div className="row mb-4 g-3">
                                                     <div className="col-12 col-md-6">
                                                         <label htmlFor="dob1" className="form-label fw-semibold">
                                                             Date of Birth <span className="text-danger ms-1">*</span>
@@ -482,31 +365,6 @@ export default function AddCustomer() {
                                                         {errors[AstroInputTypesEnum.SENIOR_NAME]?.message}
                                                     </label>
                                                 </div>
-
-                                                {/* <div className="mb-4">
-                                                    <label htmlFor="lastname" className="form-label fw-semibold">
-                                                        Profile Image<span className="text-danger ms-1"></span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <input
-                                                            className="form-control ps-2"
-                                                            type="file"
-                                                            id="formFileMultiple"
-                                                            accept=".pdf, image/jpeg, image/png"
-                                                            {...register(AstroInputTypesEnum.PROFILE_IMAGE)}
-                                                            onChange={handleAdhaarImageChange}
-                                                        />
-                                                    </div>
-
-                                                    {adhaarCardFileName && (
-                                                        <small className="text-muted mt-1 d-block">
-                                                            Selected file: {adhaarCardFileName}
-                                                        </small>
-                                                    )}
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.PROFILE_IMAGE]?.message}
-                                                    </label>
-                                                </div> */}
                                             </div>
 
                                             <div className="mb-4">
@@ -532,11 +390,6 @@ export default function AddCustomer() {
                                                 </label>
                                             </div>
                                             <div className="modal-footer justify-content-center mb-3">
-                                                {
-                                                    userData ?
-                                                        <button type='button' className="btn btn-danger m-2" onClick={() => { navigation('/user_list') }}>Cancel</button>
-                                                        : <button type='button' className="btn btn-danger m-2" onClick={() => { reset(); setShowadhaarCardImage(""); setAdhaarCardFileName(""); setPanCardFileName(""); setShowPanCardImage("") }}>Reset</button>
-                                                }
                                                 <button type='submit' className="btn btn-primary" >Submit</button>
                                             </div>
                                         </div>
@@ -546,9 +399,7 @@ export default function AddCustomer() {
                         </div>
                     </div>
                 </div>
-                {/* </div > */}
             </div >
-
         </>
     )
 }

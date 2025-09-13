@@ -1,27 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect,  useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import Header from '../../layout/Header';
-import Slidebar from '../../layout/Slidebar';
-import $ from 'jquery';
-import 'datatables.net-bs5';
-import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
-import { EditUser, CustomerList } from '../../utils/api.services';
-import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
-import profile_image from '../../assets/Images/default.jpg'
-import ReactDatatable from '../../config/ReactDatatable';
-import { Helmet } from 'react-helmet';
+import { EditUser} from '../../utils/api.services';
+import {TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, setLoader, updateCustomerList } from '../../Store/slices/MasterSlice';
-import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
+import  { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, getAllStatusObject, getLoanStatusObject, openModel } from '../../config/commonFunction';
+import { closeModel, openModel } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
-import Pagination from '../../component/Pagination';
 import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, STATUS_COLORS } from '../../config/commonVariable';
 import { IoAddCircleOutline } from 'react-icons/io5';
 import { Controller, useForm } from 'react-hook-form';
@@ -33,28 +24,16 @@ export default function ManageCoustomer() {
     let navigat = useNavigate();
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, clearErrors, reset, watch, trigger, control, formState: { errors } } = useForm();
-
-    const [totalRows, setTotalRows] = useState(0);
-
+    const { register, handleSubmit, setValue,reset, control, formState: { errors } } = useForm();
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
-
     const [selectedUser, setSelectedUser] = useState()
-
-    const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState({ global: { value: '' } });
+    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
+    const [addEmployeeLeaveModal, setAddEmployueeLeave] = useState(false);
+    
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const debounce = useDebounce(globalFilterValue, SEARCH_DELAY);
-    const [filters, setFilters] = useState({ global: { value: '' } });
-    const [sortField, setSortField] = useState('created_at');
-    const [sortOrder, setSortOrder] = useState(-1);
-    const [perPage, setPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-
-    const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
-    const [addLeaveModal, setAddLeave] = useState(false);
-
-    const hasInitialLoaded = useRef(false);
 
     const fetchData = async () => {
         const request = {
@@ -63,44 +42,14 @@ export default function ManageCoustomer() {
         try {
             await dispatch(getCustomerListThunk(request));
         } finally {
-            // dispatch(setLoader(false));
         }
     };
 
     useEffect(() => {
-        // if (!hasInitialLoaded.current) {
-        //     hasInitialLoaded.current = true;
-        //     return; // Skip first effect run
-        // }
         if (customerList?.length === 0) {
             fetchData();
         }
-    }, [debounce, page, sortField, sortOrder]);
-
-    const handleStatus = async (id, changeChecked) => {
-        let submitData = {
-            action: "admin",
-            emp_leave_company: changeChecked,
-            employee_id: id,
-        }
-        EditUser(submitData).then((response) => {
-            if (response.code == Codes.SUCCESS) {
-                TOAST_SUCCESS(response?.message)
-                let updatedList = customerList?.map((item) => {
-                    if (id == item.id) {
-                        return {
-                            ...item,
-                            emp_leave_company: changeChecked, // set current user
-                        };
-                    }
-                    return item;
-                });
-                dispatch(updateCustomerList(updatedList))
-            } else {
-                TOAST_ERROR(response?.message)
-            }
-        })
-    }
+    }, [debounce]);
 
     const handleDelete = (is_true) => {
         if (is_true) {
@@ -139,74 +88,17 @@ export default function ManageCoustomer() {
         setGlobalFilterValue(value);
     };
 
-    // ---------------------------------- Export Data ----------------------------------
-
-    const handleExportApiCall = async () => {
-        dispatch(setLoader(true));
-        let submitData = {
-            search: globalFilterValue
-        }
-        const { code, data: { customerList } } = await CustomerList(submitData);
-        const customerData = customerList?.map((customer, index) => ({
-            id: index + 1,
-            FullName: `${customer.name || '-'}`,
-            Contact: customer?.country_code + ' ' + customer?.mobile_number || '-',
-            Email: customer?.email || '-',
-            Gender: customer?.gender || '-',
-            Address: customer?.curr_address || '-',
-            CreateUser: formatDate(customer?.created_at, DateFormat?.DATE_YEAR_WISE_DASH_TIME_FORMAT) || '-'
-        }));
-
-        return { code, data: customerData }
-    };
-
-    const handleExportToPdfManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code === Codes.SUCCESS) {
-            ExportToPdf(data, 'Customer List', 'Customer List');
-        }
-        dispatch(setLoader(false));
-    };
-
-    const handleExportToCSVManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code === Codes.SUCCESS) {
-            ExportToCSV(data, 'Customer List');
-        }
-        dispatch(setLoader(false));
-
-    };
-
-    const handleExportToExcelManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code === Codes.SUCCESS) {
-            ExportToExcel(data, 'Customer List');
-        }
-        dispatch(setLoader(false));
-    };
-
-    const onPageChange = (Data) => {
-        setPage(Data)
-    }
-
-    const handleSort = (event) => {
-        console.log("Sort event triggered:", event);
-        setSortField(event.sortField); // ✅ correct key
-        setSortOrder(event.sortOrder);
-    };
-
     const openLeaveModelFunc = (data) => {
         setValue(AstroInputTypesEnum.ID, data?.id)
-        setAddLeave(true)
+        setAddEmployueeLeave(true)
     }
 
     const closeLeaveModelFunc = () => {
         reset()
-        setAddLeave(false)
+        setAddEmployueeLeave(false)
     }
 
     const onSubmitData = async (data) => {
-        console.log('datadata onSubmitData', data);
         dispatch(setLoader(true))
         let submitData = {
             action: "admin",
@@ -249,7 +141,7 @@ export default function ManageCoustomer() {
 
                     <div className="card card-body p-3 mb-2">
                         <div className="row">
-                            {/* Search Input */}
+
                             <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
                                 <div className="position-relative">
                                     <input
@@ -332,10 +224,9 @@ export default function ManageCoustomer() {
                                 }
                                 currentPageReportTemplate='Showing {first} to {last} of {totalRecords} entries'
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                                loading={loading}
-                                sortField={sortField}
-                                sortOrder={sortOrder}
-                                // onSort={handleSort}
+                                // loading={loading}
+                                // sortField={sortField}
+                                // sortOrder={sortOrder}
                                 emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>No Customer found.</span>}
                             >
                                 <Column
@@ -346,10 +237,6 @@ export default function ManageCoustomer() {
                                     sortable
                                     showFilterMenu={true}
                                 />
-
-                                {/* <Column field="profile_image" header="Profile Image" style={{ minWidth: '7rem', whiteSpace: 'nowrap' }} body={(rowData) => (
-                                    <img src={rowData?.profile_image || Constatnt?.DEFAULT_IMAGE} className='ms-2 rounded-circle  ' alt="Profile" style={{ alignSelf: 'center', height: '40px', width: '40px' }} />
-                                )} /> */}
 
                                 <Column field="employee_id" header="Employee Id" style={{ minWidth: '8rem', whiteSpace: 'nowrap' }} body={(rowData) => (
                                     <span className='me-2'>{rowData.employee_id || '-'}</span>
@@ -400,11 +287,6 @@ export default function ManageCoustomer() {
                                 )} />
 
                             </DataTable>
-
-                            {/* <div className=''>
-                                <Pagination per_page={perPage} pageCount={customerList?.total_count} onPageChange={onPageChange} page={page} />
-                            </div> */}
-
                         </div>
                     </div>
                 </div>
@@ -412,7 +294,7 @@ export default function ManageCoustomer() {
 
             {/* </div> */}
 
-            <div className={`modal custom-modal  ${addLeaveModal ? "fade show d-block " : "d-none"}`}
+            <div className={`modal custom-modal  ${addEmployeeLeaveModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
@@ -484,7 +366,7 @@ export default function ManageCoustomer() {
                 </div>
             </div >
             {
-                addLeaveModal && (
+                addEmployeeLeaveModal && (
                     <div className="modal-backdrop fade show"></div>
                 )
             }
@@ -496,6 +378,7 @@ export default function ManageCoustomer() {
                     </Model >
                 )
             }
+
         </>
     )
 }
