@@ -244,7 +244,7 @@ export default function AddCustomer() {
                                             </div>
                                         </div>
 
-                                        <div className='row col-12 col-md-10 '>
+                                        <div className='row col-12 col-md-12 '>
 
                                             <div className='col-md-6 '>
                                                 <div className="mb-4">
@@ -415,6 +415,7 @@ export default function AddCustomer() {
                                                             className="form-control ps-2"
                                                             placeholder="Enter reason"
                                                             autoComplete="off"
+                                                            rows={3}
                                                             {...register(
                                                                 AstroInputTypesEnum.REASON,
                                                                 textInputValidation(

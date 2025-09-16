@@ -604,12 +604,7 @@ export default function ManageLeaveBalance() {
                     </div>
 
                     <div className="card card-body">
-
-
-
                         <div className="table-responsive">
-                           
-
                             <DataTable
                                 value={updatedLeaveLeast?.length > 0 ? updatedLeaveLeast : []}
                                 paginator

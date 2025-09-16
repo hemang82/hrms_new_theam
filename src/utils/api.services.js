@@ -80,7 +80,7 @@ export function listLeaves(request) {
 }
 
 export function addLeaves(request) {
-    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/admin_add_leave`, request)
+    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/add_leave`, request)
 }
 
 export function addEmployeeLeaves(request) {

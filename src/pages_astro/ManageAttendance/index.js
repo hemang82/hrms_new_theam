@@ -947,12 +947,7 @@ export default function ManageAttendance() {
                                 </div>
 
                                 <div className="timeline position-relative ms-4">
-                                    {/* Vertical Line */}
-                                    <div
-                                        className="border-start border-2 border-secondary position-absolute top-0 bottom-0 start-0"
-                                        style={{ marginLeft: "7px" }}
-                                    ></div>
-
+                                    <div className="border-start border-2 border-secondary position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
                                     {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
                                         <div key={index}>
                                             <div className="mb-4 d-flex align-items-start">
@@ -981,7 +976,6 @@ export default function ManageAttendance() {
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
-
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
                             <h3 className="modal-title text-dark fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeAttendanceModel() }} />

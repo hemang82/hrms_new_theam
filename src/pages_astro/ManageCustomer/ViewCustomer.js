@@ -86,7 +86,7 @@ export default function DetailsCustomer() {
         CANCELLED: "bg-danger text-white"
     };
 
-    console.log('', userDetails);
+    console.log('userDetails', userDetails);
 
     return (
         <>
@@ -120,6 +120,8 @@ export default function DetailsCustomer() {
                                         { label: "Senior Name", value: userDetails?.senior_name },
                                         { label: "Create Employee", value: formatDate(userDetails?.created_at, DateFormat?.DATE_FORMAT) },
                                         { label: "Address", value: userDetails?.location },
+                                        { label: "Employee Leave Date", value: userDetails?.emp_leave_company == '1' ? userDetails?.emp_leave_date : null },
+                                        { label: "Employee Leave Reason", value: userDetails?.emp_leave_company == '1' ? userDetails?.emp_leave_reason : null },
                                     ].map((item, index) => (
 
                                         <div key={index} className="col-md-4 mb-4">
@@ -164,7 +166,7 @@ export default function DetailsCustomer() {
                                             { label: "Account Name", value: userDetails?.account_holder_name },
                                             { label: "Bank Name", value: userDetails?.bank_name },
                                             { label: "Account Number", value: userDetails?.account_no },
-                                            { label: "Ifsc Code Address", value: userDetails?.ifsc_code },
+                                            { label: "IFSC Code Address", value: userDetails?.ifsc_code },
                                             { label: "Bank Branch", value: userDetails?.branch },
 
                                         ].map((item, index) => (
