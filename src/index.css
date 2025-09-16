@@ -464,7 +464,6 @@
     /* Slide the slider to the right */
   }
 
-
   .make-header {
     position: sticky !important;
     top: 10px !important;
@@ -474,4 +473,8 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     /* soft shadow */
     /* border: 1px solid #ebf1f6 !important; */
+  }
+
+  .breadcrumb a{
+    color :#1F7494 !important
   }
