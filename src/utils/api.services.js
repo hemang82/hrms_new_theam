@@ -103,8 +103,12 @@ export function addLeaves(request) {
 }
 
 export function addEmployeeLeaves(request) {
-    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/admin_emp_leave_add`, request)
+    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/admin_add_leave`, request)
 }
+
+// export function addEmployeeLeaves(request) {
+//     return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/admin_emp_leave_add`, request)
+// }
 
 export function approvedRejectLeaves(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/approve_reject_leave`, request)

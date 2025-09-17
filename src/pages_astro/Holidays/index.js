@@ -263,38 +263,6 @@ export default function ManageEMISchedule() {
             <div className="container-fluid mw-100">
                 <SubNavbar title={"Holidays List"} header={'Holidays List'} />
                 <div className="widget-content searchable-container list">
-
-                    {/* <div className="card card-body">
-                        <div className="row">
-                            <div className="col-12 col-md-6 col-lg-3">
-                                <div className="position-relative">
-                                    <input type="text" className="form-control product-search ps-5" id="input-search" placeholder="Search interest..."
-                                        value={globalFilterValue}
-                                        onChange={onGlobalFilterChange} />
-                                    <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
-                                </div>
-                            </div>
-
-                            <div className="col-12 col-md-6 col-lg-9">
-                                <div className="d-flex flex-column flex-md-row justify-content-end align-items-stretch gap-2 ">
-                                    <Link
-                                        id="btn-add-contact"
-                                        className="btn btn-info d-flex align-items-center justify-content-center mt-3 mt-md-0  w-md-auto "
-                                        style={{ height: '40px' }}
-                                        onClick={() => { setScheduleModel(true); setIs_Add(true) }}
-                                    >
-                                        <span className="me-1">
-                                            <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
-                                        </span>
-                                        <span className="fw-semibold">Add EMI schedule</span>
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0 gap-3">
-
-                            </div>
-                        </div>
-                    </div> */}
                     <div className="card card-body p-2 mb-2">
                         <div className="row g-3 mb-3">
                             <div className="col-12 col-md-6 col-lg-8">

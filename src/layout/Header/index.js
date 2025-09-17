@@ -53,7 +53,7 @@ const Header = ({ page_name }) => {
                     dispatch(getListBankDetailsThunk(request)),
                     dispatch(getlistLeavesThunk(request)),
                     dispatch(getEmpLeaveBalanceListThunk(request)),
-                    dispatch(getSaturdayListThunk({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 })),
+                    dispatch(getSaturdayListThunk({ year: formatDateDyjs(dayjs(), 'YYYY') })),
                     dispatch(getHolidayListThunk({ year: formatDateDyjs(dayjs(), DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR) })),
                     dispatch(getSalaryListThunk({
                         month: formatDateDyjs(dayjs().subtract(1, 'month'), 'MM') || null,

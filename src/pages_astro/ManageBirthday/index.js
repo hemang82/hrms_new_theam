@@ -199,8 +199,6 @@ export default function ManageBirthday() {
     }
 
     const BirthDayCard = ({ birthday }) => {
-
-
         const isBirthdayToday =
             dayjs().format("MM-DD") === dayjs(birthday?.birth_date).format("MM-DD");
 
@@ -209,9 +207,6 @@ export default function ManageBirthday() {
                 <motion.div whileHover={{ scale: 1.02 }}>
                     <Card
                         className={`shadow-sm h-100 rounded-3 border-1 border-light position-relative overflow-hidden ${birthday?.is_upcoming ? 'green_border' : 'red_border'}`}
-                    // style={{
-                    //     background: "#ffffff",
-                    // }}
                     >
                         {isBirthdayToday && (
                             <Badge
@@ -300,7 +295,6 @@ export default function ManageBirthday() {
                 </div>
 
                 <div className="card card-body">
-                    {/* <div className="table-responsive"> */}
                     <div className="my-2 p-2">
                         <Row >
                             {customerList?.length > 0 && customerList?.map((birthday) => (
@@ -311,9 +305,7 @@ export default function ManageBirthday() {
                     <div className=''>
                         <Pagination per_page={perPage} pageCount={customerList?.total_count} onPageChange={onPageChange} page={page} />
                     </div>
-                    {/* </div> */}
                 </div>
-                {/* </div> */}
             </div>
 
             <div className={`modal custom-modal  ${scheduleModel ? "fade show d-block " : "d-none"}`}

@@ -33,6 +33,10 @@ import { IoAddCircleOutline } from 'react-icons/io5';
 import { uploadImageOnAWS } from '../../utils/aws.service';
 import { PATHS } from '../../Router/PATHS';
 import { BsQuestionOctagon } from 'react-icons/bs';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { GoDotFill } from 'react-icons/go';
+import { CiCalendarDate } from 'react-icons/ci';
+
 
 export default function ManageDepartnment() {
 
@@ -158,13 +162,6 @@ export default function ManageDepartnment() {
             status: selectedOption?.key // can be "", 0, 1, 2
         };
 
-        // let filteredList = leaves?.filter((item) => {
-        //     // Show all if status is explicitly "" or null/undefined
-        //     if (request.status === "" || request.status === null || request.status === undefined) return true;
-        //     // Convert both to Number to handle 0 correctly
-        //     return Number(item.status) === Number(request.status);
-        // });
-
         const filteredList = departnmentList?.filter((item) => {
 
             // ----- STATUS FILTER -----
@@ -186,36 +183,6 @@ export default function ManageDepartnment() {
         setupdatedLeavList(filteredList);
 
     }, [departnmentList, endDate, selectedOption]);
-
-    const handleStatus = async (data) => {
-        console.log('handleStatus dataaa', data);
-        setis_load(true)
-        let submitData = {
-            leaveId: selectedBankDetails?.leave_id,
-            status: selectedBankDetails?.actionType === "approved" ? '1' : '2',
-            admin_reason: data?.reason ? data?.reason : ""
-        }
-        approvedRejectLeaves(submitData).then((response) => {
-            if (response.code == Codes.SUCCESS) {
-                TOAST_SUCCESS(response?.message)
-                let updatedList = departnmentList?.map((item) => {
-                    if (selectedBankDetails?.leave_id === item.leave_id) {
-                        return {
-                            ...item,
-                            status: selectedBankDetails?.actionType === "approved" ? '1' : '2'
-                        };
-                    }
-                    return item;
-                });
-                dispatch(updateLeaveList(updatedList))
-                setSelectedBankDetails({});
-                closeActionModelFunc()
-                setis_load(false)
-            } else {
-                TOAST_ERROR(response.message)
-            }
-        })
-    }
 
     const handleDelete = (is_true) => {
         if (is_true) {
@@ -249,77 +216,6 @@ export default function ManageDepartnment() {
         setGlobalFilterValue(value?.trim());
     };
 
-    // ---------------------------------- Export Data----------------------------------
-
-    const handleExportApiCall = async () => {
-        // dispatch(setLoader(true));
-        // let submitData = {
-        //     search: globalFilterValue
-        // }
-        // const { code, data } = await exportCustomerList(submitData);
-        // return { code, data }
-    }
-
-    // const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-
-    //     console.log('getInterestRateByCibil cibilScorecibilScore', cibilScore);
-    //     console.log('getInterestRateByCibil intrestDropdown', intrestDropdown);
-
-    //     if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = intrestDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.rate_percentage : '';
-    // };
-
-    const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 300;
-
-        if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = intrestDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.rate_percentage : '';
-    };
-
-    // const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-
-    //     console.log('processingDropdown cibilScorecibilScore', cibilScore);
-    //     console.log('processingDropdown intrestDropdown', intrestDropdown);
-    //     if (!Array.isArray(processingDropdown) || processingDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = processingDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.min_fee_percent : '';
-    // };
-
-    const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-        // Fallback to 300 if cibilScore is invalid
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 0;
-
-        console.log('validCibilScorevalidCibilScore', validCibilScore);
-
-        if (!Array.isArray(processingDropdown) || processingDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = processingDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.min_fee_percent : '';
-    };
-
     const onPageChange = (Data) => {
         setPage(Data)
     }
@@ -338,18 +234,20 @@ export default function ManageDepartnment() {
                     dispatch(setLoader(false))
                     TOAST_SUCCESS(response?.message);
                     closeBankDetailsModelFunc()
+                    dispatch(getListDepartnmentThunk({}))
+
                 } else {
                     dispatch(setLoader(false))
                     TOAST_ERROR(response?.message)
                 }
             })
         } else {
-
             addDepartnment(sendRequest).then((response) => {
                 if (response?.code == Codes.SUCCESS) {
                     dispatch(setLoader(false))
                     TOAST_SUCCESS(response?.message);
                     closeBankDetailsModelFunc()
+                    dispatch(getListDepartnmentThunk({}))
                 } else {
                     dispatch(setLoader(false))
                     TOAST_ERROR(response?.message)
@@ -390,122 +288,87 @@ export default function ManageDepartnment() {
         reset()
     }
 
-    const funcStatusChange = (rowData) => {
-        // setIs_loading(true)
-        // loanDetails({ loan_id: rowData?.id }).then((response) => {
-        //     if (response?.status_code === Codes.SUCCESS) {
-        //         let responseDetails = response?.data?.loan_application;
-        //         if (!responseDetails?.aadhaar_verified) {
-        //             SWIT_FAILED("Aadhaar card verification is pending.");
-        //         } else if (responseDetails?.status === "DISBURSED") {
-        //             return
-        //         } else if (responseDetails?.status === "DISBURSEMENT_APPROVAL_PENDING") {
-        //             const bankDetails = responseDetails?.bank_accounts[0]
-        //             const approvalDetails = responseDetails?.approval_details[0]
-        //             const disbursementDetails = responseDetails?.loan_disbursement[0]
-        //             setSelecteLoan(responseDetails)
-        //             // if (responseDetails?.status === "DISBURSED") {
-
-        //             //     if (disbursementDetails?.payment_type === "BANK_TRANSFER") {
-        //             //         setValue('bank_name', disbursementDetails?.bank_name)
-        //             //         setValue('account_number', disbursementDetails?.account_number)
-        //             //         setValue('ifsc_code', disbursementDetails?.ifsc_code)
-        //             //         setValue('account_holder_name', disbursementDetails?.account_holder_name)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "UPI") {
-        //             //         setValue('upi_id', disbursementDetails?.upi_id)
-        //             //         setValue('transaction_id', disbursementDetails?.transaction_id)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "CHEQUE") {
-        //             //         setValue('cheque_number', disbursementDetails?.cheque_number)
-        //             //     }
-        //             //     setValue('approved_amount', Number(disbursementDetails?.transferred_amount || 0).toFixed(2))
-        //             //     setValue('payment_status', PAYMENT_STATUS.find(item => item.key === disbursementDetails?.payment_type)?.key)
-        //             //     setProofFileName(getFileNameFromUrl(disbursementDetails?.payment_file))
-        //             //     setShowProofImage(disbursementDetails?.payment_file)
-        //             //     setPaymentDate(dayjs(disbursementDetails?.payment_date))
-        //             //     //  setPaymentDate(dayjs(disbursementDetails?.payment_date).format("YYYY-MM-DD HH:mm:ss"));
-        //             // } else {
-        //             setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        //             setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        //             setValue('bank_name', bankDetails?.bank_name)
-        //             setValue('account_number', bankDetails?.account_number)
-        //             setValue('ifsc_code', bankDetails?.ifsc_code)
-        //             setValue('account_holder_name', bankDetails?.account_holder_name)
-        //             // }
-        //             setIs_loading(false)
-        //             setStatusModal(true)
-        //         }
-        //     } else {
-        //         setIs_loading(false)
-        //     }
-        // })
-    }
-
-    const changeStatusFunction = (data) => {
-        setValue('payment_status', PAYMENT_STATUS.find(item => item.key === data)?.key)
-        const statusExists = selectedBankDetails?.status === data;
-        setValue('remarks', statusExists ? selectedBankDetails?.remarks : '')
-        const bankDetails = selectedBankDetails?.bank_accounts[0]
-        const approvalDetails = selectedBankDetails?.approval_details[0]
-        // setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        setValue('bank_name', bankDetails?.bank_name)
-        setValue('account_number', bankDetails?.account_number)
-        setValue('ifsc_code', bankDetails?.ifsc_code)
-        setValue('account_holder_name', bankDetails?.account_holder_name)
-    }
-
-    const handleSelect = (option) => {
-        setSelectedOption(option);
-        setPage(1);
-    };
-
     const handleSort = (event) => {
         console.log("Sort event triggered:", event);
         setSortField(event?.sortField); // ✅ correct key
         setSortOrder(event?.sortOrder);
     };
 
-    // ---------------------------------- Formate date filter----------------------------------------
+    const DepartnmentCard = ({ dept }) => {
+        return (
+            <Col xs={12} sm={12} md={6} lg={3} className="mb-4">
+                <Card className="shadow-sm h-100 rounded-3 border-1 position-relative text-center">
 
-    const disabledEndDate = (current) => {
-        if (!startDate) return false;
-        return current.isBefore(startDate, 'day');
-    };
+                    <div className="position-absolute top-0 end-0 m-2 d-flex gap-2">
+                        <button
+                            className="btn btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                            style={{
+                                width: "32px",
+                                height: "32px",
+                                backgroundColor: "#e8f4ff",
+                                border: "none",
+                            }}
+                            onClick={() => { openEditBankDetailsModelFunc(dept) }}
+                            title="Edit"
+                        >
+                            <i className="ti ti-edit text-custom-theam fs-6"></i>
+                        </button>
 
-    const handleInputChange = async (key, value) => {
-        let filteredValue = value;
-        if (key === AstroInputTypesEnum.ACCOUNT_NUMBER) {
-            filteredValue = value.replace(InputRegex.ONCHANGE_PANNUMBER_REGEX, '');
-        } else if (key === AstroInputTypesEnum.ADHARCARD) {
-            filteredValue = value.replace(InputRegex.ONCHANGE_AADHAR_REGEX, '');
-        } else if (key === AstroInputTypesEnum.MOBILE || AstroInputTypesEnum?.ANNUAL_INCOME || AstroInputTypesEnum?.DESIRED_LOAN_AMOUNT) {
-            filteredValue = value.replace(InputRegex.ONCHANGE_MOBILE_REGEX, '');
-        }
-        else if (key === AstroInputTypesEnum.MOBILE || AstroInputTypesEnum?.ANNUAL_INCOME || AstroInputTypesEnum?.DESIRED_LOAN_AMOUNT) {
-            filteredValue = value.replace(InputRegex.ONCHANGE_MOBILE_REGEX, '');
-        }
-        setValue(key, filteredValue)
-        clearErrors(key);
-        await trigger(key);
-    };
+                        <button
+                            className="btn btn-sm d-flex align-items-center justify-content-center rounded-circle"
+                            style={{
+                                width: "32px",
+                                height: "32px",
+                                backgroundColor: "#ffecec",
+                                border: "none",
+                            }}
+                            onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(dept) }}
+                            title="Delete"
+                        >
+                            <i className="ti ti-trash text-danger fs-6"></i>
+                        </button>
+                    </div>
 
-    const allowLettersAndSpaces = (event) => {
-        let value = event.target.value;
-        // Remove any characters that are not letters or spaces
-        value = value.replace(/[^A-Za-z\s]/g, '');
-        // Convert to uppercase
-        value = value.toUpperCase();
-        // Update the input value
-        event.target.value = value;
-    };
+                    <Card.Body className="d-flex flex-column justify-content-center align-items-center p-4 m-2 mt-3 ">
 
-    const handleProofImageChange = (e) => {
-        const image = e.target.files[0]
-        setShowProofImage(image)
-        setProofFileName(image?.name)
-        clearErrors('proof_image');
+                        <h5 className="fw-semibold mb-2 fs-5" style={{ color: "#1f7494" }}>
+                            {dept?.dept_name}
+                        </h5>
+
+                        {dept?.dept_code && (
+                            <p className="text-muted mb-2 small">
+                                Dept ID: {dept?.dept_code}
+                            </p>
+                        )}
+                        <div
+                            className="d-flex align-items-center justify-content-center fs-6 fw-semibold"
+                            style={{
+                                color: "#1f7494",
+                                background: "#ebf1f6",
+                                borderRadius: "5px",
+                                padding: "5px 10px",
+                                minWidth: "max-content", // so the box fits content
+                                whiteSpace: "nowrap",
+                                border: '2px solid greay',
+                                minWidth: '50px',
+                                minHeight: '50px',
+                                marginTop: '12px'
+                            }}
+                        >
+                            {/* <CiCalendarDate
+                                className="me-2 flex-shrink-0"
+                                size={20}
+                                style={{ color: "#1f7494" }}
+                            /> */}
+                            <span className="truncate-date">
+                                {dept?.total_emp ? String(dept?.total_emp).padStart(2, "0") : "00"}
+                            </span>
+
+                        </div>
+                    </Card.Body>
+                </Card>
+            </Col>
+        );
     };
 
     return (
@@ -519,7 +382,7 @@ export default function ManageDepartnment() {
                         <div className="row">
 
                             <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
-                                <div className="position-relative">
+                                {/* <div className="position-relative">
                                     <input
                                         type="text"
                                         className="form-control product-search ps-5"
@@ -529,7 +392,7 @@ export default function ManageDepartnment() {
                                         onChange={onGlobalFilterChange}
                                     />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
@@ -559,67 +422,15 @@ export default function ManageDepartnment() {
                     </div>
 
                     <div className="card card-body">
-                        <div className="table-responsive">
-                            <DataTable
-                                value={updatedLeaveLeast?.length > 0 ? updatedLeaveLeast : []}
-                                paginator
-                                rows={20}
-                                globalFilter={globalFilterValue}
-                                sortField={sortField}
-                                sortOrder={sortOrder}
-                                onSort={handleSort}
-                                rowsPerPageOptions={
-                                    updatedLeaveLeast?.length > 50
-                                        ? [20, 30, 50, updatedLeaveLeast?.length]
-                                        : [20, 30, 40]
-                                }
-
-                                currentPageReportTemplate='Showing {first} to {last} of {totalRecords} entries'
-                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                                loading={loading}
-                                // globalFilterFields={['name', 'annual_income']}
-                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Department Not Found.</span>}>
-
-                                <Column
-                                    field="id"
-                                    header="Id"
-                                    style={{ minWidth: '4rem' }}
-                                    body={(rowData, options) => options?.rowIndex + 1}
-                                    showFilterMenu={true}
-                                    sortable
-                                />
-
-                                <Column field="dept_name" header="Department Name	" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.dept_name || '-'} </span>
-                                )} />
-
-                                <Column field="total_emp" header="No of Employees" sortable style={{ minWidth: '8rem', textTransform: 'capitalize' }} body={(rowData) => (
-                                    <span className='me-2'>{truncateWords(rowData.total_emp) || '-'} </span>
-                                )} />
-
-                                <Column field="created_at" header="Create Date" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.created_at, DateFormat?.DATE_FORMAT) || '-'} </span>
-                                )} />
-
-                                {/* <Column field="end_date" header="To" style={{ minWidth: '6em' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.end_date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
-                                )} /> */}
-
-                                <Column field="statuss" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <div className="action-btn">
-                                        <a className="text-info edit cursor_pointer cursor_pointer" onClick={() => { openEditBankDetailsModelFunc(rowData) }} >
-                                            <i class="ti ti-edit fs-7"></i>
-                                        </a>
-                                        <a className="text-dark delete ms-2 cursor_pointer cursor_pointer" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(rowData) }}>
-                                            <i className="ti ti-trash fs-7 text-danger" />
-                                        </a>
-                                    </div>
-                                )} />
-                            </DataTable>
-
-                            <div className=''>
-                                <Pagination per_page={50 || perPage} pageCount={departnmentList?.total_count} onPageChange={onPageChange} page={page} />
-                            </div>
+                        <div className="my-2 p-2">
+                            <Row >
+                                {departnmentList?.length > 0 && departnmentList?.map((dept) => (
+                                    <DepartnmentCard key={dept.id} dept={dept} />
+                                ))}
+                            </Row>
+                        </div>
+                        <div className=''>
+                            <Pagination per_page={perPage} pageCount={departnmentList?.total_count} onPageChange={onPageChange} page={page} />
                         </div>
                     </div>
 
@@ -695,7 +506,6 @@ export default function ManageDepartnment() {
                 )
             }
 
-
             {
                 customModel.isOpen && customModel?.modalType === ModelName.DELETE_MODEL && (
                     <Model>
@@ -707,4 +517,112 @@ export default function ManageDepartnment() {
     )
 }
 
+
+//  <div className="card card-body p-3 mb-2">
+//                         <div className="row">
+
+//                             <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0">
+//                                 <div className="position-relative">
+//                                     <input
+//                                         type="text"
+//                                         className="form-control product-search ps-5"
+//                                         id="input-search"
+//                                         placeholder="Search Department ..."
+//                                         value={globalFilterValue}
+//                                         onChange={onGlobalFilterChange}
+//                                     />
+//                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
+//                                 </div>
+//                             </div>
+
+//                             <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
+//                             </div>
+
+//                             <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
+//                             </div>
+
+//                             <div className="col-12 col-md-6 col-lg-2">
+//                                 <div className="d-flex justify-content-end">
+//                                     <Link
+//                                         id="btn-add-contact"
+//                                         className="btn btn-info d-flex align-items-center justify-content-center w-100 w-md-auto"
+//                                         style={{ height: '40px' }}
+//                                         onClick={() => { openBankDetailsModelFunc() }}
+
+//                                     >
+//                                         <span className="me-1">
+//                                             <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
+//                                         </span>
+//                                         <span className="fw-semibold">Add Department</span>
+//                                     </Link>
+//                                 </div>
+//                             </div>
+
+//                         </div>
+//                     </div>
+
+//                     <div className="card card-body">
+//                         <div className="table-responsive">
+//                             <DataTable
+//                                 value={updatedLeaveLeast?.length > 0 ? updatedLeaveLeast : []}
+//                                 paginator
+//                                 rows={20}
+//                                 globalFilter={globalFilterValue}
+//                                 sortField={sortField}
+//                                 sortOrder={sortOrder}
+//                                 onSort={handleSort}
+//                                 rowsPerPageOptions={
+//                                     updatedLeaveLeast?.length > 50
+//                                         ? [20, 30, 50, updatedLeaveLeast?.length]
+//                                         : [20, 30, 40]
+//                                 }
+
+//                                 currentPageReportTemplate='Showing {first} to {last} of {totalRecords} entries'
+//                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+//                                 loading={loading}
+//                                 // globalFilterFields={['name', 'annual_income']}
+//                                 emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Department Not Found.</span>}>
+
+//                                 <Column
+//                                     field="id"
+//                                     header="Id"
+//                                     style={{ minWidth: '4rem' }}
+//                                     body={(rowData, options) => options?.rowIndex + 1}
+//                                     showFilterMenu={true}
+//                                     sortable
+//                                 />
+
+//                                 <Column field="dept_name" header="Department Name	" style={{ minWidth: '8rem' }} body={(rowData) => (
+//                                     <span className='me-2'>{rowData?.dept_name || '-'} </span>
+//                                 )} />
+
+//                                 <Column field="total_emp" header="No of Employees" sortable style={{ minWidth: '8rem', textTransform: 'capitalize' }} body={(rowData) => (
+//                                     <span className='me-2'>{truncateWords(rowData.total_emp) || '-'} </span>
+//                                 )} />
+
+//                                 <Column field="created_at" header="Create Date" style={{ minWidth: '8rem' }} body={(rowData) => (
+//                                     <span className='me-2'>{formatDate(rowData.created_at, DateFormat?.DATE_FORMAT) || '-'} </span>
+//                                 )} />
+
+//                                 {/* <Column field="end_date" header="To" style={{ minWidth: '6em' }} body={(rowData) => (
+//                                     <span className='me-2'>{formatDate(rowData.end_date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
+//                                 )} /> */}
+
+//                                 <Column field="statuss" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
+//                                     <div className="action-btn">
+//                                         <a className="text-info edit cursor_pointer cursor_pointer" onClick={() => { openEditBankDetailsModelFunc(rowData) }} >
+//                                             <i class="ti ti-edit fs-7"></i>
+//                                         </a>
+//                                         <a className="text-dark delete ms-2 cursor_pointer cursor_pointer" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(rowData) }}>
+//                                             <i className="ti ti-trash fs-7 text-danger" />
+//                                         </a>
+//                                     </div>
+//                                 )} />
+//                             </DataTable>
+
+//                             <div className=''>
+//                                 <Pagination per_page={50 || perPage} pageCount={departnmentList?.total_count} onPageChange={onPageChange} page={page} />
+//                             </div>
+//                         </div>
+//                     </div>
 

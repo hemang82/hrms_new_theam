@@ -27,6 +27,9 @@ import { IoAddCircleOutline } from 'react-icons/io5';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { InputSwitch } from 'primereact/inputswitch';
+import { Container, Row, Col, Card, Button, Image, Badge, Spinner } from 'react-bootstrap';
+import { CiCalendarDate } from 'react-icons/ci';
+import { motion } from "framer-motion";
 
 export default function ManageSaturday() {
 
@@ -59,7 +62,7 @@ export default function ManageSaturday() {
         const request = {
             // "month": startDate ? formatDateDyjs(startDate, 'MM') : null,
             year: startDate ? formatDateDyjs(startDate, 'YYYY') : null,
-            month: startDate ? formatDateDyjs(startDate, 'MM') : null,
+            // month: startDate ? formatDateDyjs(startDate, 'MM') : null,
             // "page": 1,
             // "limit": 10
         }
@@ -145,72 +148,10 @@ export default function ManageSaturday() {
         setGlobalFilterValue(value);
     };
 
-    // ---------------------------------- Export Data ----------------------------------
-
-    const handleExportApiCall = async () => {
-        dispatch(setLoader(true));
-        let submitData = {
-            search: globalFilterValue
-        }
-        const salaryData = saturdayList?.map((salary, index) => ({
-            id: index + 1,
-            employeeID: `${salary?.empId || '-'}`,
-            EmployeeName: `${salary?.name || '-'}`,
-            FullDays: salary?.fullDays || '-',
-            HalfDays: `${salary?.halfDays || '-'}`,
-            Absent: salary?.absences,
-            OffDayCount: salary?.offDayCount || '-',
-            Sundays: salary?.sundays || '-',
-            BirthdayLeave: salary?.birthdayLeave || '-',
-            CasualLeave: salary?.casualLeave || '-',
-            CompOffLeave: salary?.compOffLeave || '-',
-            LWP: salary?.LWP || '-',
-            MonthlySalary: salary?.monthlySalary || '-',
-            payable_days: salary?.payableDays || '-',
-            totalSalary: salary?.totalSalary || '-',
-            // CreateUser: formatDate(salary?.created_at, DateFormat?.DATE_FORMAT) || '-'
-        }));
-        return { code: 1, data: salaryData }
-    };
-
-    const handleExportToPdfManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code == Codes.SUCCESS) {
-            ExportToPdf(data, 'Customer List', 'Customer List');
-        }
-        dispatch(setLoader(false));
-    };
-
-    const handleExportToCSVManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code == Codes.SUCCESS) {
-            ExportToCSV(data, 'Salary List');
-        }
-        dispatch(setLoader(false));
-    };
-
-    const handleExportToExcelManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code == Codes.SUCCESS) {
-            ExportToExcel(data, 'Salary List');
-        }
-        dispatch(setLoader(false));
-    };
-
-    const onPageChange = (Data) => {
-        setPage(Data)
-    }
-
-    const handleSort = (event) => {
-        console.log("Sort event triggered:", event);
-        setSortField(event.sortField); // ✅ correct key
-        setSortOrder(event.sortOrder);
-    };
-
     const onChangeApiCalling = (data) => {
         const request = {
-            year: data?.date ? formatDateDyjs(data.date, 'YYYY') : null,
-            month: data?.date ? formatDateDyjs(data.date, 'MM') : null
+            year: data?.date ? formatDateDyjs(data.date, 'YYYY') : null
+            // month: data?.date ? formatDateDyjs(data.date, 'MM') : null
         };
         dispatch(getSaturdayListThunk(request));
     };
@@ -242,11 +183,154 @@ export default function ManageSaturday() {
         })
     };
 
+
+    const SaturdayMonthCard = ({ monthObj }) => {
+        const [saturdays, setSaturdays] = useState(monthObj.data || []);
+        const [loadingId, setLoadingId] = useState(null);
+
+        const handleToggle = async (rowData) => {
+            setLoadingId(rowData.id);
+
+            let submitData = {
+                id: rowData?.id,
+                type: rowData?.type === "working" ? "off" : "working",
+                date: rowData?.date,
+            };
+
+            try {
+                const response = await editSaturday(submitData);
+
+                if (response.code == Codes.SUCCESS) {
+                    setSaturdays((prev) =>
+                        prev.map((sat) =>
+                            sat.id === rowData.id
+                                ? { ...sat, type: sat.type === "working" ? "off" : "working" }
+                                : sat
+                        )
+                    );
+                    TOAST_SUCCESS(response?.message);
+                } else {
+                    TOAST_ERROR(response.message);
+                }
+            } catch (error) {
+                console.error("Toggle API Error:", error);
+                TOAST_ERROR("Something went wrong. Please try again.");
+            } finally {
+                setLoadingId(null); // always reset loader
+            }
+        };
+
+        return (
+            <Col xs={12} md={6} lg={4} className="mb-4">
+                <motion.div whileHover={{ scale: 1.02 }}>
+                    <Card
+                        className={`shadow-sm rounded-3 border-1 border-light ${monthObj.is_current ? "green_border" : "red_border"
+                            }`}
+                        style={{ minHeight: "325px" }}   // fixed minimum height
+                    >
+                        <Card.Body className="p-3">
+                            {/* Month Title */}
+                            <h5 className=" text-center mb-4 fw-semibold text-custom-theam">
+                                {dayjs(`${dayjs().year()}-${monthObj.month}-01`).format(
+                                    "MMMM YYYY"
+                                )}
+                            </h5>
+
+                            {/* Header */}
+                            <Row className="fw-semibold custom_border_bottom pb-2 mb-2 text-muted small">
+                                <Col xs={4}>Date</Col>
+                                <Col xs={2}>Day's</Col>
+                                <Col xs={4}>Day Type</Col>
+                                <Col xs={2}>Status</Col>
+                            </Row>
+
+                            {/* Only 5 rows inside card */}
+                            {saturdays.slice(0, 5).map((rowData) => (
+                                <Row
+                                    key={rowData.id}
+                                    className="align-items-center custom_border_bottom py-2"
+                                >
+                                    {/* Date */}
+                                    <Col xs={4}>{dayjs(rowData.date).format("DD-MM-YYYY")}</Col>
+
+                                    {/* Weekday */}
+                                    <Col xs={2}>
+                                        {getSaturdayOrdinal(rowData.date) || "-"}
+                                    </Col>
+
+                                    {/* Type */}
+                                    <Col xs={4}>
+                                        <span
+                                            className={`badge me-2 text-light rounded-4 status_font_samll ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"
+                                                }`}
+                                        >
+                                            {getStatus(rowData?.type) || "-"}
+                                        </span>
+                                    </Col>
+
+                                    {/* Toggle */}
+                                    {/* <Col xs={2}>
+                                        <div className="toggle-switch">
+                                            <input
+                                                type="checkbox"
+                                                id={`customSoftSwitch-${rowData.id}`}
+                                                checked={rowData.type === "working"}
+                                                onChange={() => handleToggle(rowData)}
+                                            />
+                                            <label
+                                                htmlFor={`customSoftSwitch-${rowData.id}`}
+                                                className={`toggle-switch-label ${rowData.type === "working" ? "active" : ""
+                                                    }`}
+                                            >
+                                                <span className="toggle-switch-slider"></span>
+                                            </label>
+                                        </div>
+                                    </Col> */}
+                                    <Col xs={2}>
+                                        <div className="position-relative d-inline-block">
+                                            <div className="toggle-switch">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`customSoftSwitch-${rowData.id}`}
+                                                    checked={rowData.type === "working"}
+                                                    onChange={() => handleToggle(rowData)}
+                                                    disabled={loadingId === rowData.id} // disable while loading
+                                                />
+                                                <label
+                                                    htmlFor={`customSoftSwitch-${rowData.id}`}
+                                                    className={`toggle-switch-label ${rowData.type === "working" ? "active" : ""
+                                                        }`}
+                                                >
+                                                    <span className="toggle-switch-slider"></span>
+                                                </label>
+                                            </div>
+
+                                            {/* Loader overlay */}
+                                            {loadingId === rowData.id && (
+                                                <div
+                                                    className="position-absolute top-50 start-50 translate-middle"
+                                                    style={{ pointerEvents: "none" }}
+                                                >
+                                                    <Spinner animation="border" size="sm" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Col>
+                                </Row>
+                            ))}
+                        </Card.Body>
+                    </Card>
+                </motion.div>
+            </Col>
+        );
+    };
+
     return (
         <>
             <div className="container-fluid mw-100">
                 <SubNavbar title={"Saturday List"} header={'Saturday List'} />
                 <div className="widget-content searchable-container list">
+
                     <div className="card card-body mb-2 p-3 mb-2">
                         <div className="row g-3 ">
                             <div className="col-12 col-md-6 col-lg-8">
@@ -270,7 +354,7 @@ export default function ManageSaturday() {
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
                                     picker="month"   // ✅ only year picker
-                                    format="YYYY-MMM"   // ✅ show only year
+                                    format="YYYY"   // ✅ show only year
                                     value={startDate}
                                     onChange={(date) => {
                                         setStartDate(date);
@@ -284,87 +368,16 @@ export default function ManageSaturday() {
                     </div>
 
                     <div className="card card-body">
-                        <div className="table-responsive">
-                            <DataTable
-                                value={saturdayList?.length > 0 ? saturdayList : []}
-                                paginator
-                                rows={50}
-                                globalFilter={globalFilterValue}
-                                rowsPerPageOptions={
-                                    saturdayList?.length > 50
-                                        ? [20, 30, 50, saturdayList?.length]
-                                        : [20, 30, 40]
-                                }
-                                currentPageReportTemplate='Showing {first} to {last} of {totalRecords} entries'
-                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                                loading={loading}
-                                sortField={sortField}
-                                sortOrder={sortOrder}
-                                // onSort={handleSort}
-                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>No Saturday Found.</span>}
-                            >
-                                <Column
-                                    field="id"
-                                    header="Id"
-                                    style={{ minWidth: '4rem' }}
-                                    body={(rowData, options) => options.rowIndex + 1}
-                                    sortable
-                                    showFilterMenu={true}
-                                />
-                                <Column field="date" header="Date" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.date, DateFormat.DATE_FORMAT) || '-'}</span>
-                                )} />
-
-                                <Column field="date" header="Week Day" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <span className='ms-4 me-2'>{getSaturdayOrdinal(rowData.date) || '-'}</span>
-                                )} />
-
-                                <Column field="type" data-pc-section="root" header="Day Type" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <>
-                                        <span
-                                            className={`p-tag p-component badge me-2 text-light fw-semibold px-2 rounded-4 py-1 status_font ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
-                                            data-pc-name="tag"
-                                            data-pc-section="root"
-                                        >
-                                            <span className="p-tag-value fs-2 " data-pc-section="value">
-                                                {getStatus(rowData?.type) || "-"}
-                                            </span>
-                                        </span>
-                                    </>
-                                )} />
-
-                                <Column
-                                    field="type"
-                                    header="Status"
-                                    style={{ minWidth: '6rem' }}
-                                    body={(rowData) => (
-                                        // <div className="flex items-center gap-4">
-                                        //     {/* Toggle Switch */}
-                                        //     <InputSwitch
-                                        //         checked={rowData.type == 'working' ? true : false}
-                                        //         onChange={(e) => handleToggle(e, rowData)}
-                                        //     />
-                                        // </div>
-
-                                        <div className="toggle-switch">
-                                            <input
-                                                type="checkbox"
-                                                id={`customSoftSwitch-${rowData.id}`}
-                                                checked={rowData.type == 'working' ? true : false}
-                                                onChange={() => handleToggle(rowData)}
-                                            />
-                                            <label
-                                                htmlFor={`customSoftSwitch-${rowData.id}`}
-                                                className={`toggle-switch-label ${rowData.type == 'working' ? "active" : ""}`}
-                                            >
-                                                <span className="toggle-switch-slider"></span>
-                                            </label>
-                                        </div>
-                                    )}
-                                />
-                            </DataTable>
-
+                        <div className="my-2 p-2">
+                            <Row >
+                                {saturdayList?.length > 0 && saturdayList?.map((monthObj) => (
+                                    <SaturdayMonthCard key={monthObj?.month} monthObj={monthObj} />
+                                ))}
+                            </Row>
                         </div>
+                        {/* <div className=''>
+                            <Pagination per_page={perPage} pageCount={saturdayList?.total_count} onPageChange={onPageChange} page={page} />
+                        </div> */}
                     </div>
                 </div>
             </div>

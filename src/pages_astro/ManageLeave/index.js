@@ -7,7 +7,7 @@ import $ from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
-import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, approvedRejectLeaves } from '../../utils/api.services';
+import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, approvedRejectLeaves, addEmployeeLeaves } from '../../utils/api.services';
 import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import profile_image from '../../assets/Images/default.jpg'
 import ReactDatatable from '../../config/ReactDatatable';
@@ -341,13 +341,12 @@ export default function ManageCoustomer() {
 
     const onSubmitData = async (data) => {
         dispatch(setLoader(true))
-
         let sendRequest = {
             balance: data[AstroInputTypesEnum?.LEAVE_BALANCE],
             employee_id: data[AstroInputTypesEnum?.EMPLOYEE],
             leave_type: data[AstroInputTypesEnum?.LEAVE_TYPE],
         };
-        addLeaves(sendRequest).then((response) => {
+        addEmployeeLeaves(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
                 reset()
                 TOAST_SUCCESS(response?.message);
@@ -394,55 +393,6 @@ export default function ManageCoustomer() {
 
     const funcStatusChange = (rowData) => {
         openLeaveModelFunc()
-        // setIs_loading(true)
-        // loanDetails({ loan_id: rowData?.id }).then((response) => {
-        //     if (response?.status_code === Codes.SUCCESS) {
-        //         let responseDetails = response?.data?.loan_application;
-        //         if (!responseDetails?.aadhaar_verified) {
-        //             SWIT_FAILED("Aadhaar card verification is pending.");
-        //         } else if (responseDetails?.status === "DISBURSED") {
-        //             return
-        //         } else if (responseDetails?.status === "DISBURSEMENT_APPROVAL_PENDING") {
-        //             const bankDetails = responseDetails?.bank_accounts[0]
-        //             const approvalDetails = responseDetails?.approval_details[0]
-        //             const disbursementDetails = responseDetails?.loan_disbursement[0]
-        //             setSelecteLoan(responseDetails)
-        //             // if (responseDetails?.status === "DISBURSED") {
-
-        //             //     if (disbursementDetails?.payment_type === "BANK_TRANSFER") {
-        //             //         setValue('bank_name', disbursementDetails?.bank_name)
-        //             //         setValue('account_number', disbursementDetails?.account_number)
-        //             //         setValue('ifsc_code', disbursementDetails?.ifsc_code)
-        //             //         setValue('account_holder_name', disbursementDetails?.account_holder_name)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "UPI") {
-        //             //         setValue('upi_id', disbursementDetails?.upi_id)
-        //             //         setValue('transaction_id', disbursementDetails?.transaction_id)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "CHEQUE") {
-        //             //         setValue('cheque_number', disbursementDetails?.cheque_number)
-        //             //     }
-        //             //     setValue('approved_amount', Number(disbursementDetails?.transferred_amount || 0).toFixed(2))
-        //             //     setValue('payment_status', PAYMENT_STATUS.find(item => item.key === disbursementDetails?.payment_type)?.key)
-        //             //     setProofFileName(getFileNameFromUrl(disbursementDetails?.payment_file))
-        //             //     setShowProofImage(disbursementDetails?.payment_file)
-        //             //     setPaymentDate(dayjs(disbursementDetails?.payment_date))
-        //             //     //  setPaymentDate(dayjs(disbursementDetails?.payment_date).format("YYYY-MM-DD HH:mm:ss"));
-        //             // } else {
-        //             setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        //             setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        //             setValue('bank_name', bankDetails?.bank_name)
-        //             setValue('account_number', bankDetails?.account_number)
-        //             setValue('ifsc_code', bankDetails?.ifsc_code)
-        //             setValue('account_holder_name', bankDetails?.account_holder_name)
-        //             // }
-        //             setIs_loading(false)
-        //             setStatusModal(true)
-        //         }
-        //     } else {
-        //         setIs_loading(false)
-        //     }
-        // })
     }
 
     const changeStatusFunction = (data) => {
@@ -485,23 +435,6 @@ export default function ManageCoustomer() {
         setValue(key, filteredValue)
         clearErrors(key);               // Clear error message (if any)
         await trigger(key);
-    };
-
-    const allowLettersAndSpaces = (event) => {
-        let value = event.target.value;
-        // Remove any characters that are not letters or spaces
-        value = value.replace(/[^A-Za-z\s]/g, '');
-        // Convert to uppercase
-        value = value.toUpperCase();
-        // Update the input value
-        event.target.value = value;
-    };
-
-    const handleProofImageChange = (e) => {
-        const image = e.target.files[0]
-        setShowProofImage(image)
-        setProofFileName(image?.name)
-        clearErrors('proof_image');
     };
 
     const onChangeApiCalling = async (data) => {
@@ -731,14 +664,14 @@ export default function ManageCoustomer() {
                                 <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
                                         {rowData?.status == 1 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
+                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
                                                 <span className="p-tag-value" data-pc-section="value">Approved</span>
                                             </span>
                                         ) : rowData?.status == 2 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
+                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
                                                 <span className="p-tag-value" data-pc-section="value">Rejected</span>
                                             </span>
-                                        ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
+                                        ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
                                             <span className="p-tag-value" data-pc-section="value">Pending</span>
                                         </span>
                                         }
@@ -747,7 +680,7 @@ export default function ManageCoustomer() {
 
                                 <Column
                                     field="status"
-                                    header="Request"
+                                    header="Action"
                                     style={{ minWidth: "6rem" }}
                                     body={(rowData) => (
                                         <div className="action-btn d-flex align-items-center">
@@ -786,7 +719,7 @@ export default function ManageCoustomer() {
                                     )}
                                 />
 
-                                <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
+                                <Column field="status" header="View" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
 
                                         <Link onClick={() => {

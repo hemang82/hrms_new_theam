@@ -7,7 +7,7 @@ import $ from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
-import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, approvedRejectLeaves } from '../../utils/api.services';
+import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, approvedRejectLeaves, addEmployeeLeaves } from '../../utils/api.services';
 import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import profile_image from '../../assets/Images/default.jpg'
 import ReactDatatable from '../../config/ReactDatatable';
@@ -201,59 +201,6 @@ export default function ManageLeaveBalance() {
         setupdatedLeavList(filteredList);
     }, [empLeaveBalanceList, endDate, selectedOption]);
 
-    const handleStatus = async (data) => {
-        console.log('handleStatus dataaa', data);
-        setis_load(true)
-        let submitData = {
-            leaveId: selectedLeave?.leave_id,
-            status: selectedLeave?.actionType === "approved" ? '1' : '2',
-            admin_reason: data?.reason ? data?.reason : ""
-        }
-        approvedRejectLeaves(submitData).then((response) => {
-            if (response.code == Codes.SUCCESS) {
-                TOAST_SUCCESS(response?.message)
-                let updatedList = empLeaveBalanceList?.map((item) => {
-                    if (selectedLeave?.leave_id === item.leave_id) {
-                        return {
-                            ...item,
-                            status: selectedLeave?.actionType === "approved" ? '1' : '2'
-                        };
-                    }
-                    return item;
-                });
-                dispatch(updateLeaveList(updatedList))
-                setSelecteLeave({});
-                closeActionModelFunc()
-                setis_load(false)
-            } else {
-                TOAST_ERROR(response.message)
-            }
-        })
-    }
-
-    const handleDelete = (is_true) => {
-        if (is_true) {
-            // setis_load(true)
-            dispatch(setLoader(true));
-            let submitData = {
-                loan_id: selectedLeave?.id,
-                is_deleted: true,
-            }
-            updateLoanDetails(submitData).then((response) => {
-                if (response.status_code === Codes?.SUCCESS) {
-                    setis_load(false)
-                    const updatedList = empLeaveBalanceList?.filter((item) => item.id !== selectedLeave?.id)
-                    dispatch(updateLoanList({
-                        ...empLeaveBalanceList,
-                        loan_applications: updatedList
-                    }))
-                    closeModel(dispatch)
-                    dispatch(setLoader(false))
-                    TOAST_SUCCESS(response?.message);
-                }
-            });
-        }
-    };
 
     const onGlobalFilterChange = (e) => {
         const value = e.target.value;
@@ -267,91 +214,20 @@ export default function ManageLeaveBalance() {
     };
 
     // ----------------------------------Export Data----------------------------------
-
-    const handleExportApiCall = async () => {
-        // dispatch(setLoader(true));
-        // let submitData = {
-        //     search: globalFilterValue
-        // }
-        // const { code, data } = await exportCustomerList(submitData);
-        // return { code, data }
-    }
-
-    // const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-
-    //     console.log('getInterestRateByCibil cibilScorecibilScore', cibilScore);
-    //     console.log('getInterestRateByCibil intrestDropdown', intrestDropdown);
-
-    //     if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = intrestDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.rate_percentage : '';
-    // };
-
-    const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 300;
-
-        if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = intrestDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.rate_percentage : '';
-    };
-
-    // const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-
-    //     console.log('processingDropdown cibilScorecibilScore', cibilScore);
-    //     console.log('processingDropdown intrestDropdown', intrestDropdown);
-    //     if (!Array.isArray(processingDropdown) || processingDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = processingDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.min_fee_percent : '';
-    // };
-
-    const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-        // Fallback to 300 if cibilScore is invalid
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 0;
-
-        console.log('validCibilScorevalidCibilScore', validCibilScore);
-
-        if (!Array.isArray(processingDropdown) || processingDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = processingDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.min_fee_percent : '';
-    };
-
     const onPageChange = (Data) => {
         setPage(Data)
     }
 
     const onSubmitData = async (data) => {
+        dispatch(setLoader(true))
+
         let sendRequest = {
             balance: data[AstroInputTypesEnum?.LEAVE_BALANCE],
             employee_id: data[AstroInputTypesEnum?.EMPLOYEE],
             leave_type: data[AstroInputTypesEnum?.LEAVE_TYPE],
         };
-        addLeaves(sendRequest).then((response) => {
+        addEmployeeLeaves(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
-
-                console.log('selectedLeaveselectedLeave', selectedLeave);
-
                 let updatedList = empLeaveBalanceList?.map((item) => {
                     if (data[AstroInputTypesEnum?.EMPLOYEE] == item.id) {
                         return {
@@ -363,16 +239,15 @@ export default function ManageLeaveBalance() {
                     }
                     return item;
                 });
-
-                console.log('updatedListupdatedList', updatedList);
-
                 dispatch(updateLeaveBalanceList(updatedList))
                 reset()
                 TOAST_SUCCESS(response?.message);
                 closeLeaveModelFunc()
                 dispatch(getlistLeavesThunk({}))
+                dispatch(setLoader(true))
             } else {
                 TOAST_ERROR(response?.message)
+                dispatch(setLoader(true))
             }
         })
     }
