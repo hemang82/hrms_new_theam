@@ -33,7 +33,7 @@ const ADMIN_DEPARTMENT = "admin_department";
 const ADMIN_HOLIDAYS = "admin_holidays";
 const ADMIN_EMP_LEAVE = "admin_emp_leave";
 const ADMIN_EMP_ATTENDANCE = "admin_emp_attendence";
-
+const ADMIN_DAILY_TASK = "admin_daily_task";
 
 // ----------------------- HRMS --------------------------------------------
 
@@ -73,7 +73,26 @@ export function DeleteUser(request) {
     return AxiosClientApi.delete(`/${ADMIN}/${USER}/delete-user/${request?.user_id}`, request)
 }
 
+// ---------------------------- Daily Work update  ------------------------------------------------------- 
+
+export function DailyTaskList(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/daily_work_update_listing`, request, true)
+}
+
+export function AddDailyTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/add_daily_work`, request, true)
+}
+
+export function DeleteDailyWork(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/delete_daily_work`, request)
+}
+
+export function EditDailyWork(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/edit_daily_work`, request)
+}
+
 // ---------------------------- Leave Module  ------------------------------------------------------- 
+
 
 export function listLeaves(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/emp_leave_listing`, request)

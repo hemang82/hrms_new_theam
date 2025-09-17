@@ -1000,10 +1000,10 @@ export default function ManageCoustomer() {
                                     { label: "Leave Type", value: selectedLeave?.leave_type },
                                     { label: "Request Date", value: formatDate(selectedLeave?.created_at, DateFormat?.DATE_FORMAT) },
                                     { label: "Days", value: selectedLeave?.days },
-                                    { label: "Reason", value: selectedLeave?.reason },
                                     { label: "Start Date", value: formatDate(selectedLeave?.start_date, DateFormat?.DATE_FORMAT) },
                                     { label: "End Date", value: formatDate(selectedLeave?.end_date, DateFormat?.DATE_FORMAT) },
-                                    { label: "Admin Reason", value: selectedLeave?.admin_reason },
+                                    // { label: "Admin Reason", value: selectedLeave?.admin_reason },
+                                    // { label: "Reason", value: selectedLeave?.reason },
                                 ].map((item, index) => (
 
                                     <div key={index} className="col-md-4 mb-4">
@@ -1021,6 +1021,25 @@ export default function ManageCoustomer() {
                                         }
                                     </div>
                                 ))}
+
+                                {
+                                    selectedLeave?.reason &&
+                                    <>
+                                        <div className="col-md-6 mb-4">
+                                            <p className="mb-1 fs-4">Reason</p>
+                                            <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{selectedLeave.reason || 'N/A'}</h6>
+                                        </div>
+                                    </>
+                                }
+                                {selectedLeave?.admin_reason &&
+                                    <>
+                                        <div className="col-md-6 mb-4">
+                                            <p className="mb-1 fs-4">Admin Reason</p>
+                                            <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{selectedLeave.admin_reason || 'N/A'}</h6>
+                                        </div>
+                                    </>
+                                }
+
                             </div>
                         </div>
                     </div>

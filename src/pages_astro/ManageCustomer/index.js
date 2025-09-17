@@ -1,14 +1,14 @@
-import React, { useEffect,  useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import SubNavbar from '../../layout/SubNavbar';
-import { EditUser} from '../../utils/api.services';
-import {TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
+import { EditUser } from '../../utils/api.services';
+import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, setLoader, updateCustomerList } from '../../Store/slices/MasterSlice';
-import  { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
+import { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, openModel } from '../../config/commonFunction';
 import Model from '../../component/Model';
@@ -24,14 +24,14 @@ export default function ManageCoustomer() {
     let navigat = useNavigate();
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue,reset, control, formState: { errors } } = useForm();
+    const { register, handleSubmit, setValue, reset, control, formState: { errors } } = useForm();
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
     const [selectedUser, setSelectedUser] = useState()
     const [filters, setFilters] = useState({ global: { value: '' } });
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
     const [addEmployeeLeaveModal, setAddEmployueeLeave] = useState(false);
-    
+
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const debounce = useDebounce(globalFilterValue, SEARCH_DELAY);
 

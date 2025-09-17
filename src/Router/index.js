@@ -44,8 +44,6 @@ const ContactUs = Loadable(lazy(() => import("../pages_astro/ContectUs")));
 const ManageFaq = Loadable(lazy(() => import("../pages_astro/ManageFaq")));
 const ContectUsDetails = Loadable(lazy(() => import("../pages_astro/ContectUs/ContectDetials.js")));
 
-
-
 const ManageEMIPaymentCharges = Loadable(lazy(() => import("../pages_astro/ManageEMIPaymentCharges")));
 
 const ManageChatSettings = Loadable(lazy(() => import("../pages_astro/ManageChatSettings")));
@@ -72,6 +70,12 @@ const ManageBankDetails = Loadable(lazy(() => import("../pages_astro/ManageBankD
 const ManageDepartnment = Loadable(lazy(() => import("../pages_astro/ManageDepartnment/index.js")));
 
 const ManageSaturday = Loadable(lazy(() => import("../pages_astro/ManageSaturday/index.js")));
+
+const ManageWorkUpdate = Loadable(lazy(() => import("../pages_astro/ManageWorkUpdate/index.js")));
+
+const ManageBirthday = Loadable(lazy(() => import("../pages_astro/ManageBirthday/index.js")));
+
+
 
 const Router = () => {
     const navigate = useNavigate();
@@ -130,6 +134,7 @@ const Router = () => {
                         <Route path="/user_list/edit_user" element={<AddCustomer />} />
                         <Route path="/user_list/user_details" element={<ViewCustomerDetials />} />
 
+
                         <Route path="/interest_list" element={<ManageInterest />} />
 
                         <Route path={PATHS.HOLIDAYS_LIST} element={<HOLIDAYS />} />
@@ -149,7 +154,9 @@ const Router = () => {
 
                         <Route path={PATHS.SATERDAY_LIST} element={<ManageSaturday />} />
 
+                        <Route path={PATHS.LIST_DAILY_WORK_UPDATE} element={<ManageWorkUpdate />} />
 
+                        <Route path={PATHS.LIST_BIRTHDAY} element={<ManageBirthday />} />
 
                         <Route path="/emi_payment_charges" element={<ManageEMIPaymentCharges />} />
 

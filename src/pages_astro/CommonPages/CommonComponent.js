@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common'
 import Model from '../../component/Model'
 import useDebounce from '../hooks/useDebounce'
+import { RiDeleteBinLine } from 'react-icons/ri'
 
 export const PostComponent = ({ postDetails, customerDetails, is_load, setis_load, postModel, setPostModel }) => {
     const { customModel } = useSelector((state) => state.masterslice);
@@ -573,16 +574,38 @@ export const DeleteComponent = ({ onConfirm }) => {
 
     const dispatch = useDispatch()
     return (<>
-        <div className="text-center text-danger mt-2">
-            <i class="ti ti-trash fs-9"></i>
-            <h3 className="mt-4  mb-4">Are you sure, you want to Delete?</h3>
-            <button type="button" className="btn btn-info m-2 align-items-center" onClick={() => { onConfirm(true) }} >
-                Yes Delete!
-            </button>
-            <button type="button" className="btn btn-light my-2 border shdow-sm" onClick={() => { closeModel(dispatch) }}>
-                Cancel
-            </button>
-        </div>
+        <div className="text-center p-4 pt-0 pb-1">
+            <div className="col-lg-12">
+                <div className="card-body ">
+                    <div className="d-flex flex-column align-items-center text-center p-2">
+                        <div
+                            className="d-flex justify-content-center align-items-center rounded-circle mb-3"
+                            style={{
+                                width: "70px",
+                                height: "70px",
+                                border: "2px solid #1F7494",
+                            }}
+                        >
+                            <RiDeleteBinLine color="#1F7494" size={32} />
+                        </div>
+                        <h5 className="fw-bold mb-2">Are you sure ?</h5>
+                        <p className="text-muted mb-0 fs-4 fw-semibold">
+                            Are you sure, you want to Delete ?
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center border-0 ">
+
+                    <button type="button" className="btn btn-danger" onClick={() => { closeModel(dispatch) }}>
+                        Cancel
+                    </button>
+                    <button type="button" className="btn btn-primary" onClick={() => { onConfirm(true) }} >
+                        Yes Delete!
+                    </button>
+                </div>
+                {/* </div> */}
+            </div>
+        </div >
     </>)
 }
 

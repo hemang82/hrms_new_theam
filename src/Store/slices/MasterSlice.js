@@ -14,6 +14,17 @@ export const getCustomerListThunk = createAsyncThunk("customerList", async (subm
     }
 });
 
+export const getDailyTaskListThunk = createAsyncThunk("DailyTaskList", async (submitData, { dispatch }) => {
+    try {
+        dispatch(setLoader(true))
+        const { data } = await API.DailyTaskList(submitData);
+        dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
 export const getlistAttendanceThunk = createAsyncThunk("listAttendance", async (submitData, { dispatch }) => {
     try {
         dispatch(setLoader(true))
@@ -135,9 +146,9 @@ export const getProcessingFeeListThunk = createAsyncThunk("ProcessingFee", async
 
 export const getHolidayListThunk = createAsyncThunk("HolidayList", async (submitData, { dispatch }) => {
     try {
-        // dispatch(setLoader(true))
+        dispatch(setLoader(true))
         const { data } = await API.listHolidays(submitData);
-        // dispatch(setLoader(false))
+        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;
@@ -159,6 +170,10 @@ const initialState = {
     isLoading: false,
 
     customerList: {
+        data: [],
+        error: null,
+    },
+    dailyTaskList: {
         data: [],
         error: null,
     },
@@ -193,7 +208,6 @@ const initialState = {
         data: [],
         error: null,
     },
-
 
 
 
@@ -235,6 +249,9 @@ const masterSlice = createSlice({
             console.log('acton payload slidebar', action.payload);
 
             state.slidebarToggle = action.payload;
+        },
+        updateDailyTaskList: (state, action) => {
+            state.dailyTaskList.data = action.payload;
         },
         setModalStatus: (state, action) => {
             const { modalType, isOpen, data } = action.payload;
@@ -335,6 +352,12 @@ const masterSlice = createSlice({
             })
 
 
+            .addCase(getDailyTaskListThunk.fulfilled, (state, action) => {
+                state.dailyTaskList.data = action.payload;
+            })
+            .addCase(getDailyTaskListThunk.rejected, (state, action) => {
+                state.dailyTaskList.error = action.error.message;
+            })
 
             .addCase(getAllLoanListThunk.fulfilled, (state, action) => {
                 state.listAllLoan.data = action.payload;
@@ -420,5 +443,5 @@ const masterSlice = createSlice({
     },
 });
 
-export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateAttendanceList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateCustomerList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
+export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateAttendanceList, updateDailyTaskList ,updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateCustomerList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
 export default masterSlice.reducer;

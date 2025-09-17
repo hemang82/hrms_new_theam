@@ -15,34 +15,36 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getHolidayListThunk, getSalaryListThunk, setLoader, updateCustomerList, updateHolidayList, updateIntrestList } from '../../Store/slices/MasterSlice';
-import Constatnt, { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
+import { getCustomerListThunk, getHolidayListThunk, getSalaryListThunk, setLoader, updateDailyTaskList, updateHolidayList, updateIntrestList } from '../../Store/slices/MasterSlice';
+import Constatnt, { Codes, ModelName, PUBLIC_URL, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, disableFutureDates, formatDate, formatDateDyjs, openModel, textInputValidation } from '../../config/commonFunction';
+import { closeModel, formatDate, formatDateDyjs, openModel, textInputValidation } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, DateFormat, LOAN_TYPES } from '../../config/commonVariable';
+import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, LOAN_TYPES } from '../../config/commonVariable';
 import { IoAddCircleOutline } from 'react-icons/io5';
 import { useForm } from 'react-hook-form';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { PATHS } from '../../Router/PATHS';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { FaCalendarAlt, FaFlag, FaHeart } from 'react-icons/fa';
+import { Container, Row, Col, Card, Button, Image, Badge } from 'react-bootstrap';
+import { Calendar } from "react-bootstrap-icons";
 import { CiCalendarDate } from 'react-icons/ci';
 import { GoDotFill } from "react-icons/go";
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { motion } from "framer-motion";
 
-export default function ManageEMISchedule() {
+export default function ManageBirthday() {
 
     let navigat = useNavigate();
     const dispatch = useDispatch();
     const { register, handleSubmit, setValue, clearErrors, reset, watch, control, formState: { errors } } = useForm();
-    const { holidayList: { data: listHoliday }, } = useSelector((state) => state.masterslice);
+
+    const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
 
     const [selectedUser, setSelectedUser] = useState()
-    const [startDate, setStartDate] = useState(dayjs());
 
     const [loading, setLoading] = useState(false);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
@@ -61,18 +63,16 @@ export default function ManageEMISchedule() {
 
     const fetchData = async () => {
         const request = {
-            year: startDate ? formatDateDyjs(startDate, DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR) : null,
-        }
-        try {
-            await dispatch(getHolidayListThunk(request));
-        } finally {
-        }
+            birthday: true,
+            emp_leave_company: EMPLOYEE_STATUS[0]?.key
+        };
+        await dispatch(getCustomerListThunk(request));
     };
 
     useEffect(() => {
-        if (listHoliday?.length === 0) {
-            fetchData();
-        }
+        // if (adminEmployeeList?.length === 0) {
+        fetchData();
+        // }
     }, []);
 
     const closeModelFunc = async () => {
@@ -94,7 +94,8 @@ export default function ManageEMISchedule() {
             deleteHolidays(submitData).then((response) => {
                 if (response.code == Codes?.SUCCESS) {
                     closeModel(dispatch);
-                    const updatedList = listHoliday?.filter(
+
+                    const updatedList = customerList?.filter(
                         (item) => item.id !== selectedUser?.id
                     );
 
@@ -197,156 +198,122 @@ export default function ManageEMISchedule() {
         setEditData(data)
     }
 
-    const FestivalCard = ({ festival }) => {
+    const BirthDayCard = ({ birthday }) => {
+
+
+        const isBirthdayToday =
+            dayjs().format("MM-DD") === dayjs(birthday?.birth_date).format("MM-DD");
+
         return (
-            <Col xs={12} sm={12} md={6} lg={4} className="mb-4">
-                <Card
-                    className={`shadow-sm h-100 rounded-3 border-0 position-relative ${festival?.is_upcoming ? 'green_border' : 'red_border'}`}
-                >
-                    {
-                        festival?.is_upcoming &&
-                        <div className="position-absolute top-0 end-0 m-2 d-flex gap-2">
-                            {/* Edit */}
-                            <button
-                                className="btn btn-sm btn-light shadow-sm rounded-circle"
-                                onClick={() => { editFunction(festival) }}
-                                title="Edit"
+            <Col xs={12} sm={6} md={4} lg={3} className="mb-4">
+                <motion.div whileHover={{ scale: 1.02 }}>
+                    <Card
+                        className={`shadow-sm h-100 rounded-3 border-1 border-light position-relative overflow-hidden ${birthday?.is_upcoming ? 'green_border' : 'red_border'}`}
+                    // style={{
+                    //     background: "#ffffff",
+                    // }}
+                    >
+                        {isBirthdayToday && (
+                            <Badge
+                                style={{
+                                    backgroundColor: "#1f7494",
+                                    fontSize: "0.75rem",
+                                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.15)",
+                                }}
+                                className="position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill text-white"
                             >
-                                <i class="ti ti-edit fs-5 text-custom-theam"></i>
-                            </button>
+                                🎉 Happy Birthday!
+                            </Badge>
+                        )}
 
-                            <button
-                                className="btn btn-sm btn-light shadow-sm rounded-circle"
-                                onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(festival) }}
-                                title="Delete"
-                            >
-                                <i className="ti ti-trash fs-5 text-danger " />
-                            </button>
-                        </div>
-                    }
-                    <Card.Body className="d-flex flex-column justify-content-center align-items-start p-4">
-                        {/* Festival Name */}
-                        <h4
-                            className="fw-semibold mb-3 text-truncate fs-5 fs-md-4 fs-lg-3"
-                            style={{ color: "#1f7494", maxWidth: "100%" }}
-                        >
-                            <GoDotFill className="me-1" size={20} /> {festival?.name}
-                        </h4>
-
-                        {/* Festival Date */}
-                        <div
-                            className="d-flex align-items-center fs-6 fs-md-5 fs-lg-5 fw-semibold"
-                            style={{ color: "#555" }}
-                        >
-                            <CiCalendarDate
-                                className="me-2"
-                                size={22}
-                                style={{ color: "#1f7494" }}
+                        <Card.Body className="d-flex flex-column justify-content-center align-items-center text-center p-3">
+                            {/* Profile Image */}
+                            <Image
+                                // src={birthday?.profileImage || `${process.env.PUBLIC_URL}/dist/images/logos/hrms_icon.png`}
+                                src={birthday?.profileImage || `${Constatnt?.DEFAULT_IMAGE}`}
+                                roundedCircle
+                                fluid
+                                style={{
+                                    width: "90px",
+                                    height: "90px",
+                                    objectFit: "cover",
+                                }}
+                                className="border border-2 border-white shadow-sm mb-3"
+                                alt={birthday?.name || "Employee Profile"}
                             />
-                            {formatDateDyjs(festival.date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT_WEEK)}
-                        </div>
-                    </Card.Body>
-                </Card>
+
+                            {/* Name */}
+                            <h5
+                                className="fw-bold mb-1 fs-6 fs-sm-5 text-capitalize text-dark truncate-text"
+                                style={{
+                                    maxWidth: "100%",
+                                }}
+                            >
+                                {birthday?.name || "Employee Name"}
+                            </h5>
+
+                            <small
+                                className="text-muted fw-semibold mb-3 truncate-text"
+                                style={{ maxWidth: "90%" }}
+                            >
+                                Employee ID: {birthday?.employee_id}
+                            </small>
+
+                            <div
+                                className="d-flex align-items-center justify-content-center fs-6 fw-semibold"
+                                style={{
+                                    color: "#1f7494",
+                                    background: birthday?.is_upcoming ? "#ebf1f6" : "#f8f9fa",
+                                    borderRadius: "12px",
+                                    padding: "5px 10px",
+                                    minWidth: "max-content", // so the box fits content
+                                    whiteSpace: "nowrap",
+                                    border: '2px solid greay'
+                                }}
+                            >
+                                <CiCalendarDate
+                                    className="me-2 flex-shrink-0"
+                                    size={20}
+                                    style={{ color: "#1f7494" }}
+                                />
+                                <span className="truncate-date">
+                                    {dayjs(birthday?.birth_date).format("DD MMM YYYY")}
+                                </span>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </motion.div>
             </Col>
         );
-    };
-
-    const onChangeApiCalling = (data) => {
-        const request = {
-            year: data?.date ? formatDateDyjs(data?.date, DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR) : null,
-        };
-        dispatch(getHolidayListThunk(request));
-    };
+    }
 
     return (
         <>
             <div className="container-fluid mw-100">
-                <SubNavbar title={"Holidays List"} header={'Holidays List'} />
-                <div className="widget-content searchable-container list">
+                <SubNavbar title={"Birthday List"} header={'Birthday List'} />
+                {/* <div className="widget-content searchable-container list"> */}
 
-                    {/* <div className="card card-body">
-                        <div className="row">
-                            <div className="col-12 col-md-6 col-lg-3">
-                                <div className="position-relative">
-                                    <input type="text" className="form-control product-search ps-5" id="input-search" placeholder="Search interest..."
-                                        value={globalFilterValue}
-                                        onChange={onGlobalFilterChange} />
-                                    <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
-                                </div>
-                            </div>
-
-                            <div className="col-12 col-md-6 col-lg-9">
-                                <div className="d-flex flex-column flex-md-row justify-content-end align-items-stretch gap-2 ">
-                                    <Link
-                                        id="btn-add-contact"
-                                        className="btn btn-info d-flex align-items-center justify-content-center mt-3 mt-md-0  w-md-auto "
-                                        style={{ height: '40px' }}
-                                        onClick={() => { setScheduleModel(true); setIs_Add(true) }}
-                                    >
-                                        <span className="me-1">
-                                            <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
-                                        </span>
-                                        <span className="fw-semibold">Add EMI schedule</span>
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0 gap-3">
-
-                            </div>
-                        </div>
-                    </div> */}
-                    <div className="card card-body p-2 mb-2">
-                        <div className="row g-3 mb-3">
-                            <div className="col-12 col-md-6 col-lg-8">
-                                <h3 className="text-center text-custom-theam mt-2 fw-semibold">
-                                    Upcoming Holidays – {formatDateDyjs(startDate, DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR)}
-                                </h3>
-                            </div>
-                            <div className="col-12 col-md-6 col-lg-2">
-                                <DatePicker
-                                    className="custom-datepicker w-100 p-2"
-                                    picker="year"
-                                    format={DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR}
-                                    value={startDate}
-                                    onChange={(date) => {
-                                        setStartDate(date);
-                                        onChangeApiCalling({
-                                            date: date,
-                                        });
-                                    }}
-                                    disabledDate={disableFutureDates}
-                                />
-                            </div>
-                            <div className="col-12 col-md-6 col-lg-2">
-                                <Link
-                                    // to="/emi_schedule_list/add_emi_schedule"
-                                    id="btn-add-contact"
-                                    className="btn btn-info d-flex align-items-center justify-content-center mt-3 mt-md-0  w-md-auto "
-                                    style={{ height: '40px' }}
-                                    onClick={() => { setScheduleModel(true); }}
-                                >
-                                    <span className="me-1">
-                                        <IoAddCircleOutline style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="fw-semibold">Add Holidays</span>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="card card-body">
-                        <div className="my-2 p-2">
-                            <Row >
-                                {listHoliday?.length > 0 && listHoliday?.map((festival) => (
-                                    <FestivalCard key={festival.id} festival={festival} />
-                                ))}
-                            </Row>
-                        </div>
-                        <div className=''>
-                            <Pagination per_page={perPage} pageCount={listHoliday?.total_count} onPageChange={onPageChange} page={page} />
-                        </div>
+                <div className="card card-body p-2 mb-2">
+                    <div className="row">
+                        <h3 className="text-center text-custom-theam mt-2 fw-semibold">Employee Birthday</h3>
                     </div>
                 </div>
+
+                <div className="card card-body">
+                    {/* <div className="table-responsive"> */}
+                    <div className="my-2 p-2">
+                        <Row >
+                            {customerList?.length > 0 && customerList?.map((birthday) => (
+                                <BirthDayCard key={birthday?.id} birthday={birthday} />
+                            ))}
+                        </Row>
+                    </div>
+                    <div className=''>
+                        <Pagination per_page={perPage} pageCount={customerList?.total_count} onPageChange={onPageChange} page={page} />
+                    </div>
+                    {/* </div> */}
+                </div>
+                {/* </div> */}
             </div>
 
             <div className={`modal custom-modal  ${scheduleModel ? "fade show d-block " : "d-none"}`}

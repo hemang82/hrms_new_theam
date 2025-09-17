@@ -40,30 +40,6 @@ const Header = ({ page_name }) => {
         }
     };
 
-    // useEffect(() => {
-    //     dispatch(setLoader(true))
-
-    //     let request = {
-    //         // start_date: formatDateDyjs(dayjs().subtract(1, "month").startOf("month"), DateFormat.DATE_LOCAL_DASH_TIME_FORMAT),
-    //         // end_date: formatDateDyjs(dayjs().startOf("month"), DateFormat.DATE_LOCAL_DASH_TIME_FORMAT),
-
-    //         start_date: formatDateDyjs(dayjs(), DateFormat.DATE_LOCAL_DASH_TIME_FORMAT),
-    //         end_date: formatDateDyjs(dayjs(), DateFormat.DATE_LOCAL_DASH_TIME_FORMAT),
-    //         status: "",
-    //         is_active: "",
-
-
-    //     };
-    //     dispatch(getlistAttendanceThunk(request));
-    //     dispatch(getCustomerListThunk({}));
-    //     dispatch(getListDepartnmentThunk({}))
-    //     dispatch(getListBankDetailsThunk({}))
-    //     dispatch(getlistLeavesThunk({}))
-    //     dispatch(getEmpLeaveBalanceListThunk({}))
-    //     dispatch(getSaturdayListThunk({ year: new Date().getFullYear()}))
-    //     dispatch(setLoader(false))
-    // }, [])
-
     useEffect(() => {
         const fetchData = async () => {
             dispatch(setLoader(true));
@@ -72,26 +48,23 @@ const Header = ({ page_name }) => {
                     emp_leave_company: EMPLOYEE_STATUS[0]?.key
                 };
                 await Promise.all([
-                    // dispatch(getlistAttendanceThunk(request)),
                     dispatch(getCustomerListThunk(request)),
                     dispatch(getListDepartnmentThunk({})),
                     dispatch(getListBankDetailsThunk(request)),
                     dispatch(getlistLeavesThunk(request)),
                     dispatch(getEmpLeaveBalanceListThunk(request)),
                     dispatch(getSaturdayListThunk({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 })),
-                    dispatch(getHolidayListThunk())
+                    dispatch(getHolidayListThunk({ year: formatDateDyjs(dayjs(), DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR) })),
+                    dispatch(getSalaryListThunk({
+                        month: formatDateDyjs(dayjs().subtract(1, 'month'), 'MM') || null,
+                        year: formatDateDyjs(dayjs().subtract(1, 'month'), 'YYYY') || null,
+                        emp_leave_company: "0"
+                    }))
                 ]);
             } finally {
                 dispatch(setLoader(false)); // ✅ stops loader only after all are done
             }
         };
-        //   const request = {
-        //             "month": startDate ? formatDateDyjs(startDate, 'MM') : null,
-        //             "year": startDate ? formatDateDyjs(startDate, 'YYYY') : null,
-        //             // "page": 1,
-        //             // "limit": 10
-        //         }
-        //          dispatch(getSalaryListThunk(request));
         fetchData();
     }, [dispatch]);
 
@@ -131,8 +104,6 @@ const Header = ({ page_name }) => {
                             </a>
                         </li>
                     </ul>
-
-
                     <div className="collapse navbar-collapse justify-content-end" id="">
                         <div className="d-flex align-items-center justify-content-between">
                             <a className="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
@@ -184,11 +155,9 @@ const Header = ({ page_name }) => {
                                         </div>
                                     </div>
                                 </li>
-
                             </ul>
                         </div>
                     </div>
-
                 </nav>
             </header> */}
 

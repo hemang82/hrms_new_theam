@@ -60,8 +60,6 @@ export default function ManageSalary() {
             "month": startDate ? formatDateDyjs(startDate, 'MM') : null,
             "year": startDate ? formatDateDyjs(startDate, 'YYYY') : null,
             emp_leave_company: "0"
-            // "page": 1,
-            // "limit": 10
         }
         await dispatch(getSalaryListThunk(request));
     };

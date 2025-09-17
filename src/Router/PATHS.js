@@ -17,4 +17,8 @@ export const PATHS = {
 
     SATERDAY_LIST: '/saterday_list',
 
+    LIST_DAILY_WORK_UPDATE: '/list_daily_work_update',
+
+    LIST_BIRTHDAY: '/list_birthday',
+
 }

@@ -19,6 +19,8 @@ import { Language, TOAST_ERROR } from "./common";
 import { updateToken } from "../utils/api.services";
 import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
+import parse from "html-react-parser";
+
 dayjs.extend(utc);
 
 const KEY = CryptoJS.enc.Utf8.parse(Constatnt.KEY);
@@ -127,20 +129,12 @@ export const getCommaSeparatedNames = (list) => {
 // ------------------------------------------------------- Login/Logout Redirection -----------------------------------------------------------------------
 
 export const loginRedirection = (data) => {
-
-    // const navigate = useNavigate();
-    // localStorage.setItem(Constatnt.LOGIN_KEY, true);
-    // localStorage.setItem(Constatnt.ACCESS_TOKEN_KEY, data?.accessToken);
-    // localStorage.setItem(Constatnt.REFRESH_TOKEN_KEY, data?.refreshToken);
-    // localStorage.setItem(Constatnt.AUTH_KEY, JSON.stringify(data));
-
     localStorage.setItem(Constatnt.LOGIN_KEY, true);
-    localStorage.setItem(Constatnt.ROLE_KEY, data?.role)
+    localStorage.setItem(Constatnt.ROLE_KEY, data?.result[0]?.role)
 
-    localStorage.setItem(Constatnt.ACCESS_TOKEN_KEY, data?.access_token)
-    localStorage.setItem(Constatnt.REFRESH_TOKEN_KEY, data?.refresh_token)
-    localStorage.setItem(Constatnt.AUTH_KEY, JSON.stringify(data))
-
+    localStorage.setItem(Constatnt.ACCESS_TOKEN_KEY, data?.token?.token)
+    localStorage.setItem(Constatnt.REFRESH_TOKEN_KEY, data?.token?.token)
+    localStorage.setItem(Constatnt.AUTH_KEY, JSON.stringify(data?.result[0]))
 }
 
 export const logoutRedirection = () => {
@@ -335,6 +329,7 @@ export const selectOptionCustomer = (option, name) => {
     ))
     return optionData;
 }
+
 export const selectOption = (option, name) => {
     const optionData = option?.map((option, index) => (
         <option key={option.key} value={option.key}>
@@ -367,9 +362,18 @@ export const momentDateFormat = (date, dateFormat) => {
     return date ? moment.utc(date).format(dateFormat) : "";
 };
 
+export const momentNormalDateFormat = (date, inDateFormate, outDateFormat) => {
+    return date ? moment(date, inDateFormate).format(outDateFormat) : "";
+};
+
 export const dayjsDateFormat = (date, dateFormat) => {
     return date ? dayjs.utc(date).format(dateFormat) : "";
 };
+
+export const dayjsNormalDateFormat = (date, dateFormat) => {
+    return date ? dayjs(date).format(dateFormat) : "";
+};
+
 
 export const getWorkingHours = (startTime, endTime, breakMinutes = 0) => {
 
@@ -433,7 +437,7 @@ export function getSaturdayOrdinal(date) {
 
     // Get the first Saturday of the month
     let firstSaturday = moment(dateMoment).startOf('month').day(6);
-    
+
     // If the first Saturday is in the previous month (it may happen), move it forward
     if (firstSaturday.date() > 7) {
         firstSaturday = firstSaturday.add(1, 'week');
@@ -506,17 +510,19 @@ export const isValidInput = (inputType, text, event) => {
 
 export const textValidation = (inputType, value) => {
 
-    if (inputType === InputTypesEnum.FIRSTNAME) {
+    if (inputType == InputTypesEnum.NAME) {
         return ({
-            required: "Enter first name",
+            required: "Enter name",
             minLength: {
                 value: 2,
-                message: "Invalid first name."
+                message: "Invalid name."
             },
-            pattern: {
-                value: InputRegex.FIRSTNAME_REGEX,
-                message: "First name should only contain letters"
-            }
+        })
+    }
+
+    if (inputType == InputTypesEnum.MOBILE) {
+        return ({
+            required: "Enter mobile number",
         })
     }
 
@@ -542,10 +548,20 @@ export const textValidation = (inputType, value) => {
     if (inputType === InputTypesEnum.PASSWORD) {
         return ({
             required: Language('enterPassword'),
-            pattern: {
-                value: InputRegex.PASSWORD_REGEX,
-                message: Language('passwordValidation'),
-            },
+            // pattern: {
+            //     value: InputRegex.PASSWORD_REGEX,
+            //     message: Language('passwordValidation'),
+            // },
+        })
+    }
+
+    if (inputType === InputTypesEnum.EMPLOYEE) {
+        return ({
+            required: "Enter Employee ID.",
+            // pattern: {
+            //     value: InputRegex.PASSWORD_REGEX,
+            //     message: Language('passwordValidation'),
+            // },
         })
     }
 
@@ -678,12 +694,25 @@ export const getStatus = (status, paid_at) => {
     return status === "issued" && paid_at === null ? "Due" : status;
 };
 
-// export const Codes = {
-//     SUCCESS: 1,
-//     INVALID_OR_FAIL: 0,
-//     NO_DATA_FOUND: 2,
-//     DELETE_ACCOUNT: 3,
-//     USER_SESSION_EXPIRE: -1,
-// };
+export const QuillContentRowWise = (content) => {
+    return (
+        <div className="quill-output">
+            {content ? parse(content) : <span>No description</span>}
+        </div>
+    );
+};
 
-// --------------------------------- input validation ------------------------------------
+// Disable future dates (only past & today allowed)
+export const disableFutureDates = (current) => {
+    return current && current > dayjs().endOf("day");
+};
+
+// Disable past dates (only today & future allowed)
+export const disablePastDates = (current) => {
+    return current && current < dayjs().startOf("day");
+};
+
+// Disable dates between two ranges
+export const disableBeforeStartDate = (startDate) => (current) => {
+    return current && current < dayjs(startDate).startOf("day");
+};

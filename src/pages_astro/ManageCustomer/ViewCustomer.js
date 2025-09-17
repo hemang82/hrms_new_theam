@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useLocation} from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { CustomerDetails, EditUser } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
-import Constatnt, {Codes } from '../../config/constant';
+import Constatnt, { Codes } from '../../config/constant';
 import { formatDate } from '../../config/commonFunction';
-import {  DateFormat } from '../../config/commonVariable';
+import { DateFormat } from '../../config/commonVariable';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Spinner from '../../component/Spinner';
 
@@ -40,8 +40,8 @@ export default function DetailsCustomer() {
 
             <div className="container-fluid mw-100">
                 <SubNavbar title={userData ? 'Employee Details' : 'Add Employee'} header={'Employee List'} subHeaderOnlyView={userData ? 'Employee Details' : 'Add Employee'} />
+                
                 <div className="justify-content-center">
-
                     <div className='row justify-content-center '>
                         <div className="card overflow-hidden chat-application ">
 
@@ -142,7 +142,6 @@ export default function DetailsCustomer() {
                         </div>
                     </div>
                 }
-
             </div >
         </>
     )

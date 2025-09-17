@@ -316,7 +316,7 @@
     /* very light yellow */
     color: #fbc02d !important;
     /* sunflower yellow */
-    border:0.5px solid #fbc02d4d !important;
+    border: 0.5px solid #fbc02d4d !important;
   }
 
   .status-info {
@@ -464,6 +464,7 @@
     /* Slide the slider to the right */
   }
 
+
   .make-header {
     position: sticky !important;
     top: 10px !important;
@@ -475,6 +476,89 @@
     /* border: 1px solid #ebf1f6 !important; */
   }
 
-  .breadcrumb a{
-    color :#1F7494 !important
+
+  .bg-custom-theam {
+    background-color: #1F7494 !important;
+  }
+
+  .text-custom-theam {
+    color: #1F7494 !important;
+    ;
+  }
+
+  .custom-quill {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    min-height: 120px;
+  }
+
+  .custom-quill.is-invalid {
+    border: 1px solid red;
+  }
+
+  .custom-quill .ql-container {
+    border: none !important;
+    min-height: 100px;
+  }
+
+  .custom-quill .ql-toolbar {
+    border: none !important;
+    border-bottom: 1px solid #dee2e6 !important;
+  }
+
+  .custom-quill .ql-editor {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 14px;
+    /* optional */
+    line-height: 1.6;
+    /* optional */
+  }
+
+  .quill-output {
+    border: 1px solid #dee2e6;
+    /* lighter border */
+    padding: 12px 16px;
+    background-color: #fafafa;
+    /* soft background */
+    border-radius: 6px;
+    min-height: 120px;
+    /* keeps height consistent */
+  }
+
+  .quill-output p {
+    margin: 0 0 10px 0;
+    line-height: 1;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #4b5563;
+  }
+
+  .quill-output strong {
+    font-weight: 500;
+  }
+
+  .quill-output em {
+    font-style: italic;
+  }
+
+  .breadcrumb a {
+    color: #1F7494 !important
+  }
+
+  .breadcrumb .breadcrumb-item {
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    ;
+  }
+
+  .red_border {
+    /* background: #ff6b6b1c !important; */
+    background: #1f749417 !important;
+    /* border: 1px solid #ff6b6b !important; */
+  }
+
+  .green_border {
+    background: white !important;
+    border: 1px solid rgba(0, 128, 0, 0.397) !important;
+
   }

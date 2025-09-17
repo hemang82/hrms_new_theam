@@ -22,7 +22,7 @@ const Model = ({ children }) => {
             >
                 <form>
                     <div className={ModelName.DELETE_MODEL === modalType || ModelName.LOGOUT_MODEL === modalType ? "modal-dialog modal-md modal-dialog-centered" : "modal-dialog modal-lg modal-dialog-centered"}>
-                        <div className={ModelName.DELETE_MODEL === modalType || ModelName.LOGOUT_MODEL === modalType ? "modal-content modal-filled bg-light-danger" : "modal-content"}>
+                        <div className={ModelName.DELETE_MODEL === modalType || ModelName.LOGOUT_MODEL === modalType ? "modal-content modal-filled" : "modal-content"}>
 
                             {/* {
                                 ModelName.DELETE_MODEL !== modalType && (<> */}
