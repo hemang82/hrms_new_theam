@@ -129,12 +129,20 @@ export const getCommaSeparatedNames = (list) => {
 // ------------------------------------------------------- Login/Logout Redirection -----------------------------------------------------------------------
 
 export const loginRedirection = (data) => {
-    localStorage.setItem(Constatnt.LOGIN_KEY, true);
-    localStorage.setItem(Constatnt.ROLE_KEY, data?.result[0]?.role)
 
-    localStorage.setItem(Constatnt.ACCESS_TOKEN_KEY, data?.token?.token)
-    localStorage.setItem(Constatnt.REFRESH_TOKEN_KEY, data?.token?.token)
-    localStorage.setItem(Constatnt.AUTH_KEY, JSON.stringify(data?.result[0]))
+    // const navigate = useNavigate();
+    // localStorage.setItem(Constatnt.LOGIN_KEY, true);
+    // localStorage.setItem(Constatnt.ACCESS_TOKEN_KEY, data?.accessToken);
+    // localStorage.setItem(Constatnt.REFRESH_TOKEN_KEY, data?.refreshToken);
+    // localStorage.setItem(Constatnt.AUTH_KEY, JSON.stringify(data));
+
+    localStorage.setItem(Constatnt.LOGIN_KEY, true);
+    localStorage.setItem(Constatnt.ROLE_KEY, data?.role)
+
+    localStorage.setItem(Constatnt.ACCESS_TOKEN_KEY, data?.access_token)
+    localStorage.setItem(Constatnt.REFRESH_TOKEN_KEY, data?.refresh_token)
+    localStorage.setItem(Constatnt.AUTH_KEY, JSON.stringify(data))
+
 }
 
 export const logoutRedirection = () => {

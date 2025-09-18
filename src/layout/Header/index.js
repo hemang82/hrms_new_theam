@@ -27,14 +27,12 @@ const Header = ({ page_name }) => {
     const [logoutModel, setLogoutModel] = useState(false);
 
     const handleLogout = (is_true) => {
-        console.log('is_true', is_true);
-
         if (is_true) {
             // logout().then((response) => {
             // if (response?.code === Codes?.SUCCESS) {
             closeModel(dispatch)
             logoutRedirection();
-            navigate('/login')
+            navigate('/')
             // }
             // })
         }
