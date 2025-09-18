@@ -32,6 +32,7 @@ import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { CiCalendarDate } from 'react-icons/ci';
 import { GoDotFill } from "react-icons/go";
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { NoDataFound } from '../CommonPages/NoDataFound';
 
 export default function ManageEMISchedule() {
 
@@ -305,9 +306,12 @@ export default function ManageEMISchedule() {
                     <div className="card card-body">
                         <div className="my-2 p-2">
                             <Row >
-                                {listHoliday?.length > 0 && listHoliday?.map((festival) => (
+                                {listHoliday?.length > 0 ? listHoliday?.map((festival) => (
                                     <FestivalCard key={festival.id} festival={festival} />
-                                ))}
+                                )) : 
+                                <Col xs={12}>
+                                    <NoDataFound />
+                                </Col>}
                             </Row>
                         </div>
                         <div className=''>

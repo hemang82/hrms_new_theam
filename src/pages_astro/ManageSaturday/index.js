@@ -30,6 +30,7 @@ import { InputSwitch } from 'primereact/inputswitch';
 import { Container, Row, Col, Card, Button, Image, Badge, Spinner } from 'react-bootstrap';
 import { CiCalendarDate } from 'react-icons/ci';
 import { motion } from "framer-motion";
+import { NoDataFound } from '../CommonPages/NoDataFound';
 
 export default function ManageSaturday() {
 
@@ -156,7 +157,6 @@ export default function ManageSaturday() {
         dispatch(getSaturdayListThunk(request));
     };
 
-    // Toggle function
     const handleToggle = (rowData) => {
         console.log('rowData', rowData);
         let submitData = {
@@ -183,7 +183,6 @@ export default function ManageSaturday() {
         })
     };
 
-
     const SaturdayMonthCard = ({ monthObj }) => {
         const [saturdays, setSaturdays] = useState(monthObj.data || []);
         const [loadingId, setLoadingId] = useState(null);
@@ -193,7 +192,7 @@ export default function ManageSaturday() {
 
             let submitData = {
                 id: rowData?.id,
-                type: rowData?.type === "working" ? "off" : "working",
+                type: rowData?.type == "working" ? "off" : "working",
                 date: rowData?.date,
             };
 
@@ -204,7 +203,7 @@ export default function ManageSaturday() {
                     setSaturdays((prev) =>
                         prev.map((sat) =>
                             sat.id === rowData.id
-                                ? { ...sat, type: sat.type === "working" ? "off" : "working" }
+                                ? { ...sat, type: sat.type == "working" ? "off" : "working" }
                                 : sat
                         )
                     );
@@ -216,7 +215,7 @@ export default function ManageSaturday() {
                 console.error("Toggle API Error:", error);
                 TOAST_ERROR("Something went wrong. Please try again.");
             } finally {
-                setLoadingId(null); // always reset loader
+                setLoadingId(null);
             }
         };
 
@@ -224,19 +223,14 @@ export default function ManageSaturday() {
             <Col xs={12} md={6} lg={4} className="mb-4">
                 <motion.div whileHover={{ scale: 1.02 }}>
                     <Card
-                        className={`shadow-sm rounded-3 border-1 border-light ${monthObj.is_current ? "green_border" : "red_border"
-                            }`}
-                        style={{ minHeight: "325px" }}   // fixed minimum height
+                        className={`shadow-sm rounded-3 border-1 border-light ${monthObj.is_current ? "green_border" : "red_border"}`}
+                        style={{ minHeight: "325px" }}
                     >
                         <Card.Body className="p-3">
-                            {/* Month Title */}
-                            <h5 className=" text-center mb-4 fw-semibold text-custom-theam">
-                                {dayjs(`${dayjs().year()}-${monthObj.month}-01`).format(
-                                    "MMMM YYYY"
-                                )}
+                            <h5 className="text-center mb-4 fw-semibold text-custom-theam">
+                                {dayjs(`${dayjs().year()}-${monthObj.month}-01`).format("MMMM YYYY")}
                             </h5>
 
-                            {/* Header */}
                             <Row className="fw-semibold custom_border_bottom pb-2 mb-2 text-muted small">
                                 <Col xs={4}>Date</Col>
                                 <Col xs={2}>Day's</Col>
@@ -244,48 +238,17 @@ export default function ManageSaturday() {
                                 <Col xs={2}>Status</Col>
                             </Row>
 
-                            {/* Only 5 rows inside card */}
                             {saturdays.slice(0, 5).map((rowData) => (
-                                <Row
-                                    key={rowData.id}
-                                    className="align-items-center custom_border_bottom py-2"
-                                >
-                                    {/* Date */}
+                                <Row key={rowData.id} className="align-items-center custom_border_bottom py-2">
                                     <Col xs={4}>{dayjs(rowData.date).format("DD-MM-YYYY")}</Col>
-
-                                    {/* Weekday */}
-                                    <Col xs={2}>
-                                        {getSaturdayOrdinal(rowData.date) || "-"}
-                                    </Col>
-
-                                    {/* Type */}
+                                    <Col xs={2}>{getSaturdayOrdinal(rowData.date) || "-"}</Col>
                                     <Col xs={4}>
                                         <span
-                                            className={`badge me-2 text-light rounded-4 status_font_samll ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"
-                                                }`}
+                                            className={`badge me-2 text-light rounded-4 status_font_samll ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
                                         >
                                             {getStatus(rowData?.type) || "-"}
                                         </span>
                                     </Col>
-
-                                    {/* Toggle */}
-                                    {/* <Col xs={2}>
-                                        <div className="toggle-switch">
-                                            <input
-                                                type="checkbox"
-                                                id={`customSoftSwitch-${rowData.id}`}
-                                                checked={rowData.type === "working"}
-                                                onChange={() => handleToggle(rowData)}
-                                            />
-                                            <label
-                                                htmlFor={`customSoftSwitch-${rowData.id}`}
-                                                className={`toggle-switch-label ${rowData.type === "working" ? "active" : ""
-                                                    }`}
-                                            >
-                                                <span className="toggle-switch-slider"></span>
-                                            </label>
-                                        </div>
-                                    </Col> */}
                                     <Col xs={2}>
                                         <div className="position-relative d-inline-block">
                                             <div className="toggle-switch">
@@ -294,18 +257,15 @@ export default function ManageSaturday() {
                                                     id={`customSoftSwitch-${rowData.id}`}
                                                     checked={rowData.type === "working"}
                                                     onChange={() => handleToggle(rowData)}
-                                                    disabled={loadingId === rowData.id} // disable while loading
+                                                    disabled={loadingId === rowData.id}
                                                 />
                                                 <label
                                                     htmlFor={`customSoftSwitch-${rowData.id}`}
-                                                    className={`toggle-switch-label ${rowData.type === "working" ? "active" : ""
-                                                        }`}
+                                                    className={`toggle-switch-label ${rowData.type === "working" ? "active" : ""}`}
                                                 >
                                                     <span className="toggle-switch-slider"></span>
                                                 </label>
                                             </div>
-
-                                            {/* Loader overlay */}
                                             {loadingId === rowData.id && (
                                                 <div
                                                     className="position-absolute top-50 start-50 translate-middle"
@@ -325,6 +285,7 @@ export default function ManageSaturday() {
         );
     };
 
+
     return (
         <>
             <div className="container-fluid mw-100">
@@ -334,7 +295,7 @@ export default function ManageSaturday() {
                     <div className="card card-body mb-2 p-3 mb-2">
                         <div className="row g-3 ">
                             <div className="col-12 col-md-6 col-lg-8">
-                                <div className="position-relative w-50">
+                                {/* <div className="position-relative w-50">
                                     <input
                                         type="text"
                                         className="form-control ps-5 "
@@ -344,7 +305,7 @@ export default function ManageSaturday() {
                                         onChange={onGlobalFilterChange}
                                     />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2">
@@ -353,7 +314,7 @@ export default function ManageSaturday() {
                             <div className="col-12 col-md-6 col-lg-2">
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
-                                    picker="month"   // ✅ only year picker
+                                    picker="year"   // ✅ only year picker
                                     format="YYYY"   // ✅ show only year
                                     value={startDate}
                                     onChange={(date) => {
@@ -368,11 +329,15 @@ export default function ManageSaturday() {
                     </div>
 
                     <div className="card card-body">
-                        <div className="my-2 p-2">
-                            <Row >
-                                {saturdayList?.length > 0 && saturdayList?.map((monthObj) => (
+                        <div className="gx-4 gy-4">
+                            <Row className="gx-4 gy-4">
+                                {saturdayList?.length > 0 ? saturdayList?.map((monthObj) => (
                                     <SaturdayMonthCard key={monthObj?.month} monthObj={monthObj} />
-                                ))}
+                                )) : (<>
+                                    <Col xs={12}>
+                                        <NoDataFound />
+                                    </Col>
+                                </>)}
                             </Row>
                         </div>
                         {/* <div className=''>
