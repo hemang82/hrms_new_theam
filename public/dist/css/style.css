@@ -24613,9 +24613,9 @@ html[dir=rtl] .welcome-bg-img {
 /* ------------- change ----------- */
 .sidebar-nav ul .sidebar-item.selected>.sidebar-link.active,
 .sidebar-nav ul .sidebar-item.selected>.sidebar-link,
-.sidebar-nav ul .sidebar-item>.sidebar-link.active {
-  background-color: #1F7494;
-  color: whitesmoke;
+.sidebar-nav ul .sidebar-item>.sidebar-link.active , .sidebar-item.selected span svg, .sidebar-item.selected span +span{
+  background-color: #1F7494 !important;
+  color: whitesmoke !important;
   font-weight: 600;
 }
 

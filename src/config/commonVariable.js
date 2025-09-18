@@ -120,7 +120,7 @@ export const AstroInputTypesEnum = {
     CATEGORY_GU: 'category_gu',
     CATEGORY_HI: 'category_hi',
     CATEGORY_IMAGE: 'category_image',
-    DESCRIPTION : 'description',
+    DESCRIPTION: 'description',
 
     PASSWORD: 'password',
     PROFILE_IMAGE: 'aadhaar_file',
@@ -147,6 +147,10 @@ export const AstroInputTypesEnum = {
 
     LEAVE_BALANCE: 'leave_balance',
     EMPLOYEE: 'employee',
+    PROJECT: 'project',
+    TASK: 'task',
+
+
     BLOG_TITLE_EN: 'blog_title_en',
     BLOG_TITLE_GU: 'blog_title_gu',
     BLOG_TITLE_HI: 'blog_title_hi',
@@ -214,8 +218,6 @@ export const AstroInputTypesEnum = {
     PROOF_FILE: 'proof_file',
     PROPERTY_DOCUMENT_FILE: 'property_document_file',
 
-
-
     ANNUAL_INCOME: 'annual_income',
     PURPOSE_OF_LOAN: 'purpose_of_loan',
     DESIGNATION: 'designation',
@@ -238,6 +240,8 @@ export const AstroInputTypesEnum = {
     MAX_FEE_PERCENTAGE: 'max_fee_percentage',
     LOAN_COMPLETION_FILE: 'loan_completion_file',
 
+
+    PRIORITY: 'priority'
 
 };
 
@@ -1544,27 +1548,6 @@ export const EMPLOYEE_STATUS = [
     { key: "1", value: "Inactive" }
 ];
 
-// export const ALL_LOAN_STATUS_LIST = [
-//     { key: "PENDING", value: "PENDING", color: "bg-warning text-white" },           // Yellow bg, dark text
-//     { key: "UNDER_REVIEW", value: "UNDER REVIEW", color: "bg-primary-blue text-white" }, // Blue bg, white text
-//     { key: "ON_HOLD", value: "ON HOLD", color: "bg-secondary text-white" },         // Grey bg, white text
-//     { key: "APPROVED", value: "APPROVED", color: "bg-success text-white" },         // Green bg, white text
-//     { key: "REJECTED", value: "REJECTED", color: "bg-danger text-white" },          // Red bg, white text
-//     { key: "DISBURSED", value: "DISBURSED", color: "bg-info text-white" },           // Light blue bg, dark text
-//     { key: "CLOSED", value: "CLOSED", color: "bg-dark text-white" },                // Black bg, white text
-//     { key: "CANCELLED", value: "CANCELLED", color: "bg-danger text-white" },        // Red bg, white text
-//     { key: "USER_ACCEPTED", value: "USER ACCEPTED", color: "bg-success text-white" }, // Green bg, white text
-//     { key: "COMPLETED", value: "COMPLETED", color: "bg-success text-white" } // Green bg, white text
-// ];
-
-// export const STATUS_COLORS = {
-//     BLUE: "status-blue",           // custom CSS (primary blue shade)
-//     WARNING: "bg-warning text-white",
-//     INFO: "bg-info text-white",
-//     SUCCESS: "bg-success text-white",
-//     DANGER: "bg-danger text-white"
-// };
-
 export const STATUS_COLORS = {
     BLUE: "status-blue fw-semibold",
     WARNING: "status-warning fw-semibold",
@@ -1574,68 +1557,6 @@ export const STATUS_COLORS = {
     DANGER: "status-danger fw-semibold",
     GREY: "status-grey fw-semibold",
     PURPULE: "status-bounce fw-semibold"
-};
-
-// export const ALL_LOAN_STATUS_LIST = [
-//     { key: "APPLICATION_SUBMITTED", value: "APPLICATION SUBMITTED", color: "status-blue" },
-//     { key: "PENDING", value: "PENDING", color: "bg-warning text-white" },
-//     { key: "UNDER_REVIEW", value: "UNDER REVIEW", color: "bg-info text-white" },
-//     { key: "ON_HOLD", value: "ON HOLD", color: "bg-warning text-white" },
-//     { key: "APPROVED", value: "APPROVED", color: "bg-success text-white" },
-//     { key: "REJECTED", value: "REJECTED", color: "bg-danger text-white" },
-//     { key: "AADHAR_VERIFIED", value: "AADHAR VERIFIED", color: "status-blue" },
-//     { key: "BANK_VERIFIED", value: "BANK VERIFIED", color: "status-blue" },
-//     { key: "USER_ACCEPTED", value: "USER ACCEPTED", color: "status-blue" },
-//     { key: "E_MANDATE_GENERATED", value: "E-MANDATE GENERATED", color: "status-blue" },
-//     { key: "DISBURSEMENT_APPROVAL_PENDING", value: "DISBURSEMENT APPROVAL PENDING", color: "bg-warning text-white" },
-//     { key: "DISBURSEMENT_APPROVED", value: "DISBURSEMENT APPROVED", color: "bg-success text-white" },
-//     { key: "DISBURSED", value: "DISBURSED", color: "bg-info text-white" },
-//     { key: "COMPLETED", value: "COMPLETED", color: "bg-success text-white" },
-//     { key: "CANCELLED", value: "CANCELLED", color: "bg-danger text-white" },
-//     { key: "CLOSED", value: "CLOSED", color: "bg-danger text-white" },
-// ];
-
-
-const getStatusColor = (status) => {
-
-    // Common groups
-    const blueStatuses = new Set([
-    ]);
-
-    const orangeStatuses = new Set([
-        "Aadhar Verification Pending",
-        "Admin Approval Pending",
-        "Under Review",
-        "On Hold",
-        "User Accepted Pending",
-        "Bank Verified Pending",
-        "E MANDATE Setup Pending",
-        "Disbursement Approval Pending",
-        "Disbursement Approval Pending"
-    ]);
-    const greenStatuses = new Set([
-        "Completed",
-        "Disbursed",
-        "Closed",
-    ]);
-    const redStatuses = new Set([
-        "Rejected",
-        "Cancelled",
-    ]);
-    if (blueStatuses.has(status)) {
-        return "text-[#1F7494] bg-[#f1f3ff]";
-    }
-    if (greenStatuses.has(status)) {
-        return "text-green-600 bg-[#e6ffec]";
-    }
-    if (redStatuses.has(status)) {
-        return "text-red-600 bg-[#ffeeee]";
-    }
-    if (orangeStatuses.has(status)) {
-        return "text-[#ffa500] bg-[#fff9ef]"
-    }
-
-    return "text-[#1F7494] bg-[#f1f3ff]";
 };
 
 export const ALL_STATUS = [
@@ -1940,3 +1861,27 @@ export const AttendanceType = {
     },
 
 };
+
+
+// ---------------------------------------------------------- Project Variables ------------------------------------------------------------------------------------------------------------
+
+export const PROJECT_PRIORITY = [
+    // { key: "", value: "Select Type" },
+    { key: "high", value: "High" },
+    { key: "medium", value: "Medium" },
+    { key: "low", value: "Low" },
+];
+
+export const PROJECT_LIST = [
+    // { key: "", value: "Select Type" },
+    { id: "1", name: "IPO-Trend" },
+    { id: "2", name: "TTPro" },
+    { id: "3", name: "Chat My Astrologer" },
+];
+
+export const TASK_LIST = [
+    // { key: "", value: "Select Type" },
+    { id: "1", name: "Home page" },
+    { id: "2", name: "Admin panel" },
+    { id: "3", name: "Contact us page" },
+];

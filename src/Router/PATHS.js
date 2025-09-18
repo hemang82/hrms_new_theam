@@ -21,4 +21,16 @@ export const PATHS = {
 
     LIST_BIRTHDAY: '/list_birthday',
 
+    LIST_PROJECT: '/list_project',
+    ADD_PROJECT: '/list_project/add_project',
+    EDIT_PROJECT: '/list_project/edit_project',
+
+    LIST_ASSIGN_TASK: '/list_assign_task',
+    ADD_ASSIGN_TASK: '/list_assign_task/add_assign_task',
+    EDIT_ASSIGN_TASK: '/list_assign_task/edit_assign_task',
+
+    LIST_TICKET: '/list_ticket',
+    ADD_TICKET: '/list_ticket/add_ticket',
+    EDIT_TICKET: '/list_ticket/edit_ticket',
+
 }

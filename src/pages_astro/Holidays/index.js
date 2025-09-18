@@ -308,10 +308,10 @@ export default function ManageEMISchedule() {
                             <Row >
                                 {listHoliday?.length > 0 ? listHoliday?.map((festival) => (
                                     <FestivalCard key={festival.id} festival={festival} />
-                                )) : 
-                                <Col xs={12}>
-                                    <NoDataFound />
-                                </Col>}
+                                )) :
+                                    <Col xs={12}>
+                                        <NoDataFound />
+                                    </Col>}
                             </Row>
                         </div>
                         <div className=''>

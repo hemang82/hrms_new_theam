@@ -261,19 +261,7 @@ export default function ManageWorkUpdate() {
                                     disabledDate={disabledEndDate}
                                 />
                             </div>
-                            {/* <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
-                                <label className="form-label fw-semibold mb-1">&nbsp;</label>
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
-                                    style={{ height: '40px' }}
-                                    // onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
-                                    onClick={() => { openWorkUpdateModelFunc() }}
-                                >
-                                    <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
-                                    <span className="fw-semibold">Add Work Update</span>
-                                </button>
-                            </div> */}
+
                         </div>
                     </div>
 

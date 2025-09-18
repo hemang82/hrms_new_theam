@@ -31,6 +31,7 @@ import { FcLeave } from "react-icons/fc";
 import { CiCalendarDate } from "react-icons/ci";
 import { CgList } from "react-icons/cg";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
+import { GoProjectSymlink } from 'react-icons/go';
 
 
 const Slidebar = () => {
@@ -42,19 +43,6 @@ const Slidebar = () => {
     let path = '/' + location?.pathname?.split('/')?.[1]
     const { customModel } = useSelector((state) => state.masterslice);
     const { slidebarToggle } = useSelector((state) => state.masterslice);
-
-    // const logouthandle = async () => {
-    //     SWIT_LOGOUT().then(async (result) => {
-    //         if (result.isConfirmed) {
-    //             let { code, message } = await API.logout();
-    //             if (code === '1') {
-    //                 TOAST_SUCCESS(message);
-    //                 logoutRedirection();
-    //                 navigate('/login');
-    //             }
-    //         }
-    //     });
-    // }
 
     const [hideSpans, setHideSpans] = useState(true);
     var AdminData = JSON.parse(localStorage.getItem(Constatnt.AUTH_KEY));
@@ -184,7 +172,6 @@ const Slidebar = () => {
                         </div>
                     </div>
 
-                    {/* Sidebar navigation*/}
                     <nav className="sidebar-nav scroll-sidebar" data-simplebar>
                         <ul id="sidebarnav">
 
@@ -205,38 +192,6 @@ const Slidebar = () => {
                                     <span className="hide-menu">Employee</span>
                                 </Link>
                             </li>
-
-                            {/* 
-                            <li className={`sidebar-item ${path === "/loan_list" ? "selected" : ""}`}>
-                                <Link to={'/loan_list'} className={`sidebar-link ${path === "/loan_list" ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <LuHandCoins style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Loan</span>
-                                </Link>
-                            </li> */}
-
-
-
-                            {/* <li className={`sidebar-item ${path === "/interest_list" ? "selected" : ""}`}>
-                                <Link to={'/interest_list'} className={`sidebar-link ${path === "/interest_list" ? "active" : ""}`} aria-expanded="false">
-                                    <span>
-                                        <TbMoneybag style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Interest Rate</span>
-                                </Link>
-                            </li> */}
-
-                            {/* <li className={`sidebar-item ${path === "/processing_fee_list" ? "selected" : ""}`}>
-                                <Link to={'/processing_fee_list'} className={`sidebar-link ${path === "/processing_fee_list" ? "active" : ""}`} aria-expanded="false">
-                                 
-                                    <span>
-                                        <TbCoinRupee style={{ fontSize: '1.2rem' }} />
-                                    </span>
-                                    <span className="hide-menu">Processing Fee</span>
-                                </Link>
-                            </li> */}
-
 
                             <li className={`sidebar-item ${path === PATHS.ATTENDANCE_LIST ? "selected" : ""}`}>
                                 <Link to={PATHS.ATTENDANCE_LIST} className={`sidebar-link ${path === PATHS.ATTENDANCE_LIST ? "active" : ""}`} aria-expanded="false">
@@ -326,14 +281,67 @@ const Slidebar = () => {
                                     <span className="hide-menu">Department</span>
                                 </Link>
                             </li>
+                            {/* <li class="nav-small-cap">
+                                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                                <span class="hide-menu">Project</span>
+                            </li>
 
-                            {/* <li className={`sidebar-item ${path === "/contact_us_list" ? "selected" : ""}`}>
-                                <Link to={'/contact_us_list'} className={`sidebar-link ${path === "/contact_us_list" ? "active" : ""}`} aria-expanded="false">
+
+                            <li className={`sidebar-item ${path === PATHS.LIST_PROJECT || path === PATHS.LIST_ASSIGN_TASK || path === PATHS.LIST_TICKET? "selected" : ""}`} >
+                                <div
+                                    className={`sidebar-link has-arrow ${expanded["project"] ? "active" : "" }`}
+                                    role="button"
+                                    aria-expanded={expanded["project"] ? "true" : "false"}
+                                    onClick={() => toggleMenu("project")}
+                                >
                                     <span>
-                                        <MdOutlineContactPhone style={{ fontSize: '1.2rem' }} />
+                                        <GoProjectSymlink style={{ fontSize: "1.2rem" }} />
                                     </span>
-                                    <span className="hide-menu">Contact Us</span>
-                                </Link>
+                                    <span className="hide-menu">Project</span>
+                                </div>
+
+                                <ul
+                                    className={`collapse first-level ${expanded["project"] ? "show" : ""
+                                        }`}
+                                    aria-expanded={expanded["project"] ? "true" : "false"}
+                                >
+                                    <li className="sidebar-item">
+                                        <Link
+                                            to={PATHS.LIST_PROJECT}
+                                            className={`sidebar-link ${path === PATHS.LIST_PROJECT ? "active" : ""
+                                                }`}
+                                        >
+                                            <div className="round-16 d-flex align-items-center justify-content-center">
+                                                <i className="ti ti-circle" />
+                                            </div>
+                                            <span className="hide-menu">Project List</span>
+                                        </Link>
+                                    </li>
+                                    <li className="sidebar-item">
+                                        <Link
+                                            to={PATHS.LIST_ASSIGN_TASK}
+                                            className={`sidebar-link ${path === PATHS.LIST_ASSIGN_TASK ? "active" : ""
+                                                }`}
+                                        >
+                                            <div className="round-16 d-flex align-items-center justify-content-center">
+                                                <i className="ti ti-circle" />
+                                            </div>
+                                            <span className="hide-menu">Assign Task</span>
+                                        </Link>
+                                    </li>
+                                    <li className="sidebar-item">
+                                        <Link
+                                            to={PATHS.LIST_TICKET}
+                                            className={`sidebar-link ${path === PATHS.LIST_TICKET ? "active" : ""
+                                                }`}
+                                        >
+                                            <div className="round-16 d-flex align-items-center justify-content-center">
+                                                <i className="ti ti-circle" />
+                                            </div>
+                                            <span className="hide-menu">Tickets</span>
+                                        </Link>
+                                    </li>
+                                </ul>
                             </li> */}
 
                             <li className={`sidebar-item  `} onClick={() => { openModel(dispatch, ModelName.LOGOUT_MODEL) }} style={{ cursor: 'pointer' }}>
@@ -344,6 +352,7 @@ const Slidebar = () => {
                                     <span className="hide-menu">Logout</span>
                                 </Link>
                             </li>
+
                         </ul>
                     </nav>
 

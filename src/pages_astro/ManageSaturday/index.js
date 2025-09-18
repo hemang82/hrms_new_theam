@@ -220,7 +220,7 @@ export default function ManageSaturday() {
         };
 
         return (
-            <Col xs={12} md={6} lg={4} className="mb-4">
+            <Col xs={12} md={6} lg={4} className="mb-4 saturday_month_view">
                 <motion.div whileHover={{ scale: 1.02 }}>
                     <Card
                         className={`shadow-sm rounded-3 border-1 border-light ${monthObj.is_current ? "green_border" : "red_border"}`}
@@ -330,7 +330,7 @@ export default function ManageSaturday() {
 
                     <div className="card card-body">
                         <div className="gx-4 gy-4">
-                            <Row className="gx-4 gy-4">
+                            <Row className="gx-4 gy-4 saturday_month_view_section">
                                 {saturdayList?.length > 0 ? saturdayList?.map((monthObj) => (
                                     <SaturdayMonthCard key={monthObj?.month} monthObj={monthObj} />
                                 )) : (<>

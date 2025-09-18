@@ -56,6 +56,14 @@ const ManageWorkUpdate = Loadable(lazy(() => import("../pages_astro/ManageWorkUp
 
 const ManageBirthday = Loadable(lazy(() => import("../pages_astro/ManageBirthday/index.js")));
 
+const ManageProject = Loadable(lazy(() => import("../pages_astro/ManageProject/index.js")));
+const AddProject = Loadable(lazy(() => import("../pages_astro/ManageProject/AddProject.js")));
+
+const AssignTaskList = Loadable(lazy(() => import("../pages_astro/ManageProject/AssignTaskList.js")));
+const AddAssignTask = Loadable(lazy(() => import("../pages_astro/ManageProject/AddAssignTask.js")));
+
+const TicketList = Loadable(lazy(() => import("../pages_astro/ManageProject/TicketList.js")));
+const AddTicket = Loadable(lazy(() => import("../pages_astro/ManageProject/AddTicket.js")));
 
 
 const Router = () => {
@@ -124,6 +132,18 @@ const Router = () => {
                         <Route path={PATHS.LIST_DAILY_WORK_UPDATE} element={<ManageWorkUpdate />} />
 
                         <Route path={PATHS.LIST_BIRTHDAY} element={<ManageBirthday />} />
+
+                        <Route path={PATHS.LIST_PROJECT} element={<ManageProject />} />
+                        <Route path={PATHS.ADD_PROJECT} element={<AddProject />} />
+                        <Route path={PATHS.EDIT_PROJECT} element={<AddProject />} />
+
+                        <Route path={PATHS.LIST_ASSIGN_TASK} element={<AssignTaskList />} />
+                        <Route path={PATHS.ADD_ASSIGN_TASK} element={<AddAssignTask />} />
+                        <Route path={PATHS.EDIT_ASSIGN_TASK} element={<AddAssignTask />} />
+
+                        <Route path={PATHS.LIST_TICKET} element={<TicketList />} />
+                        <Route path={PATHS.ADD_TICKET} element={<AddTicket />} />
+                        <Route path={PATHS.EDIT_TICKET} element={<AddTicket />} />
 
                         <Route path="/faq" element={<ManageFaq />} />
 

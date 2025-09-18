@@ -10,7 +10,7 @@
 
   .custom-datepicker.ant-picker-focused {
     border-color: #1F7494 !important;
-    box-shadow: 0 0 0 2px rgba(249, 109, 36, 0.2) !important;
+    box-shadow: #ebf1f6 !important;
   }
 
 
@@ -564,4 +564,68 @@
 
   .custom_border_bottom {
     border-bottom: 1px solid #00000018 !important;
+  }
+
+  .ant-select-selector {
+    position: relative !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    /* padding: 6px 12px !important; */
+  }
+
+
+  .sidebar-item span svg,
+  .sidebar-item span+span {
+    color: #1F7494 !important;
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  html body .p-datatable .p-datatable-tbody>tr:nth-child(even)>td {
+    background-color: #ebf1f66e !important;
+  }
+
+  .p-datatable .p-datatable-tbody>tr>td {
+    padding: 0.5% !important;
+    font-size: 13px !important;
+    padding: 10px 15px !important;
+  }
+
+  html .p-datatable .p-datatable-thead>tr>th {
+    background: #1f7494;
+    color: #fff;
+    padding: 10px 15px !important;
+  }
+
+  html .p-datatable .p-datatable-tbody>tr>td {
+    padding: 10px 15px !important;
+  }
+
+  .p-column-title {
+    font-size: 15px !important;
+    font-weight: 500;
+  }
+
+  html .p-datatable-table {
+    border-radius: 7px !important;
+    overflow: hidden;
+  }
+
+  .saturday_month_view>div>div,
+  .saturday_month_view>div {
+    height: 100%;
+  }
+
+  .saturday_month_view_section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(390px, 1fr));
+    gap: 1rem;
+    /* space between items */
+  }
+
+  .saturday_month_view_section>div {
+    width: 100%;
   }
