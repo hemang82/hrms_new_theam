@@ -684,46 +684,60 @@ export default function ManageAttendance() {
                         <div className="modal-body">
                             <div className="container py-3">
                                 <div className="row">
-                                    {
-                                        selectedAttendance &&
-                                        <div className="col-12 justify-content-center">
-                                            <div className="mb-3">
-                                                <div className="row">
+                                    {[
+                                        // { label: "Employee Id", value: selectedEmployee?.employee_id },
+                                        { label: "Date", value: momentDateFormat(selectedAttendance?.date, DateFormat?.DATE_FORMAT) || '-' },
+                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
+                                        {
+                                            label: "Check In",
+                                            value: selectedAttendance?.checkInTimes?.[0]
+                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
+                                                : '-'
+                                        },
+                                        {
+                                            label: "Check Out",
+                                            value: selectedAttendance?.checkOutTimes?.[0]
+                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
+                                                : '-'
+                                        },
+                                        { label: "Break Timeline", value: "-" },
+                                        { label: "Total Break", value: selectedAttendance?.breaks?.length > 0 ? getBreakMinutes(selectedAttendance?.breaks) + 'm' : "-" },
+                                    ].map((item, index) => (<>
+                                        <div className='col-12 col-sm-6 attendance_card'>
+                                            <div key={index} className="card border-1 them-light shadow-sm mt-2 ">
+                                                <div className="card-body text-center m-1 p-1">
+                                                    <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
+                                                    {
+                                                        item.label == "Break Timeline" ? (<>
+                                                            <div className="timeline position-relative ms-4">
 
-                                                    {console.log('selectedAttendanceselectedAttendance', selectedAttendance)}
-                                                    {[
-                                                        // { label: "Employee Id", value: selectedEmployee?.employee_id },
-                                                        // { label: "Name", value: selectedEmployee?.name },
-                                                        // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
-                                                        {
-                                                            label: "Check In",
-                                                            value: selectedAttendance?.checkInTimes?.[0]
-                                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                                : '-'
-                                                        },
-                                                        {
-                                                            label: "Check Out",
-                                                            value: selectedAttendance?.checkOutTimes?.[0]
-                                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                                : '-'
-                                                        },
-                                                        { label: "Total Break", value: selectedAttendance?.breaks?.length > 0 ? getBreakMinutes(selectedAttendance?.breaks) + 'm' : "-" },
-                                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
-                                                    ].map((item, index) => (<>
-                                                        <div className='col-12 col-sm-6 attendance_card'>
-                                                            <div key={index} className="card border-1 them-light shadow-sm mt-2 ">
-                                                                <div className="card-body text-center m-1 p-1">
-                                                                    <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
-                                                                    <h5 className="fw-medium text-dark mb-0 fs-6">
-                                                                        {item?.value || '0'}
-                                                                    </h5>
-                                                                </div>
+                                                                <div className=" border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
+                                                                {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
+                                                                    <div key={index}>
+                                                                        <div className="mt-2 d-flex align-items-start">
+                                                                            <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
+                                                                            <div>
+                                                                                <span className="badge bg-light text-dark fs-4 fw-medium">
+                                                                                    {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+
                                                             </div>
-                                                        </div>
+                                                        </>) : (<>
+                                                            <h5 className="fw-medium text-dark mb-0 fs-5">
+                                                                {item?.value || '0'}
+                                                            </h5>
+                                                        </>)
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>))}
 
-                                                    </>))}
-
-                                                    <div className='col-12 col-sm-6 attendance_card'>
+                                    {/* <div className='col-12 col-sm-6 attendance_card'>
                                                         <div className="card border-1 them-light shadow-sm mt-2 ">
                                                             <div className="card-body text-center m-1 p-1">
 
@@ -744,14 +758,11 @@ export default function ManageAttendance() {
                                                                             </div>
                                                                         </div>
                                                                     ))}
+
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
+                                                    </div> */}
                                 </div>
                             </div>
                         </div>
