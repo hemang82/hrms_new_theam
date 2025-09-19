@@ -286,7 +286,7 @@ export default function ManageCoustomer() {
                                         //     <div className="action-icon cursor_pointer  action-icon col p-0 m-0" onClick={() => handleDeleteUser(rowData?.id)}> <i className="mdi mdi-delete fs-3" /></div>
                                         // </div>
                                         <div className="action-btn">
-                                            <Link to={'/contact_us/contact_details'} className="text-info edit cursor_pointer">
+                                            <Link to={'/contact_us/contact_details'} className="text-custom-theam edit cursor_pointer">
                                                 <i className="ti ti-eye fs-7 " />
                                             </Link>
                                             <a className="text-dark delete ms-2 cursor_pointer" onClick={() => { setCustomerDeleteModel(true) }}>
@@ -311,7 +311,7 @@ export default function ManageCoustomer() {
 
                                 <Column field="status" header="Action" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        <Link to={'/contact_us_list/contact_details'} state={rowData} className="text-info edit cursor_pointer">
+                                        <Link to={'/contact_us_list/contact_details'} state={rowData} className="text-custom-theam edit cursor_pointer">
                                             <i className="ti ti-eye fs-7 " />
                                         </Link>
                                         {/* <a className="text-dark delete ms-2 cursor_pointer cursor_pointer" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(rowData) }}>

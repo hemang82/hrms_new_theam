@@ -272,7 +272,7 @@ export default function AddCustomer() {
                                             <div className='col-12 col-sm-6 col-md-2 col-lg-4 '>
                                                 <div key={index} className="card border-1 zoom-in them-light shadow-sm">
                                                     <div className="card-body text-center">
-                                                        <p className="fw-semibold fs-6 text-dark ">{item.label}</p>
+                                                        <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
                                                         <h5 className="fw-semibold text-dark mb-0 fs-5">
                                                             {item.value || '-'}
                                                         </h5>

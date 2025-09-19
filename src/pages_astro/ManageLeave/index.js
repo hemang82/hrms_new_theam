@@ -728,7 +728,7 @@ export default function ManageCoustomer() {
                                             // }
                                         }}
                                             state={rowData}
-                                            className={`text-info edit cursor_pointer`}
+                                            className={`text-custom-theam edit cursor_pointer`}
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
@@ -752,7 +752,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{'Add Leave Balance'} </h6>
+                            <h6 className="modal-title fs-5">{'Add Leave Balance'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveModelFunc() }} />
                         </div>
 
@@ -854,7 +854,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Rejection Reason"} </h6>
+                            <h6 className="modal-title">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Rejection Reason"} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeActionModelFunc() }} />
                         </div>
                         <div className="modal-body">
@@ -924,7 +924,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-6"> Leave Details </h6>
+                            <h6 className="modal-title fs-6"> Leave Details </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeViewModelFunc() }} />
                         </div>
                         <div className="modal-body ">

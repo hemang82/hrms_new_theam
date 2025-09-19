@@ -281,7 +281,7 @@ const MyProfile = () => {
                     <div className="modal-dialog modal-dialog-centered" role="document" >
                         <div className="modal-content border-0">
                             <div className="modal-header bg-primary " style={{ borderRadius: '10px 10px 0px 0px' }}>
-                                <h6 className="modal-title text-light">Edit Profile</h6>
+                                <h6 className="modal-title ">Edit Profile</h6>
                                 <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { setProfileModel(false) }} />
                             </div>
 

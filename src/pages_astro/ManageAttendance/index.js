@@ -145,35 +145,35 @@ export default function ManageAttendance() {
 
     useEffect(() => {
         if (attendanceList && attendanceList?.length > 0 && startDate && endDate) {
-            updatedData(attendanceList, startDate, endDate)
-            // const start = new Date(startDate);
-            // start.setHours(0, 0, 0, 0); // normalize start date
-            // const end = new Date(endDate);
-            // end.setHours(23, 59, 59, 999); // include full day for end date
-            // const modified = attendanceList.flatMap((item) =>
-            //     item?.dates
-            //         ?.filter((dates) => {
-            //             const currentDate = new Date(dates?.date);
-            //             return currentDate >= start && currentDate <= end;
-            //         }).map((dates) => ({
-            //             emp_id: item?.emp_id,
-            //             name: item?.name,
-            //             date: dates?.date,
-            //             type: dates?.type,
-            //             status: dates?.status,
-            //             checkInTimes: dates?.checkInTimes,
-            //             checkOutTimes: dates?.checkOutTimes,
-            //             breaks: dates?.breaks,
-            //         }))
-            // );
-            // const sorted = modified.sort(
-            //     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-            // );
-            // setUpdateAttendanceList(sorted);
+            // updatedData(attendanceList, startDate, endDate)
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0); // normalize start date
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); // include full day for end date
+            const modified = attendanceList.flatMap((item) =>
+                item?.dates
+                    ?.filter((dates) => {
+                        const currentDate = new Date(dates?.date);
+                        return currentDate >= start && currentDate <= end;
+                    }).map((dates) => ({
+                        emp_id: item?.emp_id,
+                        name: item?.name,
+                        date: dates?.date,
+                        type: dates?.type,
+                        status: dates?.status,
+                        checkInTimes: dates?.checkInTimes,
+                        checkOutTimes: dates?.checkOutTimes,
+                        breaks: dates?.breaks,
+                    }))
+            );
+            const sorted = modified.sort(
+                (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            );
+            setUpdateAttendanceList(sorted);
         } else {
             setUpdateAttendanceList([])
         }
-    }, [attendanceList, startDate, endDate, employeeStatus]);
+    }, [attendanceList, employeeStatus]);
 
     useEffect(() => {
         let request = {
@@ -184,35 +184,6 @@ export default function ManageAttendance() {
         };
         dispatch(getlistAttendanceThunk(request));
     }, []);
-
-    const handleStatus = async (id, changeChecked) => {
-        setis_load(true)
-        let submitData = {
-            astrologer_id: id,
-            is_active: changeChecked,
-        }
-        // EditAstrologer(submitData).then((response) => {
-        //     if (response.code === Codes.SUCCESS) {
-        //         TOAST_SUCCESS(response?.message)
-        // let updatedList = loanList?.astrologerList?.map((item) => {
-        //     if (id === item._id) {
-        //         return {
-        //             ...item,
-        //             is_active: item?.is_active == 1 ? 0 : 1
-        //         };
-        //     }
-        //     return item;
-        // });
-        // dispatch(updateLoanList({
-        //     ...loanList,
-        //     astrologerList: updatedList
-        // }))
-        //         setis_load(false)
-        //     } else {
-        //         TOAST_ERROR(response.message)
-        //     }
-        // })
-    }
 
     const handleDelete = (is_true) => {
         if (is_true) {
@@ -246,77 +217,6 @@ export default function ManageAttendance() {
         setFilters(_filters);
         setPage(1)
         setGlobalFilterValue(value?.trim());
-    };
-
-    // ----------------------------------Export Data----------------------------------
-
-    const handleExportApiCall = async () => {
-        // dispatch(setLoader(true));
-        // let submitData = {
-        //     search: globalFilterValue
-        // }
-        // const { code, data } = await exportCustomerList(submitData);
-        // return { code, data }
-    }
-
-    // const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-
-    //     console.log('getInterestRateByCibil cibilScorecibilScore', cibilScore);
-    //     console.log('getInterestRateByCibil intrestDropdown', intrestDropdown);
-
-    //     if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = intrestDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.rate_percentage : '';
-    // };
-
-    const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 300;
-
-        if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = intrestDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.rate_percentage : '';
-    };
-
-    // const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-
-    //     console.log('processingDropdown cibilScorecibilScore', cibilScore);
-    //     console.log('processingDropdown intrestDropdown', intrestDropdown);
-    //     if (!Array.isArray(processingDropdown) || processingDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = processingDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.min_fee_percent : '';
-    // };
-
-    const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-        // Fallback to 300 if cibilScore is invalid
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 0;
-
-        console.log('validCibilScorevalidCibilScore', validCibilScore);
-
-        if (!Array.isArray(processingDropdown) || processingDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = processingDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.min_fee_percent : '';
     };
 
     const onPageChange = (Data) => {
@@ -389,13 +289,6 @@ export default function ManageAttendance() {
         setAttendanceEditModel(true)
         setSelectedAttendance(attendanceData)
 
-        console.log('attendanceData', attendanceData);
-
-        // const formattedBreaks = attendanceData?.breaks?.map(b => ({
-        //     start: b.start ? dayjs(`${b.start}`, 'HH:mm:ss') : null,
-        //     end: b.end ? dayjs(`${b.end}`, 'HH:mm:ss') : null
-        // }));
-
         const formattedBreaks = attendanceData?.breaks?.map(b => ({
             start: b.start ? dayjs(momentTimeFormate(b.start, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null,
             end: b.end ? dayjs(momentTimeFormate(b.end, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null
@@ -407,93 +300,14 @@ export default function ManageAttendance() {
         setValue(AstroInputTypesEnum?.EMPLOYEE, selectedObj.id)
 
         setValue('dob1', attendanceData?.date ? dayjs(attendanceData?.date).format('DD-MM-YYYY') : null);
-
-        // setValue('checkIn', attendanceData?.checkInTimes?.[0] ? dayjs(attendanceData.date + momentTimeFormate(attendanceData?.checkInTimes[0], 'HH:mm:ss'), 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss') : null);
-        // setValue('checkOut', attendanceData?.checkOutTimes?.[0] ? dayjs(attendanceData.date + momentTimeFormate(attendanceData?.checkOutTimes[0], 'HH:mm:ss'), 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss') : null);
-        // setValue(
-        //     'checkIn',
-        //     attendanceData?.checkInTimes?.[0]
-        //         ? dayjs(
-        //             momentTimeFormate(`${attendanceData.date} ${attendanceData.checkInTimes[0]}`, 'YYYY-MM-DD HH:mm:ss'),
-        //             'YYYY-MM-DD HH:mm:ss'
-        //         )
-        //         : null
-        // );
-
-        // setValue(
-        //     'checkOut',
-        //     attendanceData?.checkOutTimes?.[0]
-        //         ? dayjs(
-        //             momentTimeFormate(`${attendanceData?.date} ${attendanceData?.checkOutTimes[0]}`, 'YYYY-MM-DD HH:mm:ss'),
-        //             'YYYY-MM-DD HH:mm:ss'
-        //         )
-        //         : null
-        // );
-
         setValue('checkIn', attendanceData?.checkInTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
         setValue('checkOut', attendanceData?.checkOutTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
-
-        // setValue('checkIn', attendanceData?.checkInTimes?.[0] ? dayjs(`${attendanceData.date} ${attendanceData.checkInTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
-        // setValue('checkOut', attendanceData?.checkOutTimes?.[0] ? dayjs(`${attendanceData.date} ${attendanceData.checkOutTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
     }
 
     const closeAttendanceModel = () => {
         setAttendanceEditModel(false)
         setSelectedAttendance({})
         reset()
-    }
-
-    const funcStatusChange = (rowData) => {
-        openModelFunc()
-        // setIs_loading(true)
-        // loanDetails({ loan_id: rowData?.id }).then((response) => {
-        //     if (response?.status_code === Codes.SUCCESS) {
-        //         let responseDetails = response?.data?.loan_application;
-        //         if (!responseDetails?.aadhaar_verified) {
-        //             SWIT_FAILED("Aadhaar card verification is pending.");
-        //         } else if (responseDetails?.status === "DISBURSED") {
-        //             return
-        //         } else if (responseDetails?.status === "DISBURSEMENT_APPROVAL_PENDING") {
-        //             const bankDetails = responseDetails?.bank_accounts[0]
-        //             const approvalDetails = responseDetails?.approval_details[0]
-        //             const disbursementDetails = responseDetails?.loan_disbursement[0]
-        //             setSelecteLoan(responseDetails)
-        //             // if (responseDetails?.status === "DISBURSED") {
-
-        //             //     if (disbursementDetails?.payment_type === "BANK_TRANSFER") {
-        //             //         setValue('bank_name', disbursementDetails?.bank_name)
-        //             //         setValue('account_number', disbursementDetails?.account_number)
-        //             //         setValue('ifsc_code', disbursementDetails?.ifsc_code)
-        //             //         setValue('account_holder_name', disbursementDetails?.account_holder_name)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "UPI") {
-        //             //         setValue('upi_id', disbursementDetails?.upi_id)
-        //             //         setValue('transaction_id', disbursementDetails?.transaction_id)
-        //             //     }
-        //             //     else if (disbursementDetails?.payment_type === "CHEQUE") {
-        //             //         setValue('cheque_number', disbursementDetails?.cheque_number)
-        //             //     }
-        //             //     setValue('approved_amount', Number(disbursementDetails?.transferred_amount || 0).toFixed(2))
-        //             //     setValue('payment_status', PAYMENT_STATUS.find(item => item.key === disbursementDetails?.payment_type)?.key)
-        //             //     setProofFileName(getFileNameFromUrl(disbursementDetails?.payment_file))
-        //             //     setShowProofImage(disbursementDetails?.payment_file)
-        //             //     setPaymentDate(dayjs(disbursementDetails?.payment_date))
-        //             //     //  setPaymentDate(dayjs(disbursementDetails?.payment_date).format("YYYY-MM-DD HH:mm:ss"));
-        //             // } else {
-        //             setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        //             setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        //             setValue('bank_name', bankDetails?.bank_name)
-        //             setValue('account_number', bankDetails?.account_number)
-        //             setValue('ifsc_code', bankDetails?.ifsc_code)
-        //             setValue('account_holder_name', bankDetails?.account_holder_name)
-        //             // }
-        //             setIs_loading(false)
-        //             setStatusModal(true)
-        //         }
-        //     } else {
-        //         setIs_loading(false)
-        //     }
-        // })
     }
 
     const changeStatusFunction = (data) => {
@@ -528,33 +342,6 @@ export default function ManageAttendance() {
         return current.isBefore(startDate, 'day');
     };
 
-    const handleInputChange = async (key, value) => {
-        let filteredValue = value;
-        if (key === 'approved_amount') {
-            filteredValue = value.replace(InputRegex.ONCHANGE_MOBILE_REGEX, '');
-        }
-        setValue(key, filteredValue)
-        clearErrors(key);               // Clear error message (if any)
-        await trigger(key);
-    };
-
-    const allowLettersAndSpaces = (event) => {
-        let value = event.target.value;
-        // Remove any characters that are not letters or spaces
-        value = value.replace(/[^A-Za-z\s]/g, '');
-        // Convert to uppercase
-        value = value.toUpperCase();
-        // Update the input value
-        event.target.value = value;
-    };
-
-    const handleProofImageChange = (e) => {
-        const image = e.target.files[0]
-        setShowProofImage(image)
-        setProofFileName(image?.name)
-        clearErrors('proof_image');
-    };
-
     const onChangeApiCalling = async (data) => {
         try {
             const request = {
@@ -569,7 +356,6 @@ export default function ManageAttendance() {
     };
 
     console.log('updatedAttendanceListupdatedAttendanceList', updatedAttendanceList);
-
 
     return (
         <>
@@ -853,11 +639,11 @@ export default function ManageAttendance() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
 
-                                        {/* <a className="text-info edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ATTENDANCE, { state: rowData })} >
+                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ATTENDANCE, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a> */}
 
-                                        <a className="text-info edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                        <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a>
 
@@ -867,7 +653,7 @@ export default function ManageAttendance() {
                                             }
                                         }}
                                             state={rowData}
-                                            className={`text-info edit ${rowData?.breaks?.length > 0 ? "cursor_pointer " : "disabled-status"}`}
+                                            className={`text-info edit ${rowData?.breaks?.length > 0 ? "cursor_pointer text-custom-theam" : "disabled-status"}`}
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
@@ -882,7 +668,6 @@ export default function ManageAttendance() {
                             </div>
 
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -892,7 +677,7 @@ export default function ManageAttendance() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{'Attendance Details'} </h6>
+                            <h6 className="modal-title fs-5">{'Attendance Details'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeModelFunc() }} />
                         </div>
 
@@ -924,42 +709,49 @@ export default function ManageAttendance() {
                                                         },
                                                         { label: "Total Break", value: selectedAttendance?.breaks?.length > 0 ? getBreakMinutes(selectedAttendance?.breaks) + 'm' : "-" },
                                                         { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
-                                                    ].map((item, index) => (
-                                                        <div className='col-12 col-sm-6'>
-                                                            <div key={index} className="card border-1  them-light shadow-sm mt-2 ">
+                                                    ].map((item, index) => (<>
+                                                        <div className='col-12 col-sm-6 attendance_card'>
+                                                            <div key={index} className="card border-1 them-light shadow-sm mt-2 ">
                                                                 <div className="card-body text-center m-1 p-1">
-                                                                    <p className="fw-semibold fs-6 text-dark ">{item.label}</p>
-                                                                    <h5 className="fw-semibold text-dark mb-0 fs-5">
+                                                                    <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
+                                                                    <h5 className="fw-semibold text-dark mb-0 fs-6">
                                                                         {item?.value || '0'}
                                                                     </h5>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    ))}
+
+                                                    </>))}
+
+                                                    <div className='col-12 col-sm-6 attendance_card'>
+                                                        <div className="card border-1 them-light shadow-sm mt-2 ">
+                                                            <div className="card-body text-center m-1 p-1">
+
+                                                                <p className="fw-semibold fs-4 text-custom-theam ">Break Timeline</p>
+
+                                                                <div className="timeline position-relative ms-4">
+
+                                                                    <div className=" border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
+                                                                    {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
+                                                                        <div key={index}>
+                                                                            <div className="mt-2 d-flex align-items-start">
+                                                                                <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
+                                                                                <div>
+                                                                                    <span className="badge bg-light text-dark fs-4 fw-medium">
+                                                                                        {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     }
-                                </div>
-
-                                <div className="text-center mb-4">
-                                    <h3 className="fw-bold text-blue fs-6">Break Timeline</h3>
-                                </div>
-
-                                <div className="timeline position-relative ms-4">
-                                    <div className="border-start border-2 border-secondary position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
-                                    {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
-                                        <div key={index}>
-                                            <div className="mb-4 d-flex align-items-start">
-                                                <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
-                                                <div>
-                                                    <span className="badge bg-light text-dark">
-                                                        {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -977,7 +769,7 @@ export default function ManageAttendance() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h3 className="modal-title text-dark fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
+                            <h3 className="modal-title fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeAttendanceModel() }} />
                         </div>
 
@@ -995,11 +787,11 @@ export default function ManageAttendance() {
                                                     { label: "Work Hours", value: getWorkingHours(watch('checkIn') ? dayjs(watch('checkIn')).format("HH:mm:ss") : 0, dayjs(watch('checkOut') || dayjs()).format("HH:mm:ss"), getBreakMinutes(watch('breaks') || 0)) || 0 },
                                                     { label: "Total Break", value: getBreakMinutes(watch('breaks')) + 'm' || '-' },
                                                 ].map((item, index) => (
-                                                    <div className='col-12 col-sm-6'>
+                                                    <div className='col-12 col-sm-6 attendance_card'>
                                                         <div key={index} className="card border-1 zoom-in them-light shadow-sm m-1 ">
                                                             <div className="card-body text-center m-1 p-1">
-                                                                <p className="fw-semibold fs-6 text-dark ">{item.label}</p>
-                                                                <h5 className="fw-semibold text-dark mb-0 fs-5">
+                                                                <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
+                                                                <h5 className="fw-medium text-dark mb-0 fs-5">
                                                                     {item.value || '-'}
                                                                 </h5>
                                                             </div>

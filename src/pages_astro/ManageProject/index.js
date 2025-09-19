@@ -534,11 +534,11 @@ export default function ManageProject() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
 
-                                        <a className="text-info edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_PROJECT, { state: rowData })} >
+                                        <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_PROJECT, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a>
 
-                                        {/* <a className="text-info edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a> */}
 
@@ -572,7 +572,7 @@ export default function ManageProject() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{'Attendance Details'} </h6>
+                            <h6 className="modal-title fs-5">{'Attendance Details'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeModelFunc() }} />
                         </div>
 
@@ -608,7 +608,7 @@ export default function ManageProject() {
                                                         <div className='col-12 col-sm-6'>
                                                             <div key={index} className="card border-1  them-light shadow-sm mt-2 ">
                                                                 <div className="card-body text-center m-1 p-1">
-                                                                    <p className="fw-semibold fs-6 text-dark ">{item.label}</p>
+                                                                    <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
                                                                     <h5 className="fw-semibold text-dark mb-0 fs-5">
                                                                         {item?.value || '0'}
                                                                     </h5>
@@ -657,7 +657,7 @@ export default function ManageProject() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h3 className="modal-title text-dark fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
+                            <h3 className="modal-title fs-5">{attendanceEditModal ? 'Edit Attendance Details' : 'Add Attendance Details'} </h3>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeAttendanceModel() }} />
                         </div>
 
@@ -678,7 +678,7 @@ export default function ManageProject() {
                                                     <div className='col-12 col-sm-6'>
                                                         <div key={index} className="card border-1 zoom-in them-light shadow-sm m-1 ">
                                                             <div className="card-body text-center m-1 p-1">
-                                                                <p className="fw-semibold fs-6 text-dark ">{item.label}</p>
+                                                                <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
                                                                 <h5 className="fw-semibold text-dark mb-0 fs-5">
                                                                     {item.value || '-'}
                                                                 </h5>

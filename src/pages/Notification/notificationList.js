@@ -281,7 +281,7 @@ export default function WorksheetAnswer() {
 
                         <Column field="status" header="Action" style={{ minWidth: '1rem' }} body={(rowData) => (
                             <div className="action-btn">
-                                {/* <a className="text-info edit cursor_pointer cursor_pointer" onClick={() => navigat(`/category_list/edit_category`, { state: rowData })} >
+                                {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer" onClick={() => navigat(`/category_list/edit_category`, { state: rowData })} >
                                     <i class="ti ti-edit fs-7"></i>
 
                                 </a> */}

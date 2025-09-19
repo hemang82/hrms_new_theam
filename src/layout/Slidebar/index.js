@@ -57,58 +57,45 @@ const Slidebar = () => {
     // const [slidebarToggle, setIs_toggle] = useState(true);
     const [toggletype, setTogalType] = useState("full");
 
-    const toggleMenu = (menuName) => {
-        setExpanded((prev) => ({
-            ...prev,
-            [menuName]: !prev[menuName],
-        }));
-    };
+    // const toggleMenu = (menuName) => {
+    //     setExpanded((prev) => ({
+    //         ...prev,
+    //         [menuName]: !prev[menuName],
+    //     }));
+    // };
 
-    // useEffect(() => {
-    //     if (location.pathname !== '/category_list' && location.pathname !== '/filter_category_list') {
-    //         setExpanded(false);
-    //     } else {
-    //         setExpanded(true);
-    //     }
-    // }, [location.pathname]);
-    // const { userPermition: { data: adminPermitions }, } = useSelector((state) => state.userPermition);
+    const toggleMenu = (menuName) => {
+        setExpanded((prev) => {
+            const newState = Object.keys(prev).reduce((acc, key) => {
+                acc[key] = false; // close all menus
+                return acc;
+            }, {});
+            newState[menuName] = !prev[menuName]; // toggle clicked menu
+            return newState;
+        });
+    };
 
     const handleLogout = (is_true) => {
         if (is_true) {
-            // logout().then((response) => {
-            // if (response?.code === Codes?.SUCCESS) {
             closeModel(dispatch)
             logoutRedirection();
             navigate('/login')
-            // }
-            // })
         }
     };
 
-    // const btnClick = (newToggleState) => {
-    //     const body = document.querySelector("body");
-    //     if (body) {
-    //         body.setAttribute("data-sidebartype", newToggleState ? "mini-sidebar" : "full");
-    //     }
-    //     const screenWidth = window.innerWidth;
-    //     if (screenWidth <= 992) {
-    //         const leftSideMenu = document.getElementById("left_side_menu_id");
-    //         if (leftSideMenu) {
-    //             leftSideMenu.style.display = newToggleState ? "none" : "block";
-    //         }
-    //     }
-    // };
-
-    // const sidebarType = document.body.getAttribute("data-sidebartype");
-
-    // useEffect(() => {
-    //     console.log('sidebarTypesidebarType', sidebarType);
-    //     if (sidebarType == 'full') {
-    //         updateSlidebarToggle(false)
-    //     } else {
-    //         updateSlidebarToggle(true)
-    //     }
-    // }, [sidebarType])
+    const btnClick = () => {
+        const body = document.querySelector("body");
+        if (body) {
+            body.setAttribute("data-sidebartype", slidebarToggle ? "mini-sidebar" : "full");
+        }
+        const screenWidth = window.innerWidth;
+        if (screenWidth <= 992) {
+            const leftSideMenu = document.getElementById("left_side_menu_id");
+            if (leftSideMenu) {
+                leftSideMenu.style.display = slidebarToggle ? "none" : "block";
+            }
+        }
+    };
 
     return (
         <>
@@ -137,10 +124,13 @@ const Slidebar = () => {
                                 </Link>
                         } */}
 
-                        <Link to={'/'} className="text-nowrap logo-img text-center d-flex m-2 ms-3">
+                        {/* <Link to={'/'} className="text-nowrap logo-img text-center d-flex m-2 ms-3 ">
+                            <img src={Constatnt?.APP_LOGO} className="dark-logo m-2" width={200} height={60} alt />
+                        </Link> */}
+
+                        <Link to={'/'} className="text-nowrap logo-img text-center d-flex ms-sm-1 me-sm-0 d-lg-none m-lg-2 ms-lg-3 ">
                             <img src={Constatnt?.APP_LOGO} className="dark-logo m-2" width={200} height={60} alt />
                         </Link>
-
                         {/* <img src={PUBLIC_URL + "/dist/images/Group 25.png"} className="dark-logo p-2 m-2 " width={200} alt /> */}
                         {/* <img src={PUBLIC_URL + "/dist/images/logos/light-logo.svg"} className="light-logo" width={180} alt /> */}
                         {/* </Link> */}
@@ -158,14 +148,15 @@ const Slidebar = () => {
                         </div> */}
 
                         <div
-                            className="close-btn d-lg-none d-block sidebartoggler cursor-pointer"
+                            className="close-btn d-lg-none d-block sidebartoggler cursor-pointer "
                             id="sidebarCollapse"
                             onClick={() => {
                                 // const newToggle = !slidebarToggle;
                                 // btnClick(newToggle);
                                 // setIs_toggle(newToggle);
-                                // btnClick(!slidebarToggle);
-                                updateSlidebarToggle(!slidebarToggle)
+                                btnClick(!slidebarToggle);
+                                dispatch(updateSlidebarToggle(!slidebarToggle));
+                                // updateSlidebarToggle(!slidebarToggle)
                             }}
                         >
                             <i className="ti ti-x fs-8 text-muted me-3" />
@@ -175,7 +166,9 @@ const Slidebar = () => {
                     <nav className="sidebar-nav scroll-sidebar" data-simplebar>
                         <ul id="sidebarnav">
 
-                            <li className={`sidebar-item ${path === "/dashboard" || path === "/" ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === "/dashboard" || path === "/" ? "selected" : ""}`}
+                                onClick={() => toggleMenu('/dashboard')}
+                            >
                                 <Link to={'/dashboard'} className={`sidebar-link ${path === "/dashboard" || path === "/" ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <TfiDashboard style={{ fontSize: '1.2rem' }} />
@@ -184,7 +177,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === "/user_list" ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === "/user_list" ? "selected" : ""}`}
+                                onClick={() => toggleMenu('/user_list')}
+                            >
                                 <Link to={'/user_list'} className={`sidebar-link ${path === "/user_list" ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <FiUsers style={{ fontSize: '1.2rem' }} />
@@ -193,7 +188,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.ATTENDANCE_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.ATTENDANCE_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.ATTENDANCE_LIST)}
+                            >
                                 <Link to={PATHS.ATTENDANCE_LIST} className={`sidebar-link ${path === PATHS.ATTENDANCE_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <LuCalendarSync style={{ fontSize: '1.2rem' }} />
@@ -202,7 +199,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LIST_DAILY_WORK_UPDATE)}
+                            >
                                 <Link to={PATHS.LIST_DAILY_WORK_UPDATE} className={`sidebar-link ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <LuNotebookPen style={{ fontSize: '1.2rem' }} />
@@ -211,7 +210,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.LEAVE_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.LEAVE_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LEAVE_LIST)}
+                            >
                                 <Link to={PATHS.LEAVE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <MdOutlineCoPresent style={{ fontSize: '1.2rem' }} />
@@ -219,7 +220,9 @@ const Slidebar = () => {
                                     <span className="hide-menu">Leave</span>
                                 </Link>
                             </li>
-                            <li className={`sidebar-item ${path === PATHS.LEAVE_BALANCE_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.LEAVE_BALANCE_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LEAVE_BALANCE_LIST)}
+                            >
                                 <Link to={PATHS.LEAVE_BALANCE_LIST} className={`sidebar-link ${path === PATHS.LEAVE_BALANCE_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <RiScalesLine style={{ fontSize: '1.2rem' }} />
@@ -228,7 +231,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.SALARY_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.SALARY_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.SALARY_LIST)}
+                            >
                                 <Link to={PATHS.SALARY_LIST} className={`sidebar-link ${path === PATHS.SALARY_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <GrMoney style={{ fontSize: '1.2rem' }} />
@@ -237,7 +242,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS?.HOLIDAYS_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS?.HOLIDAYS_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS?.HOLIDAYS_LIST)}
+                            >
                                 <Link to={PATHS?.HOLIDAYS_LIST} className={`sidebar-link ${path === PATHS?.HOLIDAYS_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <IoCalendarOutline style={{ fontSize: '1.2rem' }} />
@@ -246,7 +253,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS?.LIST_BIRTHDAY ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS?.LIST_BIRTHDAY ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS?.LIST_BIRTHDAY)}
+                            >
                                 <Link to={PATHS?.LIST_BIRTHDAY} className={`sidebar-link ${path === PATHS?.LIST_BIRTHDAY ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <LiaBirthdayCakeSolid style={{ fontSize: '1.2rem' }} />
@@ -255,7 +264,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.SATERDAY_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.SATERDAY_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.SATERDAY_LIST)}
+                            >
                                 <Link to={PATHS.SATERDAY_LIST} className={`sidebar-link ${path === PATHS.SATERDAY_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <MdOutlineDateRange style={{ fontSize: '1.2rem' }} />
@@ -264,7 +275,9 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.BANK_DETAILS_LIST ? "selected" : ""}`}>
+                            <li className={`sidebar-item ${path === PATHS.BANK_DETAILS_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.BANK_DETAILS_LIST)}
+                            >
                                 <Link to={PATHS.BANK_DETAILS_LIST} className={`sidebar-link ${path === PATHS.BANK_DETAILS_LIST ? "active" : ""}`} aria-expanded="false">
                                     <span>
                                         <TbBuildingBank style={{ fontSize: '1.2rem' }} />
@@ -273,23 +286,27 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.DEPARTNMENT_LIST ? "selected" : ""}`}>
-                                <Link to={PATHS.DEPARTNMENT_LIST} className={`sidebar-link ${path === PATHS.DEPARTNMENT_LIST ? "active" : ""}`} aria-expanded="false">
+                            <li className={`sidebar-item ${path === PATHS.DEPARTNMENT_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.DEPARTNMENT_LIST)}
+                            >
+                                <Link to={PATHS.DEPARTNMENT_LIST} className={`sidebar-link ${path === PATHS.DEPARTNMENT_LIST ? "active" : ""}`} aria-expanded="false"
+                                >
                                     <span>
                                         <CgList style={{ fontSize: '1.2rem' }} />
                                     </span>
                                     <span className="hide-menu">Department</span>
                                 </Link>
                             </li>
-                            {/* <li class="nav-small-cap">
+
+                            <li class="nav-small-cap">
                                 <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                                <span class="hide-menu">Project</span>
+                                <span class="hide-menu text-custom-theam">Project</span>
                             </li>
 
 
-                            <li className={`sidebar-item ${path === PATHS.LIST_PROJECT || path === PATHS.LIST_ASSIGN_TASK || path === PATHS.LIST_TICKET? "selected" : ""}`} >
+                            <li className={`sidebar-item ${path === PATHS.LIST_PROJECT || path === PATHS.LIST_ASSIGN_TASK || path === PATHS.LIST_TICKET ? "selected" : ""}`} >
                                 <div
-                                    className={`sidebar-link has-arrow ${expanded["project"] ? "active" : "" }`}
+                                    className={`sidebar-link has-arrow ${expanded["project"] ? "active" : ""}`}
                                     role="button"
                                     aria-expanded={expanded["project"] ? "true" : "false"}
                                     onClick={() => toggleMenu("project")}
@@ -342,7 +359,7 @@ const Slidebar = () => {
                                         </Link>
                                     </li>
                                 </ul>
-                            </li> */}
+                            </li>
 
                             <li className={`sidebar-item  `} onClick={() => { openModel(dispatch, ModelName.LOGOUT_MODEL) }} style={{ cursor: 'pointer' }}>
                                 <Link className={`sidebar-link`} aria-expanded="false" >

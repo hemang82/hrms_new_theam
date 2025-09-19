@@ -314,7 +314,7 @@ export default function ManageWorkUpdate() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
                                         {/* <a
-                                            className={`text-info edit cursor_pointer me-1`}
+                                            className={`text-custom-theam edit cursor_pointer me-1`}
                                             onClick={() => {
                                                 openWorkUpdateModelFunc(rowData);
                                             }}
@@ -325,7 +325,7 @@ export default function ManageWorkUpdate() {
                                             openViewModelFunc(rowData);
                                         }}
                                             state={rowData}
-                                            className={`text-info edit cursor_pointer`}
+                                            className={`text-custom-theam edit cursor_pointer`}
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
@@ -353,7 +353,7 @@ export default function ManageWorkUpdate() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{isWorkEdit ? 'Edit Work Update' : 'Add Work Update'} </h6>
+                            <h6 className="modal-title fs-5">{isWorkEdit ? 'Edit Work Update' : 'Add Work Update'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeWorkUpdateModelFunc() }} />
                         </div>
 
@@ -496,7 +496,7 @@ export default function ManageWorkUpdate() {
                 <div className="modal-dialog modal-lg modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">Work Update Details </h6>
+                            <h6 className="modal-title fs-5">Work Update Details </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeViewModelFunc() }} />
                         </div>
                         <div className="modal-body ">

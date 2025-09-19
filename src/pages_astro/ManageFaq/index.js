@@ -189,7 +189,7 @@ const ManageFaq = () => {
                                         </button>
 
                                         <div className="action-btn me-4 mt-2">
-                                            {/* <Link to={'/customer_list/customer_details'} state={faq} className="text-info edit cursor_pointer">
+                                            {/* <Link to={'/customer_list/customer_details'} state={faq} className="text-custom-theam edit cursor_pointer">
                                                     <i className="ti ti-eye fs-7 " />
                                                 </Link> */}
                                             <a className="text-dark delete ms-2 cursor_pointer cursor_pointer" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(faq) }}>

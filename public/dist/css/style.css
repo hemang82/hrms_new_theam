@@ -7186,6 +7186,7 @@ fieldset:disabled .btn {
 .modal-title {
   margin-bottom: 0;
   line-height: var(--bs-modal-title-line-height);
+  color: #1F7494 !important;
 }
 
 .modal-body {
@@ -24613,10 +24614,17 @@ html[dir=rtl] .welcome-bg-img {
 /* ------------- change ----------- */
 .sidebar-nav ul .sidebar-item.selected>.sidebar-link.active,
 .sidebar-nav ul .sidebar-item.selected>.sidebar-link,
-.sidebar-nav ul .sidebar-item>.sidebar-link.active , .sidebar-item.selected span svg, .sidebar-item.selected span +span{
+.sidebar-nav ul .sidebar-item>.sidebar-link.active,
+.sidebar-item.selected span svg,
+.sidebar-item.selected span+span {
   background-color: #1F7494 !important;
   color: whitesmoke !important;
   font-weight: 600;
+}
+
+.sidebar-nav #sidebarnav>.sidebar-item>.sidebar-link.active>.hide-menu,
+.sidebar-nav #sidebarnav .sidebar-item>.sidebar-link.active span>svg {
+  color: whitesmoke !important;
 }
 
 .sidebar-nav ul .sidebar-item.selected .sidebar-link.has-arrow::after {
@@ -24821,7 +24829,7 @@ html[dir=rtl] .welcome-bg-img {
   }
 
   #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] .body-wrapper {
-    margin-left: 87px;
+    margin-left: 0px;
   }
 
   #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] .nav-small-cap {

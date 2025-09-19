@@ -596,7 +596,7 @@ export default function ManageLeaveBalance() {
 
                                 <Column field="statuss" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        <a className="text-info edit cursor_pointer cursor_pointer" onClick={() => { openEditBankDetailsModelFunc(rowData) }} >
+                                        <a className="text-custom-theam edit cursor_pointer cursor_pointer" onClick={() => { openEditBankDetailsModelFunc(rowData) }} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a>
                                         <a className="text-dark delete ms-2 cursor_pointer cursor_pointer" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(rowData) }}>
@@ -621,7 +621,7 @@ export default function ManageLeaveBalance() {
                     <div className="modal-content border-0">
 
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{editBankDetailsModal ? 'Edit Bank Details' : 'Add Bank Details'} </h6>
+                            <h6 className="modal-title fs-5">{editBankDetailsModal ? 'Edit Bank Details' : 'Add Bank Details'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeBankDetailsModelFunc() }} />
                         </div>
 

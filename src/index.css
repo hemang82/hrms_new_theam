@@ -483,7 +483,10 @@
 
   .text-custom-theam {
     color: #1F7494 !important;
-    ;
+  }
+
+  .border-custom-theam {
+    border-left: 2px solid #1F7494 !important;
   }
 
   .custom-quill {
@@ -595,9 +598,14 @@
   }
 
   html .p-datatable .p-datatable-thead>tr>th {
-    background: #1f7494;
+    /* background: #1f7494;
     color: #fff;
-    padding: 10px 15px !important;
+    padding: 10px 15px !important; */
+
+
+    background: #ebf1f6 !important;
+    color: #1f7494 !important;
+    padding: 10px 15px !important
   }
 
   html .p-datatable .p-datatable-tbody>tr>td {
@@ -628,4 +636,12 @@
 
   .saturday_month_view_section>div {
     width: 100%;
+  }
+
+  .attendance_card >div >div{
+    padding: 16px 15px !important
+  }
+
+  .attendance_card >div >div .text-custom-theam{
+    margin-bottom: 3px !important;
   }

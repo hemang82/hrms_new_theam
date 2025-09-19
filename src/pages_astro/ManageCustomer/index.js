@@ -274,10 +274,10 @@ export default function ManageCoustomer() {
 
                                 <Column field="statuss" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        <a className="text-info edit cursor_pointer cursor_pointer" onClick={() => navigat(`/user_list/edit_user`, { state: rowData })} >
+                                        <a className="text-custom-theam edit cursor_pointer cursor_pointer" onClick={() => navigat(`/user_list/edit_user`, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a>
-                                        <Link to={'/user_list/user_details'} state={rowData} className="text-info edit cursor_pointer">
+                                        <Link to={'/user_list/user_details'} state={rowData} className="text-custom-theam edit cursor_pointer">
                                             <i className="ti ti-eye fs-7 ms-2" />
                                         </Link>
                                         <a className="text-dark delete ms-2 cursor_pointer cursor_pointer" onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(rowData) }}>
@@ -299,7 +299,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{'Leave Employee Details'} </h6>
+                            <h6 className="modal-title fs-5">{'Leave Employee Details'} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveModelFunc() }} />
                         </div>
 

@@ -326,7 +326,7 @@ export default function ManageEMISchedule() {
                 <div className="modal-dialog modal-dialog-centered modal-sm modal-md modal-lg" role="document">
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary " style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title text-dark fs-5">{is_edit ? 'Edit' : 'Add'} Holidays</h6>
+                            <h6 className="modal-title fs-5">{is_edit ? 'Edit' : 'Add'} Holidays</h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeModelFunc() }} />
                         </div>
                         <div className="modal-body">
