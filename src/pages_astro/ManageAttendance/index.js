@@ -714,7 +714,7 @@ export default function ManageAttendance() {
                                                             <div key={index} className="card border-1 them-light shadow-sm mt-2 ">
                                                                 <div className="card-body text-center m-1 p-1">
                                                                     <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
-                                                                    <h5 className="fw-semibold text-dark mb-0 fs-6">
+                                                                    <h5 className="fw-medium text-dark mb-0 fs-6">
                                                                         {item?.value || '0'}
                                                                     </h5>
                                                                 </div>

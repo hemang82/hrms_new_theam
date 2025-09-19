@@ -24829,7 +24829,7 @@ html[dir=rtl] .welcome-bg-img {
   }
 
   #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] .body-wrapper {
-    margin-left: 0px;
+    margin-left: 80px;
   }
 
   #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] .nav-small-cap {

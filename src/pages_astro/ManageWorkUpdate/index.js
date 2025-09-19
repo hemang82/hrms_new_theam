@@ -336,7 +336,6 @@ export default function ManageWorkUpdate() {
                                                 openModel(dispatch, ModelName.DELETE_MODEL);
                                                 setSelectedWork(rowData)
                                             }}
-
                                         >
                                             <i className="ti ti-trash fs-7"></i>
                                         </a>
