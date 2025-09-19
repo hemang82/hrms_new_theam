@@ -33,16 +33,15 @@ const Constatnt = {
 
     // --------------------------local storage creandtials-----------------------------------------
 
-    LOGIN_KEY: "LOAN_is_login",
-    AUTH_KEY: 'LOAN_auth',
-    ACCESS_TOKEN_KEY: 'LOAN_access_token',
-    REFRESH_TOKEN_KEY: 'LOAN_refresh_token',
-    LANGUAGE_KEY: 'LOAN_language',
-    ROLE_KEY: 'LOAN_role',
-    THEME_KEY: 'LOAN_theme',
+    LOGIN_KEY: "ADMIN_is_login",
+    AUTH_KEY: 'ADMIN_auth',
+    ACCESS_TOKEN_KEY: 'ADMIN_access_token',
+    REFRESH_TOKEN_KEY: 'ADMIN_refresh_token',
+    LANGUAGE_KEY: 'ADMIN_language',
+    ROLE_KEY: 'ADMIN_role',
+    THEME_KEY: 'ADMIN_theme',
 
     ROLE: 'admin',
-
 }
 
 // # ----------------------------- S3 bucket keys --------------------------------------

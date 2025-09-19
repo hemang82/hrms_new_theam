@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, openModel, selectOption, selectOptionCustomer, truncateWords } from '../../config/commonFunction';
+import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, openModel, selectOption, selectOptionCustomer, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -677,47 +677,48 @@ export default function ManageCoustomer() {
                                         }
                                     </>
                                 )} />
-
-                                <Column
-                                    field="status"
-                                    header="Action"
-                                    style={{ minWidth: "6rem" }}
-                                    body={(rowData) => (
-                                        <div className="action-btn d-flex align-items-center">
-                                            {
-                                                rowData?.status == 0 ? (<>
-                                                    <a
-                                                        className="text-success cursor_pointer me-2"
+                                {
+                                    getLocalStorageItem(Constatnt?.ROLE_KEY) == '1' && <Column
+                                        field="status"
+                                        header="Action"
+                                        style={{ minWidth: "6rem" }}
+                                        body={(rowData) => (
+                                            <div className="action-btn d-flex align-items-center">
+                                                {
+                                                    rowData?.status == 0 ? (<>
+                                                        <a
+                                                            className="text-success cursor_pointer me-2"
+                                                            // onClick={() => { handleStatus(rowData?.id, '1') }}
+                                                            onClick={() => { openActionModelFunc(rowData, 'approved') }}
+                                                        >
+                                                            <i className="ti ti-check fs-7"></i>
+                                                        </a>
+                                                        <a
+                                                            className="text-danger cursor_pointer"
+                                                            onClick={() => { openActionModelFunc(rowData, 'cancel') }}
+                                                        >
+                                                            <i className="ti ti-x fs-7"></i>
+                                                        </a>
+                                                    </>) : (<>
+                                                        <a className="text-success me-2 disabled-status"
                                                         // onClick={() => { handleStatus(rowData?.id, '1') }}
-                                                        onClick={() => { openActionModelFunc(rowData, 'approved') }}
-                                                    >
-                                                        <i className="ti ti-check fs-7"></i>
-                                                    </a>
-                                                    <a
-                                                        className="text-danger cursor_pointer"
-                                                        onClick={() => { openActionModelFunc(rowData, 'cancel') }}
-                                                    >
-                                                        <i className="ti ti-x fs-7"></i>
-                                                    </a>
-                                                </>) : (<>
-                                                    <a className="text-success me-2 disabled-status"
-                                                    // onClick={() => { handleStatus(rowData?.id, '1') }}
-                                                    // onClick={() => { openActionModelFunc(rowData, 'approved') }}
-                                                    >
-                                                        <i className="ti ti-check fs-7"></i>
-                                                    </a>
-                                                    <a
-                                                        className="text-danger disabled-status"
-                                                    // onClick={() => { openActionModelFunc(rowData, 'cancel') }}
-                                                    >
-                                                        <i className="ti ti-x fs-7"></i>
-                                                    </a>
-                                                </>)
-                                            }
+                                                        // onClick={() => { openActionModelFunc(rowData, 'approved') }}
+                                                        >
+                                                            <i className="ti ti-check fs-7"></i>
+                                                        </a>
+                                                        <a
+                                                            className="text-danger disabled-status"
+                                                        // onClick={() => { openActionModelFunc(rowData, 'cancel') }}
+                                                        >
+                                                            <i className="ti ti-x fs-7"></i>
+                                                        </a>
+                                                    </>)
+                                                }
 
-                                        </div>
-                                    )}
-                                />
+                                            </div>
+                                        )}
+                                    />
+                                }
 
                                 <Column field="status" header="View" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">

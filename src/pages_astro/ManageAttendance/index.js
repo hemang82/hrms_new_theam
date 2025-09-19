@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
+import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -399,7 +399,6 @@ export default function ManageAttendance() {
                                 />
                             </div>
 
-                            {/* End Date */}
                             <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">End Date</label>
                                 <DatePicker
@@ -638,15 +637,11 @@ export default function ManageAttendance() {
 
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
-
-                                        {/* <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_ATTENDANCE, { state: rowData })} >
-                                            <i class="ti ti-edit fs-7"></i>
-                                        </a> */}
-
-                                        <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
-                                            <i class="ti ti-edit fs-7"></i>
-                                        </a>
-
+                                        {
+                                            getLocalStorageItem(Constatnt?.ROLE_KEY) == '1' && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                                <i class="ti ti-edit fs-7"></i>
+                                            </a>
+                                        }
                                         <Link onClick={() => {
                                             if (rowData?.breaks?.length > 0) {
                                                 openModelFunc(rowData);

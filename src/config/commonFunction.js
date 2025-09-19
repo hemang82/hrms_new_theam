@@ -726,3 +726,6 @@ export const disableBeforeStartDate = (startDate) => (current) => {
 };
 
 
+export const getLocalStorageItem = (key) => {
+  return localStorage.getItem(key);
+};
