@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
-import { addAttendance } from '../../utils/api.services';
+import { addAttendance, addTicket, editTicket } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
 import Constatnt, { AwsFolder, Codes } from '../../config/constant';
 import { formatDate, formatDateDyjs, getBreakMinutes, getWorkingHours, selectOption, selectOptionCustomer, textInputValidation, } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, PROJECT_LIST, PROJECT_PRIORITY, TASK_LIST, TimeFormat } from '../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomerListThunk, setLoader } from '../../Store/slices/MasterSlice';
+import { getAssignTaskListThunk, getCustomerListThunk, getListTicketThunk, getProjectListThunk, setLoader } from '../../Store/slices/MasterSlice';
 import Spinner from '../../component/Spinner';
 import { DatePicker, Select, Space } from 'antd';
 import dayjs from 'dayjs';
@@ -22,12 +22,16 @@ export default function AddTicket() {
     const dispatch = useDispatch();
 
     const location = useLocation();
-    var ProjectData = location?.state;
+    var TicketData = location?.state;
 
+    const { assignTaskList: { data: assignTaskList } } = useSelector((state) => state.masterslice);
+    const { projectList: { data: projectList } } = useSelector((state) => state.masterslice);
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
 
     const [is_loding, setIs_loading] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [selectedProject, setSelectedProject] = useState({});
+
 
     const { register, handleSubmit, setValue, clearErrors, reset, watch, control, trigger, formState: { errors }, } = useForm({
         defaultValues: {
@@ -35,10 +39,10 @@ export default function AddTicket() {
         },
     });
 
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: "breaks",
-    });
+    // const { fields, append, remove } = useFieldArray({
+    //     control,
+    //     name: "breaks",
+    // });
 
     useEffect(() => {
         const request = {
@@ -47,74 +51,75 @@ export default function AddTicket() {
         if (customerList?.length === 0) {
             dispatch(getCustomerListThunk(request));
         }
+        if (projectList?.length === 0) {
+            dispatch(getProjectListThunk({}));
+        }
+        if (assignTaskList?.length === 0) {
+            dispatch(getAssignTaskListThunk({}));
+        }
     }, [])
 
     useEffect(() => {
-        if (ProjectData && customerList?.length > 0) {
-            dispatch(setLoader(true))
-            const formattedBreaks = ProjectData?.breaks?.map(b => ({
-                start: b.start ? dayjs(`${b.start}`, 'HH:mm:ss') : null,
-                end: b.end ? dayjs(`${b.end}`, 'HH:mm:ss') : null
-            }));
-            setValue('breaks', formattedBreaks);
-            const selectedEmployee = customerList?.find(emp => emp.id == ProjectData?.emp_id) || null;
-            setSelectedEmployee(selectedEmployee || null)
-            setValue(AstroInputTypesEnum?.EMPLOYEE_ID, ProjectData?.emp_id);
-            setValue('dob1', ProjectData?.date ? dayjs(ProjectData?.date).format('DD-MM-YYYY') : null);
-            setValue('checkIn', ProjectData?.checkInTimes?.[0] ? dayjs(`${ProjectData.date} ${ProjectData.checkInTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
+        if (TicketData && customerList?.length > 0 && assignTaskList?.length > 0) {
 
-            setValue('checkOut', ProjectData?.checkOutTimes?.[0] ? dayjs(`${ProjectData.date} ${ProjectData.checkOutTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
+            // const AssignTO = TicketData?.assign_to ? TicketData?.assign_to?.split(",").map(Number) : [];
+            // setValue(AstroInputTypesEnum.EMPLOYEE, AssignTO || []);
+
+            setValue(AstroInputTypesEnum.PROJECT, TicketData?.project_id || null);
+            setValue(AstroInputTypesEnum.TITLE, TicketData?.title || null);
+
+            watch(AstroInputTypesEnum.PROJECT) && setValue(AstroInputTypesEnum.TASK, TicketData?.task_id?.toString() || null);
+
+            setValue(AstroInputTypesEnum.DESCRIPTION, TicketData?.description || null);
+
+            // get selected objects
+            const selectedObjects = projectList?.filter((p) => (p.id == TicketData?.project_id));
+            setSelectedProject(selectedObjects?.length > 0 ? selectedObjects[0]?.team?.split(",").map((id) => id.trim()) : []);
+            if (selectedObjects?.length > 0) {
+                const AssignTO = TicketData?.assign_to ? TicketData?.assign_to?.split(",").map(String) : [];
+                setValue(AstroInputTypesEnum.EMPLOYEE, AssignTO || []);
+            }
             dispatch(setLoader(false))
         }
-        console.log('userData?.departmentuserData?.department', ProjectData?.department);
-    }, [ProjectData, customerList]);
+    }, [TicketData, customerList]);
 
     const onSubmitData = async (data) => {
         try {
             dispatch(setLoader(true))
             let request = {
-                employee_id: selectedEmployee?.id,
-                date: formatDateDyjs(data?.dob1, DateFormat?.DATE_DASH_TIME_FORMAT),
-                check_in_time: data?.checkIn ? dayjs(data.checkIn).format("HH:mm") : null,
-                check_out_time: data?.checkOut ? dayjs(data.checkOut).format("HH:mm") : null,
-                breaks: Array.isArray(data?.breaks) && data?.breaks?.length > 0
-                    ? data.breaks.map(b => ({
-                        start: b?.start
-                            ? dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                            : null,
-                        end: b?.end
-                            ? dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                            : null
-                    })) : [],
-                lat: "0.000",
-                log: "0.000",
-                location_id: "TRACEWAVE",
+                project_id: data[AstroInputTypesEnum.PROJECT],
+                task_id: data[AstroInputTypesEnum.TASK],
+                title: data[AstroInputTypesEnum.TITLE],
+                description: data[AstroInputTypesEnum.DESCRIPTION],
+                // deadline: formatDateDyjs(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_DASH_TIME_FORMAT),
+                assign_to: data[AstroInputTypesEnum.EMPLOYEE]?.length == 1 ? data[AstroInputTypesEnum.EMPLOYEE][0]?.toString() : data[AstroInputTypesEnum.EMPLOYEE],
+                // priority: data[AstroInputTypesEnum.PRIORITY]
+                status: ""
             };
-
-            if (ProjectData) {
-                // request.employee_id = userData?.id?.toString();
-                // EditUser(request).then((response) => {
-                //     if (response?.code == Codes.SUCCESS) {
-                //         TOAST_SUCCESS(response?.message)
-                //         navigation(PATHS?.ATTENDANCE_LIST)
-                //     } else {
-                //         TOAST_ERROR(response.message)
-                //     }
-                // })
-            } else {
-                addAttendance(request).then((response) => {
+            if (TicketData) {
+                request.ticket_id = TicketData?.id?.toString();
+                editTicket(request).then((response) => {
                     if (response?.code == Codes.SUCCESS) {
                         TOAST_SUCCESS(response?.message)
-                        navigation(PATHS?.ATTENDANCE_LIST)
+                        dispatch(getListTicketThunk({}));
+                        navigation(PATHS?.LIST_TICKET)
+                    } else {
+                        TOAST_ERROR(response.message)
+                    }
+                })
+            } else {
+                addTicket(request).then((response) => {
+                    if (response?.code == Codes.SUCCESS) {
+                        TOAST_SUCCESS(response?.message)
+                        navigation(PATHS?.LIST_TICKET)
+                        dispatch(getListTicketThunk({}));
                         dispatch(setLoader(false))
-
                     } else {
                         TOAST_ERROR(response.message)
                         dispatch(setLoader(false))
                     }
                 })
             }
-
         } catch (error) {
             TOAST_ERROR('Somthing went wrong')
             dispatch(setLoader(false))
@@ -139,11 +144,14 @@ export default function AddTicket() {
         console.log(`selected ${value}`);
     };
 
+    console.log('Watch', watch());
+
+
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
             <div className="container-fluid mw-100">
-                <SubNavbar title={ProjectData ? 'Edit Ticket' : 'Add Ticket'} header={'Ticket List'} subHeaderOnlyView={ProjectData ? 'Edit Ticket' : 'Add Ticket'} />
+                <SubNavbar title={TicketData ? 'Edit Ticket' : 'Add Ticket'} header={'Ticket List'} subHeaderOnlyView={TicketData ? 'Edit Ticket' : 'Add Ticket'} />
                 <div className="row">
                     <div className="col-12 justify-content-center">
                         <div className='row justify-content-center '>
@@ -171,8 +179,12 @@ export default function AddTicket() {
                                                                 onChange={(selectedIds) => {
                                                                     field.onChange(selectedIds);
                                                                     setValue(AstroInputTypesEnum.PROJECT, selectedIds);
+
+                                                                    // get selected objects
+                                                                    const selectedObjects = projectList?.filter((p) => (p.id == selectedIds));
+                                                                    setSelectedProject(selectedObjects?.length > 0 ? selectedObjects[0]?.team?.split(",").map((id) => id.trim()) : []);
                                                                 }}
-                                                                options={PROJECT_LIST?.map((c) => ({
+                                                                options={projectList?.map((c) => ({
                                                                     label: c.name,
                                                                     value: c.id,
                                                                 })) || []}
@@ -184,7 +196,7 @@ export default function AddTicket() {
                                                         )}
                                                     />
                                                     <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.EMPLOYEE]?.message}
+                                                        {errors[AstroInputTypesEnum.PROJECT]?.message}
                                                     </label>
                                                 </div>
 
@@ -233,8 +245,6 @@ export default function AddTicket() {
                                                         {errors[AstroInputTypesEnum.DESCRIPTION]?.message}
                                                     </label>
                                                 </div>
-
-
                                             </div>
 
                                             <div className='col-md-6'>
@@ -242,7 +252,6 @@ export default function AddTicket() {
                                                     <label htmlFor="gender1" className="form-label fw-semibold">
                                                         Select Task<span className="text-danger ms-1">*</span>
                                                     </label>
-
                                                     <Controller
                                                         name={AstroInputTypesEnum.TASK}
                                                         control={control}
@@ -257,14 +266,24 @@ export default function AddTicket() {
                                                                     field.onChange(selectedIds);
                                                                     setValue(AstroInputTypesEnum.TASK, selectedIds);
                                                                 }}
-                                                                options={TASK_LIST?.map((c) => ({
-                                                                    label: c.name,
-                                                                    value: c.id,
+
+                                                                // options={assignTaskList?.map((c) => ({
+                                                                //     label: c.title,
+                                                                //     value: c.id,
+                                                                // })) || []}
+
+                                                                options={watch(AstroInputTypesEnum.PROJECT) && assignTaskList?.filter((c) => watch(AstroInputTypesEnum.PROJECT) ? watch(AstroInputTypesEnum.PROJECT) == c.project_id : [""]).map((c) => ({
+                                                                    label: c.title,
+                                                                    value: String(c.id),
                                                                 })) || []}
+
                                                                 optionRender={(option) => (
                                                                     <Space>{option?.label}</Space>
                                                                 )}
+
                                                                 className='border rounded-1'
+                                                                optionFilterProp="label"
+
                                                             />
                                                         )}
                                                     />
@@ -284,7 +303,7 @@ export default function AddTicket() {
                                                         rules={{ required: "Select at least one employee" }}
                                                         render={({ field }) => (
                                                             <Select
-                                                                // mode="multiple"
+                                                                mode="multiple"
                                                                 style={{ width: "100%", height: "40px" }}
                                                                 placeholder="Select employee"
                                                                 value={field.value || []} // ensure controlled array
@@ -292,14 +311,18 @@ export default function AddTicket() {
                                                                     field.onChange(selectedIds); // updates form value
                                                                     setValue(AstroInputTypesEnum.EMPLOYEE, selectedIds); // optional extra update
                                                                 }}
-                                                                options={customerList?.map((c) => ({
-                                                                    label: c.name,
-                                                                    value: c.id,
-                                                                })) || []}
+                                                                options={
+                                                                    customerList?.filter((c) => selectedProject?.length > 0 && selectedProject?.includes(String(c.id))) // match employee ids
+                                                                        .map((c) => ({
+                                                                            label: c.name,
+                                                                            value: String(c.id),
+                                                                        })) || []
+                                                                }
                                                                 optionRender={(option) => (
                                                                     <Space>{option?.label}</Space>
                                                                 )}
                                                                 className='border rounded-1'
+                                                                optionFilterProp="label"
                                                             />
                                                         )}
                                                     />
@@ -321,7 +344,6 @@ export default function AddTicket() {
                     </div>
 
                 </div>
-
             </div >
         </>
     )

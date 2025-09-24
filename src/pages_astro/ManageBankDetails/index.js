@@ -15,7 +15,7 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getCustomerListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList, getEmpLeaveBalanceListThunk, updateLeaveBalanceList, getListBankDetailsThunk, updateBankDetailsList } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, getAllLoanListThunk, setLoader, getSalaryListThunk, getlistLeavesThunk, updateLeaveList, getEmpLeaveBalanceListThunk, updateLeaveBalanceList, getListBankDetailsThunk, updateBankDetailsList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
@@ -630,8 +630,6 @@ export default function ManageLeaveBalance() {
                                 <div className="col-lg-12">
                                     <div className="card-body p-2   ">
                                         <div className="row">
-                                            {/* Payment Type */}
-                                            {/* <div className="col-12 "> */}
                                             <div className="mb-1">
                                                 <label htmlFor="payment_status" className="form-label fw-semibold">
                                                     Select Employee<span className="text-danger ms-1">*</span>
@@ -646,6 +644,7 @@ export default function ManageLeaveBalance() {
                                                             required: "Select employee",
                                                             // onChange: (e) => changeStatusFunction(e.target.value),
                                                         })}
+                                                        disabled
                                                     >
                                                         <option value="">Select employee</option>
                                                         {selectOptionCustomer(customerList)}

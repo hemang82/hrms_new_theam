@@ -239,7 +239,7 @@ export default function ManageBirthday() {
 
                             {/* Name */}
                             <h5
-                                className="fw-bold mb-1 fs-6 fs-sm-5 text-capitalize text-dark truncate-text"
+                                className="fw-bold mb-1 fontSize16 fs-sm-5 text-capitalize text-dark truncate-text"
                                 style={{
                                     maxWidth: "100%",
                                 }}

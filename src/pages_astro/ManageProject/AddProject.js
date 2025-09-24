@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
-import { addAttendance } from '../../utils/api.services';
+import { addAttendance, addProject, editProject } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
 import Constatnt, { AwsFolder, Codes } from '../../config/constant';
 import { formatDate, formatDateDyjs, getBreakMinutes, getWorkingHours, selectOption, selectOptionCustomer, textInputValidation, } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, PROJECT_PRIORITY, TimeFormat } from '../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomerListThunk, setLoader } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, getProjectListThunk, setLoader } from '../../Store/slices/MasterSlice';
 import Spinner from '../../component/Spinner';
 import { DatePicker, Select, Space } from 'antd';
 import dayjs from 'dayjs';
@@ -39,7 +39,6 @@ export default function AddProject() {
         name: "breaks",
     });
 
-
     useEffect(() => {
         const request = {
             emp_leave_company: EMPLOYEE_STATUS[0]?.key
@@ -49,72 +48,57 @@ export default function AddProject() {
         }
     }, [])
 
+    console.log('ProjectData', ProjectData);
+
     useEffect(() => {
         if (ProjectData && customerList?.length > 0) {
             dispatch(setLoader(true))
-            const formattedBreaks = ProjectData?.breaks?.map(b => ({
-                start: b.start ? dayjs(`${b.start}`, 'HH:mm:ss') : null,
-                end: b.end ? dayjs(`${b.end}`, 'HH:mm:ss') : null
-            }));
-            setValue('breaks', formattedBreaks);
-            const selectedEmployee = customerList?.find(emp => emp.id == ProjectData?.emp_id) || null;
-            setSelectedEmployee(selectedEmployee || null)
-            setValue(AstroInputTypesEnum?.EMPLOYEE_ID, ProjectData?.emp_id);
-            setValue('dob1', ProjectData?.date ? dayjs(ProjectData?.date).format('DD-MM-YYYY') : null);
-            setValue('checkIn', ProjectData?.checkInTimes?.[0] ? dayjs(`${ProjectData.date} ${ProjectData.checkInTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
+            const teamArray = ProjectData?.team ? ProjectData?.team?.split(",").map(Number) : [];
+            const selectedEmployees = customerList?.filter(emp => teamArray?.includes(emp?.id)) || [];
+            setValue(AstroInputTypesEnum.EMPLOYEE, teamArray || []);
+            setValue(AstroInputTypesEnum.NAME, ProjectData?.name || null);
+            setValue(AstroInputTypesEnum.DESCRIPTION, ProjectData?.description || null);
+            setValue(AstroInputTypesEnum.PRIORITY, ProjectData?.priority || null);
+            setValue(AstroInputTypesEnum.DATE, ProjectData?.deadline ? dayjs(ProjectData?.deadline, 'YYYY-MM-DD') : null);
 
-            setValue('checkOut', ProjectData?.checkOutTimes?.[0] ? dayjs(`${ProjectData.date} ${ProjectData.checkOutTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
             dispatch(setLoader(false))
         }
-        console.log('userData?.departmentuserData?.department', ProjectData?.department);
     }, [ProjectData, customerList]);
 
     const onSubmitData = async (data) => {
         try {
             dispatch(setLoader(true))
             let request = {
-                employee_id: selectedEmployee?.id,
-                date: formatDateDyjs(data?.dob1, DateFormat?.DATE_DASH_TIME_FORMAT),
-                check_in_time: data?.checkIn ? dayjs(data.checkIn).format("HH:mm") : null,
-                check_out_time: data?.checkOut ? dayjs(data.checkOut).format("HH:mm") : null,
-                breaks: Array.isArray(data?.breaks) && data?.breaks?.length > 0
-                    ? data.breaks.map(b => ({
-                        start: b?.start
-                            ? dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                            : null,
-                        end: b?.end
-                            ? dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                            : null
-                    })) : [],
-                lat: "0.000",
-                log: "0.000",
-                location_id: "TRACEWAVE",
+                name: data[AstroInputTypesEnum.NAME],
+                description: data[AstroInputTypesEnum.DESCRIPTION],
+                deadline: formatDateDyjs(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_DASH_TIME_FORMAT),
+                team: data[AstroInputTypesEnum.EMPLOYEE]?.length == 1 ? data[AstroInputTypesEnum.EMPLOYEE][0]?.toString() : data[AstroInputTypesEnum.EMPLOYEE],
+                priority: data[AstroInputTypesEnum.PRIORITY]
             };
-
             if (ProjectData) {
-                // request.employee_id = userData?.id?.toString();
-                // EditUser(request).then((response) => {
-                //     if (response?.code == Codes.SUCCESS) {
-                //         TOAST_SUCCESS(response?.message)
-                //         navigation(PATHS?.ATTENDANCE_LIST)
-                //     } else {
-                //         TOAST_ERROR(response.message)
-                //     }
-                // })
-            } else {
-                addAttendance(request).then((response) => {
+                request.project_id = ProjectData?.id?.toString();
+                editProject(request).then((response) => {
                     if (response?.code == Codes.SUCCESS) {
                         TOAST_SUCCESS(response?.message)
-                        navigation(PATHS?.ATTENDANCE_LIST)
+                        dispatch(getProjectListThunk({}));
+                        navigation(PATHS?.LIST_PROJECT)
+                    } else {
+                        TOAST_ERROR(response.message)
+                    }
+                })
+            } else {
+                addProject(request).then((response) => {
+                    if (response?.code == Codes.SUCCESS) {
+                        TOAST_SUCCESS(response?.message)
+                        navigation(PATHS?.LIST_PROJECT)
+                        dispatch(getProjectListThunk({}));
                         dispatch(setLoader(false))
-
                     } else {
                         TOAST_ERROR(response.message)
                         dispatch(setLoader(false))
                     }
                 })
             }
-
         } catch (error) {
             TOAST_ERROR('Somthing went wrong')
             dispatch(setLoader(false))
@@ -138,9 +122,6 @@ export default function AddProject() {
     const handleChange = value => {
         console.log(`selected ${value}`);
     };
-
-    console.log('watchwatchwatch', watch());
-
 
     return (
         <>
@@ -210,7 +191,7 @@ export default function AddProject() {
                                                     <div className="col-12 col-md-6">
 
                                                         <label htmlFor="dob1" className="form-label fw-semibold">
-                                                            Deadline Date
+                                                            Deadline Date <span className="text-danger ms-1">*</span>
                                                         </label>
                                                         <Controller
                                                             name={AstroInputTypesEnum.DATE}
@@ -220,9 +201,13 @@ export default function AddProject() {
                                                                 <DatePicker
                                                                     id={AstroInputTypesEnum.DATE}
                                                                     className="form-control custom-datepicker w-100"
-                                                                    format="DD-MM-YYYY"
+                                                                    format={DateFormat?.DATE_FORMAT}
                                                                     value={field.value ? dayjs(field.value) : null}
-                                                                    onChange={(date) => field.onChange(date ? date.toISOString() : null)}
+                                                                    onChange={(date) => {
+                                                                        console.log('date', date);
+
+                                                                        field.onChange(date ? date.toISOString() : null)
+                                                                    }}
                                                                     allowClear={false}
                                                                     picker="date"
                                                                 />

@@ -213,7 +213,7 @@ export default function ManageEMISchedule() {
                                 onClick={() => { editFunction(festival) }}
                                 title="Edit"
                             >
-                                <i class="ti ti-edit fs-5 text-custom-theam"></i>
+                                <i class="ti ti-edit fontSize16 text-custom-theam"></i>
                             </button>
 
                             <button
@@ -221,14 +221,14 @@ export default function ManageEMISchedule() {
                                 onClick={() => { openModel(dispatch, ModelName.DELETE_MODEL); setSelectedUser(festival) }}
                                 title="Delete"
                             >
-                                <i className="ti ti-trash fs-5 text-danger " />
+                                <i className="ti ti-trash fontSize16 text-danger " />
                             </button>
                         </div>
                     }
                     <Card.Body className="d-flex flex-column justify-content-center align-items-start p-4">
                         {/* Festival Name */}
                         <h4
-                            className="fw-semibold mb-3 text-truncate fs-5 fs-md-4 fs-lg-3"
+                            className="fw-semibold mb-3 text-truncate fontSize16 fs-md-4 fs-lg-3"
                             style={{ color: "#1f7494", maxWidth: "100%" }}
                         >
                             <GoDotFill className="me-1" size={20} /> {festival?.name}
@@ -236,7 +236,7 @@ export default function ManageEMISchedule() {
 
                         {/* Festival Date */}
                         <div
-                            className="d-flex align-items-center fs-6 fs-md-5 fs-lg-5 fw-semibold"
+                            className="d-flex align-items-center fontSize16 fs-md-5 fs-lg-5 fw-semibold"
                             style={{ color: "#555" }}
                         >
                             <CiCalendarDate

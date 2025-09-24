@@ -15,10 +15,10 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getCustomerListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, setLoader, updateLoanList, getlistLeavesThunk, updateLeaveList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, openModel, selectOption, selectOptionCustomer, truncateWords } from '../../config/commonFunction';
+import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, openModel, QuillContentRowWise, selectOption, selectOptionCustomer, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -237,19 +237,19 @@ export default function ManageCoustomer() {
                 loan_id: selectedLeave?.id,
                 is_deleted: true,
             }
-            updateLoanDetails(submitData).then((response) => {
-                if (response.status_code === Codes?.SUCCESS) {
-                    setis_load(false)
-                    const updatedList = leaves?.filter((item) => item.id !== selectedLeave?.id)
-                    dispatch(updateLoanList({
-                        ...leaves,
-                        loan_applications: updatedList
-                    }))
-                    closeModel(dispatch)
-                    dispatch(setLoader(false))
-                    TOAST_SUCCESS(response?.message);
-                }
-            });
+            // updateLoanDetails(submitData).then((response) => {
+            //     if (response.status_code === Codes?.SUCCESS) {
+            //         setis_load(false)
+            //         const updatedList = leaves?.filter((item) => item.id !== selectedLeave?.id)
+            //         dispatch(updateLoanList({
+            //             ...leaves,
+            //             loan_applications: updatedList
+            //         }))
+            //         closeModel(dispatch)
+            //         dispatch(setLoader(false))
+            //         TOAST_SUCCESS(response?.message);
+            //     }
+            // });
         }
     };
 
@@ -395,20 +395,6 @@ export default function ManageCoustomer() {
         openLeaveModelFunc()
     }
 
-    const changeStatusFunction = (data) => {
-        setValue('payment_status', PAYMENT_STATUS.find(item => item.key === data)?.key)
-        const statusExists = selectedLeave?.status === data;
-        setValue('remarks', statusExists ? selectedLeave?.remarks : '')
-        const bankDetails = selectedLeave?.bank_accounts[0]
-        const approvalDetails = selectedLeave?.approval_details[0]
-        // setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        setValue('bank_name', bankDetails?.bank_name)
-        setValue('account_number', bankDetails?.account_number)
-        setValue('ifsc_code', bankDetails?.ifsc_code)
-        setValue('account_holder_name', bankDetails?.account_holder_name)
-    }
-
     const handleSelect = (option) => {
         setSelectedOption(option);
         setPage(1);
@@ -425,16 +411,6 @@ export default function ManageCoustomer() {
     const disabledEndDate = (current) => {
         if (!startDate) return false;
         return current.isBefore(startDate, 'day');
-    };
-
-    const handleInputChange = async (key, value) => {
-        let filteredValue = value;
-        if (key === 'approved_amount') {
-            filteredValue = value.replace(InputRegex.ONCHANGE_MOBILE_REGEX, '');
-        }
-        setValue(key, filteredValue)
-        clearErrors(key);               // Clear error message (if any)
-        await trigger(key);
     };
 
     const onChangeApiCalling = async (data) => {
@@ -657,8 +633,8 @@ export default function ManageCoustomer() {
                                     <span className='me-2'>{rowData?.leave_type || '-'}</span>
                                 )} />
 
-                                <Column field="create_at" header="Request Date" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.create_at, DateFormat?.DATE_FORMAT) || '-'} </span>
+                                <Column field="created_at" header="Request Date" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                    <span className='me-2'>{formatDate(rowData.created_at, DateFormat?.DATE_FORMAT) || '-'} </span>
                                 )} />
 
                                 <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
@@ -936,40 +912,33 @@ export default function ManageCoustomer() {
                                     { label: "Days", value: selectedLeave?.days },
                                     { label: "Start Date", value: formatDate(selectedLeave?.start_date, DateFormat?.DATE_FORMAT) },
                                     { label: "End Date", value: formatDate(selectedLeave?.end_date, DateFormat?.DATE_FORMAT) },
-                                    // { label: "Admin Reason", value: selectedLeave?.admin_reason },
-                                    // { label: "Reason", value: selectedLeave?.reason },
                                 ].map((item, index) => (
 
                                     <div key={index} className="col-md-4 mb-4">
 
-                                        {item?.label == "Reason" ? (<>
-                                            <p className="mb-1 fs-4">{item.label}</p>
-                                            <h6 dangerouslySetInnerHTML={{ __html: item.value }} />
-                                        </>) :
-                                            item.value &&
-                                            <>
-                                                <p className="mb-1 fs-4">{item.label}</p>
-                                                <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
+                                        {
+                                            item.value && <>
+                                                <p className="mb-1 fontSize14">{item.label}</p>
+                                                <h6 className="fw-meduim mb-0 fontSize16 text-capitalize">{item.value || 'N/A'}</h6>
                                             </>
-
                                         }
                                     </div>
                                 ))}
 
                                 {
-                                    selectedLeave?.reason &&
-                                    <>
-                                        <div className="col-md-6 mb-4">
-                                            <p className="mb-1 fs-4">Reason</p>
-                                            <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{selectedLeave.reason || 'N/A'}</h6>
+                                    selectedLeave?.reason && <>
+                                        <div className={`${selectedLeave?.admin_reason ? 'col-md-6' : 'col-md-12'} mb-4`}>
+                                            <p className="mb-1 fontSize14">Reason</p>
+                                            <h6 className="fw-meduim mb-0 fontSize16 text-capitalize">{QuillContentRowWise(selectedLeave.reason ? selectedLeave.reason : "-")}</h6>
                                         </div>
                                     </>
                                 }
+
                                 {selectedLeave?.admin_reason &&
                                     <>
                                         <div className="col-md-6 mb-4">
-                                            <p className="mb-1 fs-4">Admin Reason</p>
-                                            <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{selectedLeave.admin_reason || 'N/A'}</h6>
+                                            <p className="mb-1 fontSize14">Admin Reason</p>
+                                            <h6 className="fw-meduim mb-0 fontSize16 text-capitalize">{QuillContentRowWise(selectedLeave.admin_reason ? selectedLeave.admin_reason : "-") || 'N/A'}</h6>
                                         </div>
                                     </>
                                 }

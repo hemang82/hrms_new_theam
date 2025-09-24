@@ -84,7 +84,7 @@ export default function DetailsCustomer() {
                                                     />
                                                 ) : <>
                                                     <p className="mb-1 fs-4">{item.label}</p>
-                                                    <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
+                                                    <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
                                                 </>
                                             }
                                         </div>
@@ -130,7 +130,7 @@ export default function DetailsCustomer() {
                                                         />
                                                     ) : <>
                                                         <p className="mb-1 fs-4">{item.label}</p>
-                                                        <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
+                                                        <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
                                                     </>
 
                                                 }

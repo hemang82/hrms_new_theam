@@ -36,26 +36,6 @@ export const getlistAttendanceThunk = createAsyncThunk("listAttendance", async (
     }
 });
 
-
-export const getAllLoanListThunk = createAsyncThunk("allLoanList", async (submitData, { dispatch }) => {
-    try {
-        // dispatch(setLoader(true))
-        const { data } = await API.listAllLoan(submitData);
-        // dispatch(setLoader(false))
-
-        const updatedData = {
-            ...data,
-            loan_applications: data?.loan_applications?.map(app => ({
-                ...app,
-                cibil_score: app?.credit_score, // or any dynamic value you want to add
-            }))
-        };
-        return updatedData;
-    } catch (error) {
-        throw error;
-    }
-});
-
 export const getlistLeavesThunk = createAsyncThunk("listLeaves", async (submitData, { dispatch }) => {
     try {
         dispatch(setLoader(true))
@@ -133,16 +113,6 @@ export const getListContactUsThunk = createAsyncThunk("listContactUs", async (su
     }
 });
 
-export const getProcessingFeeListThunk = createAsyncThunk("ProcessingFee", async (submitData, { dispatch }) => {
-    try {
-        // dispatch(setLoader(true))
-        const { data } = await API.processingFeeList(submitData);
-        // dispatch(setLoader(false))
-        return data?.processing_fees;
-    } catch (error) {
-        throw error;
-    }
-});
 
 export const getHolidayListThunk = createAsyncThunk("HolidayList", async (submitData, { dispatch }) => {
     try {
@@ -155,11 +125,33 @@ export const getHolidayListThunk = createAsyncThunk("HolidayList", async (submit
     }
 });
 
-export const getEMIChargeListThunk = createAsyncThunk("listEMICharge", async (submitData, { dispatch }) => {
+export const getProjectListThunk = createAsyncThunk("ProjectList", async (submitData, { dispatch }) => {
     try {
-        // dispatch(setLoader(true))
-        const { data } = await API.listEMICharge(submitData);
-        // dispatch(setLoader(false))
+        dispatch(setLoader(true))
+        const { data } = await API.listProject(submitData);
+        dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
+export const getAssignTaskListThunk = createAsyncThunk("AssignTaskList", async (submitData, { dispatch }) => {
+    try {
+        dispatch(setLoader(true))
+        const { data } = await API.listAssignTask(submitData);
+        dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
+export const getListTicketThunk = createAsyncThunk("listTicket", async (submitData, { dispatch }) => {
+    try {
+        dispatch(setLoader(true))
+        const { data } = await API.listTicket(submitData);
+        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;
@@ -208,16 +200,14 @@ const initialState = {
         data: [],
         error: null,
     },
-
-
-
-
-
-    listAllLoan: {
+    projectList: {
         data: [],
         error: null,
     },
-    listProcessFee: {
+    assignTaskList: {
+        data: [],
+        error: null,
+    }, ticketList: {
         data: [],
         error: null,
     },
@@ -230,10 +220,6 @@ const initialState = {
         error: null,
     },
 
-    emiChargesList: {
-        data: [],
-        error: null,
-    },
     slidebarToggle: true,
     pageScroll: false
 }
@@ -246,8 +232,6 @@ const masterSlice = createSlice({
             state.isLoading = action.payload;
         },
         updateSlidebarToggle: (state, action) => {
-            console.log('acton payload slidebar', action.payload);
-
             state.slidebarToggle = action.payload;
         },
         updateDailyTaskList: (state, action) => {
@@ -260,15 +244,12 @@ const masterSlice = createSlice({
         },
 
 
-        // ---------------------- Loan -----------------------------
-
-        updateLoanList: (state, action) => {
-            state.listAllLoan.data = action.payload;
-        },
+        // ---------------------- HRMS -----------------------------
 
         updateIntrestList: (state, action) => {
             state.salaryList.data = action.payload;
         },
+
         updateCustomerList: (state, action) => {
             state.customerList.data = action.payload;
         },
@@ -297,46 +278,16 @@ const masterSlice = createSlice({
         updateSaterdayList: (state, action) => {
             state.saturdayList.data = action.payload;
         },
-
-
-        updateEMICahrgeList: (state, action) => {
-            state.emiChargesList.data = action.payload;
+        updateProjectList: (state, action) => {
+            state.projectList.data = action.payload;
+        },
+        updateAssignTaskList: (state, action) => {
+            state.assignTaskList.data = action.payload;
+        },
+        updateTicketList: (state, action) => {
+            state.ticketList.data = action.payload;
         },
 
-        // ------------------ Astro --------------------
-
-        updateCategoryList: (state, action) => {
-            state.categoryList.data = action.payload;
-        },
-        updateFilterCategoryList: (state, action) => {
-            state.filterCategoryList.data = action.payload;
-        },
-        updateCouponCodeList: (state, action) => {
-            state.couponCodeList.data = action.payload;
-        },
-
-        updateBlogList: (state, action) => {
-            state.blogList.data = action.payload;
-        },
-
-        updateBannerList: (state, action) => {
-            state.bannerList.data = action.payload;
-        },
-        updateCelebrityList: (state, action) => {
-            state.celebrityList.data = action.payload;
-        },
-        updateNewsList: (state, action) => {
-            state.newsList.data = action.payload;
-        },
-        updateNewsLatterList: (state, action) => {
-            state.newsLatterList.data = action.payload;
-        },
-        updateWalletOfferList: (state, action) => {
-            state.walletOfferList.data = action.payload;
-        },
-        updateContactUsList: (state, action) => {
-            state.contactUsList.data = action.payload;
-        },
         updatePageScroll: (state, action) => {
             state.pageScroll = action.payload;
         },
@@ -357,13 +308,6 @@ const masterSlice = createSlice({
             })
             .addCase(getDailyTaskListThunk.rejected, (state, action) => {
                 state.dailyTaskList.error = action.error.message;
-            })
-
-            .addCase(getAllLoanListThunk.fulfilled, (state, action) => {
-                state.listAllLoan.data = action.payload;
-            })
-            .addCase(getAllLoanListThunk.rejected, (state, action) => {
-                state.listAllLoan.error = action.error.message;
             })
 
             .addCase(getlistLeavesThunk.fulfilled, (state, action) => {
@@ -417,11 +361,6 @@ const masterSlice = createSlice({
                 state.salaryList.error = action.error.message;
             })
 
-            .addCase(getProcessingFeeListThunk.fulfilled, (state, action) => {
-                state.listProcessFee.data = action.payload;
-            }).addCase(getProcessingFeeListThunk.rejected, (state, action) => {
-                state.listProcessFee.error = action.error.message;
-            })
 
             .addCase(getListContactUsThunk.fulfilled, (state, action) => {
                 state.contactUsList.data = action.payload;
@@ -435,13 +374,27 @@ const masterSlice = createSlice({
                 state.holidayList.error = action.error.message;
             })
 
-            .addCase(getEMIChargeListThunk.fulfilled, (state, action) => {
-                state.emiChargesList.data = action.payload;
-            }).addCase(getEMIChargeListThunk.rejected, (state, action) => {
-                state.emiChargesList.error = action.error.message;
+            .addCase(getProjectListThunk.fulfilled, (state, action) => {
+                state.projectList.data = action.payload;
+            }).addCase(getProjectListThunk.rejected, (state, action) => {
+                state.projectList.error = action.error.message;
             })
+
+            .addCase(getAssignTaskListThunk.fulfilled, (state, action) => {
+                state.assignTaskList.data = action.payload;
+            }).addCase(getAssignTaskListThunk.rejected, (state, action) => {
+                state.assignTaskList.error = action.error.message;
+            })
+
+            .addCase(getListTicketThunk.fulfilled, (state, action) => {
+                state.ticketList.data = action.payload;
+            }).addCase(getListTicketThunk.rejected, (state, action) => {
+                state.ticketList.error = action.error.message;
+            })
+
+
     },
 });
 
-export const { setLoader, setModalStatus, updatePostList, updateCategoryList, updateAttendanceList, updateDailyTaskList ,updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateEMICahrgeList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateCouponCodeList, updateIntrestList, updateBlogList, updateCustomerList, updateBannerList, updateCelebrityList, updateLoanList, updateNewsList, updateFilterCategoryList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
+export const { setLoader, setModalStatus, updatePostList, updateAttendanceList, updateTicketList, updateAssignTaskList, updateProjectList, updateDailyTaskList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateIntrestList, updateCustomerList, updateBannerList, updateCelebrityList, updateNewsList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
 export default masterSlice.reducer;

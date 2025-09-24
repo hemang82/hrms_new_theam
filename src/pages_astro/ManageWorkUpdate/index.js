@@ -515,19 +515,17 @@ export default function ManageWorkUpdate() {
                                             item.value &&
                                             <>
                                                 <p className="mb-1 fs-3">{item.label}</p>
-                                                <h6 className="fw-semibold mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
+                                                <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
                                             </>
-
                                         }
                                     </div>
                                 ))}
-
                                 {
                                     selectedWork?.reason &&
                                     <>
                                         <div className="col-md-6 mb-4">
                                             <p className="mb-1 fs-4">Reason</p>
-                                            <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{selectedWork.reason || 'N/A'}</h6>
+                                            <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{selectedWork.reason || 'N/A'}</h6>
                                         </div>
                                     </>
                                 }
@@ -535,7 +533,7 @@ export default function ManageWorkUpdate() {
                                     <>
                                         <div className="col-md-6 mb-4">
                                             <p className="mb-1 fs-4">Admin Reason</p>
-                                            <h6 className="fw-semibold mb-0 fs-5 text-capitalize">{selectedWork.admin_reason || 'N/A'}</h6>
+                                            <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{selectedWork.admin_reason || 'N/A'}</h6>
                                         </div>
                                     </>
                                 }

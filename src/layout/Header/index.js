@@ -9,7 +9,7 @@ import { LogoutComponent } from '../../pages/CommonPages/CommonComponent';
 import { DateFormat, EMPLOYEE_STATUS, ModelName } from '../../config/commonVariable';
 
 // /dist/images/logos/lone_logo.png
-import { getCustomerListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
+import { getAssignTaskListThunk, getCustomerListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesThunk, getListTicketThunk, getProjectListThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
 import dayjs from 'dayjs';
 
 const Header = ({ page_name }) => {
@@ -28,13 +28,9 @@ const Header = ({ page_name }) => {
 
     const handleLogout = (is_true) => {
         if (is_true) {
-            // logout().then((response) => {
-            // if (response?.code === Codes?.SUCCESS) {
             closeModel(dispatch)
             logoutRedirection();
             navigate('/')
-            // }
-            // })
         }
     };
 
@@ -57,7 +53,10 @@ const Header = ({ page_name }) => {
                         month: formatDateDyjs(dayjs().subtract(1, 'month'), 'MM') || null,
                         year: formatDateDyjs(dayjs().subtract(1, 'month'), 'YYYY') || null,
                         emp_leave_company: "0"
-                    }))
+                    })),
+                    dispatch(getProjectListThunk({})),
+                    dispatch(getAssignTaskListThunk({})),
+                    dispatch(getListTicketThunk({})),
                 ]);
             } finally {
                 dispatch(setLoader(false)); // ✅ stops loader only after all are done

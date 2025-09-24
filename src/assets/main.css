@@ -251,7 +251,7 @@ label.errorc {
 
 .p-datatable .p-datatable-tbody>tr>td {
   padding: 0.5% !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
 }
 
 input::-webkit-outer-spin-button,
@@ -266,7 +266,7 @@ input[type=number] {
 }
 
 .p-column-title {
-  font-size: 14px !important;
+  font-size: 16px !important;
 }
 
 .p-dropdown:not(.p-disabled).p-focus {

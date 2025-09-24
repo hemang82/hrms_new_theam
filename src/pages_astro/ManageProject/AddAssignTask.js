@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
-import { addAttendance } from '../../utils/api.services';
+import { addAssignTask, addAttendance, editAssignTask } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
 import Constatnt, { AwsFolder, Codes } from '../../config/constant';
 import { formatDate, formatDateDyjs, getBreakMinutes, getWorkingHours, selectOption, selectOptionCustomer, textInputValidation, } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, PROJECT_LIST, PROJECT_PRIORITY, TimeFormat } from '../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomerListThunk, setLoader } from '../../Store/slices/MasterSlice';
+import { getAssignTaskListThunk, getCustomerListThunk, getProjectListThunk, setLoader } from '../../Store/slices/MasterSlice';
 import Spinner from '../../component/Spinner';
 import { DatePicker, Select, Space } from 'antd';
 import dayjs from 'dayjs';
@@ -21,12 +21,13 @@ export default function AddAssignTask() {
     const dispatch = useDispatch();
 
     const location = useLocation();
-    var ProjectData = location?.state;
+    var AssignTaskData = location?.state;
 
+    const { projectList: { data: projectList } } = useSelector((state) => state.masterslice);
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
 
     const [is_loding, setIs_loading] = useState(false);
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [selectedProject, setSelectedProject] = useState({});
 
     const { register, handleSubmit, setValue, clearErrors, reset, watch, control, trigger, formState: { errors }, } = useForm({
         defaultValues: {
@@ -39,6 +40,11 @@ export default function AddAssignTask() {
         name: "breaks",
     });
 
+    useEffect(() => {
+        if (projectList?.length === 0) {
+            dispatch(getProjectListThunk({}));
+        }
+    }, []);
 
     useEffect(() => {
         const request = {
@@ -50,71 +56,63 @@ export default function AddAssignTask() {
     }, [])
 
     useEffect(() => {
-        if (ProjectData && customerList?.length > 0) {
+        if (AssignTaskData && customerList?.length > 0) {
             dispatch(setLoader(true))
-            const formattedBreaks = ProjectData?.breaks?.map(b => ({
-                start: b.start ? dayjs(`${b.start}`, 'HH:mm:ss') : null,
-                end: b.end ? dayjs(`${b.end}`, 'HH:mm:ss') : null
-            }));
-            setValue('breaks', formattedBreaks);
-            const selectedEmployee = customerList?.find(emp => emp.id == ProjectData?.emp_id) || null;
-            setSelectedEmployee(selectedEmployee || null)
-            setValue(AstroInputTypesEnum?.EMPLOYEE_ID, ProjectData?.emp_id);
-            setValue('dob1', ProjectData?.date ? dayjs(ProjectData?.date).format('DD-MM-YYYY') : null);
-            setValue('checkIn', ProjectData?.checkInTimes?.[0] ? dayjs(`${ProjectData.date} ${ProjectData.checkInTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
 
-            setValue('checkOut', ProjectData?.checkOutTimes?.[0] ? dayjs(`${ProjectData.date} ${ProjectData.checkOutTimes[0]}`, 'YYYY-MM-DD HH:mm:ss') : null);
+            setValue(AstroInputTypesEnum.PROJECT, AssignTaskData?.project_id || null);
+            setValue(AstroInputTypesEnum.NAME, AssignTaskData?.title || null);
+            setValue(AstroInputTypesEnum.DESCRIPTION, AssignTaskData?.description || null);
+            setValue(AstroInputTypesEnum.PRIORITY, AssignTaskData?.priority || null);
+            setValue(AstroInputTypesEnum.DATE, AssignTaskData?.due_date ? dayjs(AssignTaskData?.due_date, 'YYYY-MM-DD') : null);
+            // get selected objects
+            const selectedObjects = projectList?.filter((p) => (p.id == AssignTaskData?.project_id));
+            setSelectedProject(selectedObjects?.length > 0 ? selectedObjects[0]?.team?.split(",").map((id) => id.trim()) : []);
+            if (selectedObjects?.length > 0) {
+                const teamArray = AssignTaskData?.assign_to ? AssignTaskData?.assign_to?.split(",").map(String) : [];
+                setValue(AstroInputTypesEnum.EMPLOYEE, teamArray || []);
+            }
             dispatch(setLoader(false))
         }
-        console.log('userData?.departmentuserData?.department', ProjectData?.department);
-    }, [ProjectData, customerList]);
+    }, [AssignTaskData, customerList]);
 
     const onSubmitData = async (data) => {
         try {
             dispatch(setLoader(true))
             let request = {
-                employee_id: selectedEmployee?.id,
-                date: formatDateDyjs(data?.dob1, DateFormat?.DATE_DASH_TIME_FORMAT),
-                check_in_time: data?.checkIn ? dayjs(data.checkIn).format("HH:mm") : null,
-                check_out_time: data?.checkOut ? dayjs(data.checkOut).format("HH:mm") : null,
-                breaks: Array.isArray(data?.breaks) && data?.breaks?.length > 0
-                    ? data.breaks.map(b => ({
-                        start: b?.start
-                            ? dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                            : null,
-                        end: b?.end
-                            ? dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                            : null
-                    })) : [],
-                lat: "0.000",
-                log: "0.000",
-                location_id: "TRACEWAVE",
+                project_id: data[AstroInputTypesEnum.PROJECT],
+                title: data[AstroInputTypesEnum.NAME],
+                description: data[AstroInputTypesEnum.DESCRIPTION],
+                due_date: formatDateDyjs(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_DASH_TIME_FORMAT),
+                assign_to: data[AstroInputTypesEnum.EMPLOYEE]?.length == 1 ? data[AstroInputTypesEnum.EMPLOYEE][0]?.toString() : data[AstroInputTypesEnum.EMPLOYEE],
+                priority: data[AstroInputTypesEnum.PRIORITY],
+                status: ""
             };
-
-            if (ProjectData) {
-                // request.employee_id = userData?.id?.toString();
-                // EditUser(request).then((response) => {
-                //     if (response?.code == Codes.SUCCESS) {
-                //         TOAST_SUCCESS(response?.message)
-                //         navigation(PATHS?.ATTENDANCE_LIST)
-                //     } else {
-                //         TOAST_ERROR(response.message)
-                //     }
-                // })
-            } else {
-                addAttendance(request).then((response) => {
+            if (AssignTaskData) {
+                request.task_id = AssignTaskData?.id?.toString();
+                editAssignTask(request).then((response) => {
                     if (response?.code == Codes.SUCCESS) {
                         TOAST_SUCCESS(response?.message)
-                        navigation(PATHS?.ATTENDANCE_LIST)
+                        navigation(PATHS?.LIST_ASSIGN_TASK)
+                        dispatch(getAssignTaskListThunk({}));
                         dispatch(setLoader(false))
-
+                    } else {
+                        TOAST_ERROR(response.message)
+                        dispatch(setLoader(false))
+                    }
+                })
+            } else {
+                addAssignTask(request).then((response) => {
+                    if (response?.code == Codes.SUCCESS) {
+                        TOAST_SUCCESS(response?.message)
+                        navigation(PATHS?.LIST_ASSIGN_TASK)
+                        dispatch(getAssignTaskListThunk({}));
+                        dispatch(setLoader(false))
                     } else {
                         TOAST_ERROR(response.message)
                         dispatch(setLoader(false))
                     }
                 })
             }
-
         } catch (error) {
             TOAST_ERROR('Somthing went wrong')
             dispatch(setLoader(false))
@@ -138,12 +136,12 @@ export default function AddAssignTask() {
     const handleChange = value => {
         console.log(`selected ${value}`);
     };
-
+    
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
             <div className="container-fluid mw-100">
-                <SubNavbar title={ProjectData ? 'Edit Assign Task' : 'Add Assign Task'} header={'Assign Task List'} subHeaderOnlyView={ProjectData ? 'Edit Assign Task' : 'Add Assign Task'} />
+                <SubNavbar title={AssignTaskData ? 'Edit Assign Task' : 'Add Assign Task'} header={'Assign Task List'} subHeaderOnlyView={AssignTaskData ? 'Edit Assign Task' : 'Add Assign Task'} />
                 <div className="row">
                     <div className="col-12 justify-content-center">
                         <div className='row justify-content-center '>
@@ -154,6 +152,7 @@ export default function AddAssignTask() {
                                         <div className='row col-12 col-md-12 '>
                                             <div className='col-md-6'>
                                                 <div className="mb-4">
+
                                                     <label htmlFor="gender1" className="form-label fw-semibold">
                                                         Select Project<span className="text-danger ms-1">*</span>
                                                     </label>
@@ -171,8 +170,11 @@ export default function AddAssignTask() {
                                                                 onChange={(selectedIds) => {
                                                                     field.onChange(selectedIds);
                                                                     setValue(AstroInputTypesEnum.PROJECT, selectedIds);
+                                                                    // get selected objects
+                                                                    const selectedObjects = projectList?.filter((p) => (p.id == selectedIds));
+                                                                    setSelectedProject(selectedObjects?.length > 0 ? selectedObjects[0]?.team?.split(",").map((id) => id.trim()) : []);
                                                                 }}
-                                                                options={PROJECT_LIST?.map((c) => ({
+                                                                options={projectList?.map((c) => ({
                                                                     label: c.name,
                                                                     value: c.id,
                                                                 })) || []}
@@ -184,7 +186,7 @@ export default function AddAssignTask() {
                                                         )}
                                                     />
                                                     <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.EMPLOYEE]?.message}
+                                                        {errors[AstroInputTypesEnum.PROJECT]?.message}
                                                     </label>
                                                 </div>
 
@@ -202,7 +204,7 @@ export default function AddAssignTask() {
                                                                 <DatePicker
                                                                     id={AstroInputTypesEnum.DATE}
                                                                     className="form-control custom-datepicker w-100"
-                                                                    format="DD-MM-YYYY"
+                                                                    format={DateFormat?.DATE_FORMAT}
                                                                     value={field.value ? dayjs(field.value) : null}
                                                                     onChange={(date) => field.onChange(date ? date.toISOString() : null)}
                                                                     allowClear={false}
@@ -282,8 +284,6 @@ export default function AddAssignTask() {
                                                         {errors[AstroInputTypesEnum.DESCRIPTION]?.message}
                                                     </label>
                                                 </div>
-
-
                                             </div>
 
                                             <div className='col-md-6'>
@@ -307,6 +307,7 @@ export default function AddAssignTask() {
 
 
                                                 <div className="mb-4">
+
                                                     <label htmlFor="gender1" className="form-label fw-semibold">
                                                         Select Employee<span className="text-danger ms-1">*</span>
                                                     </label>
@@ -317,7 +318,7 @@ export default function AddAssignTask() {
                                                         rules={{ required: "Select at least one employee" }}
                                                         render={({ field }) => (
                                                             <Select
-                                                                // mode="multiple"
+                                                                mode="multiple"
                                                                 style={{ width: "100%", height: "40px" }}
                                                                 placeholder="Select employee"
                                                                 value={field.value || []} // ensure controlled array
@@ -325,10 +326,13 @@ export default function AddAssignTask() {
                                                                     field.onChange(selectedIds); // updates form value
                                                                     setValue(AstroInputTypesEnum.EMPLOYEE, selectedIds); // optional extra update
                                                                 }}
-                                                                options={customerList?.map((c) => ({
-                                                                    label: c.name,
-                                                                    value: c.id,
-                                                                })) || []}
+                                                                options={
+                                                                    customerList?.filter((c) => selectedProject?.length > 0 && selectedProject?.includes(String(c.id))) // match employee ids
+                                                                        .map((c) => ({
+                                                                            label: c.name,
+                                                                            value: String(c.id),
+                                                                        })) || []
+                                                                }
                                                                 optionRender={(option) => (
                                                                     <Space>{option?.label}</Space>
                                                                 )}

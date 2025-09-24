@@ -128,7 +128,7 @@ const Slidebar = () => {
                             <img src={Constatnt?.APP_LOGO} className="dark-logo m-2" width={200} height={60} alt />
                         </Link> */}
 
-                        <Link to={'/'} className="text-nowrap logo-img text-center d-flex ms-sm-1 me-sm-0 d-lg-none m-lg-2 ms-lg-3 ">
+                        <Link to={'/'} className="text-nowrap logo-img text-center d-flex ms-sm-1 me-sm-0  m-lg-2 ms-lg-3 ">
                             <img src={Constatnt?.APP_LOGO} className="dark-logo m-2" width={200} height={60} alt />
                         </Link>
                         {/* <img src={PUBLIC_URL + "/dist/images/Group 25.png"} className="dark-logo p-2 m-2 " width={200} alt /> */}
@@ -317,11 +317,10 @@ const Slidebar = () => {
                                     <span className="hide-menu">Project</span>
                                 </div>
 
-                                <ul
-                                    className={`collapse first-level ${expanded["project"] ? "show" : ""
-                                        }`}
+                                <ul className={`collapse first-level ${expanded["project"] ? "show" : ""}`}
                                     aria-expanded={expanded["project"] ? "true" : "false"}
                                 >
+
                                     <li className="sidebar-item">
                                         <Link
                                             to={PATHS.LIST_PROJECT}
@@ -334,6 +333,7 @@ const Slidebar = () => {
                                             <span className="hide-menu">Project List</span>
                                         </Link>
                                     </li>
+
                                     <li className="sidebar-item">
                                         <Link
                                             to={PATHS.LIST_ASSIGN_TASK}

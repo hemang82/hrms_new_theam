@@ -385,7 +385,7 @@
 
   html body .status_font>span {
     font-weight: 500;
-    font-size: 11px !important;
+    font-size: 12px !important;
     line-height: 100%;
     position: relative;
     top: -2px;
@@ -519,30 +519,89 @@
 
   .quill-output {
     border: 1px solid #dee2e6;
-    /* lighter border */
-    padding: 12px 16px;
+    padding: 16px 20px;
     background-color: #fafafa;
-    /* soft background */
-    border-radius: 6px;
+    border-radius: 8px;
     min-height: 120px;
-    /* keeps height consistent */
-  }
-
-  .quill-output p {
-    margin: 0 0 10px 0;
-    line-height: 1;
     font-family: 'Poppins', sans-serif;
-    font-size: 13px;
-    color: #4b5563;
+    color: #374151;
+    /* text-gray-700 */
+    font-size: 14px;
+    line-height: 1.6;
+    max-height: 250px !important;
+    overflow-y: auto
   }
 
+  /* Paragraphs */
+  .quill-output p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Lists */
+  .quill-output ul,
+  .quill-output ol {
+    margin: 12px 0;
+    padding-left: 24px;
+  }
+
+  .quill-output li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+    font-size: 14px;
+    position: relative;
+  }
+
+  /* Make unordered list bullets neat */
+  .quill-output ul li::marker {
+    color: #2563eb;
+    /* blue-600 */
+    font-weight: bold;
+  }
+
+  /* Numbered list style */
+  .quill-output ol {
+    list-style-type: decimal;
+  }
+
+  /* Headings */
+  .quill-output h1,
+  .quill-output h2,
+  .quill-output h3,
+  .quill-output h4 {
+    margin: 16px 0 10px;
+    font-weight: 600;
+    color: #111827;
+    /* darker text */
+  }
+
+  .quill-output h1 {
+    font-size: 20px;
+  }
+
+  .quill-output h2 {
+    font-size: 18px;
+  }
+
+  .quill-output h3 {
+    font-size: 16px;
+  }
+
+  .quill-output h4 {
+    font-size: 15px;
+  }
+
+  /* Bold & Italics */
   .quill-output strong {
-    font-weight: 500;
+    font-weight: 600;
+    color: #111827;
   }
 
   .quill-output em {
     font-style: italic;
   }
+
 
   .breadcrumb a {
     color: #1F7494 !important
@@ -613,8 +672,8 @@
   }
 
   .p-column-title {
-    font-size: 15px !important;
-    font-weight: 500;
+    font-size: 16px !important;
+    font-weight: 600;
   }
 
   html .p-datatable-table {
@@ -638,10 +697,24 @@
     width: 100%;
   }
 
-  .attendance_card >div >div{
+  .attendance_card>div>div {
     padding: 16px 15px !important
   }
 
-  .attendance_card >div >div .text-custom-theam{
+  .attendance_card>div>div .text-custom-theam {
     margin-bottom: 3px !important;
   }
+
+  .fontSize12 {
+    font-size: 12px;
+  }
+
+  .fontSize14 {
+    font-size: 14px;
+  }
+
+  .fontSize16 {
+    font-size: 16px;
+  }
+
+  .status_font_samll {}

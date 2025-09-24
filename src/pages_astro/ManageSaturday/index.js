@@ -218,7 +218,6 @@ export default function ManageSaturday() {
                 setLoadingId(null);
             }
         };
-
         return (
             <Col xs={12} md={6} lg={4} className="mb-4 saturday_month_view">
                 <motion.div whileHover={{ scale: 1.02 }}>
@@ -227,7 +226,7 @@ export default function ManageSaturday() {
                         style={{ minHeight: "325px" }}
                     >
                         <Card.Body className="p-3">
-                            <h5 className="text-center mb-4 fw-semibold text-custom-theam">
+                            <h5 className="text-center mb-4 fw-semibold text-custom-theam fontSize16">
                                 {dayjs(`${dayjs().year()}-${monthObj.month}-01`).format("MMMM YYYY")}
                             </h5>
 
@@ -244,7 +243,7 @@ export default function ManageSaturday() {
                                     <Col xs={2}>{getSaturdayOrdinal(rowData.date) || "-"}</Col>
                                     <Col xs={4}>
                                         <span
-                                            className={`badge me-2 text-light rounded-4 status_font_samll ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
+                                            className={`badge me-2 text-light rounded-4 fontSize14 ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
                                         >
                                             {getStatus(rowData?.type) || "-"}
                                         </span>
@@ -285,7 +284,6 @@ export default function ManageSaturday() {
         );
     };
 
-
     return (
         <>
             <div className="container-fluid mw-100">
@@ -295,17 +293,6 @@ export default function ManageSaturday() {
                     <div className="card card-body mb-2 p-3 mb-2">
                         <div className="row g-3 ">
                             <div className="col-12 col-md-6 col-lg-8">
-                                {/* <div className="position-relative w-50">
-                                    <input
-                                        type="text"
-                                        className="form-control ps-5 "
-                                        id="input-search"
-                                        placeholder="Search Saturday ..."
-                                        value={globalFilterValue}
-                                        onChange={onGlobalFilterChange}
-                                    />
-                                    <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
-                                </div> */}
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2">

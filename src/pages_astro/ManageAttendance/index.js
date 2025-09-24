@@ -15,7 +15,7 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getCustomerListThunk, getAllLoanListThunk, setLoader, updateLoanList, getProcessingFeeListThunk, getSalaryListThunk, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, setLoader, updateLoanList, getlistAttendanceThunk, updateAttendanceList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
@@ -355,8 +355,6 @@ export default function ManageAttendance() {
         }
     };
 
-    console.log('updatedAttendanceListupdatedAttendanceList', updatedAttendanceList);
-
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
@@ -395,6 +393,7 @@ export default function ManageAttendance() {
                                     onChange={(date) => {
                                         setStartDate(date);
                                         setEndDate(null);
+                                        handleSelect({ id: "", name: "All Employees" });
                                     }}
                                 />
                             </div>
@@ -420,7 +419,7 @@ export default function ManageAttendance() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
-                                <label className="form-label fw-semibold mb-1">Employees Filter</label>
+                                <label className="d-block mb-1 fw-semibold">Employees Filter</label>
                                 <div className="dropdown w-100">
                                     <button
                                         className="btn btn-sm btn-info fw-semibold dropdown-toggle w-100"
@@ -477,7 +476,7 @@ export default function ManageAttendance() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2 mb-2 mb-md-0">
-                                <label className="form-label fw-semibold mb-1">Status</label>
+                                <label className="d-block mb-1 fw-semibold">Status</label>
 
                                 <div className="btn-group w-100">
                                     <button
@@ -514,7 +513,7 @@ export default function ManageAttendance() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-1 d-flex flex-column">
-                                <label className="form-label fw-semibold mb-1">&nbsp;</label> {/* placeholder for alignment */}
+                                <label className="d-block mb-1 fw-semibold">&nbsp;</label> {/* placeholder for alignment */}
                                 <button
                                     type="button"
                                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
@@ -791,7 +790,7 @@ export default function ManageAttendance() {
                                                     // { label: "Name", value: selectedEmployee?.name },
                                                     // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
                                                     { label: "Work Hours", value: getWorkingHours(watch('checkIn') ? dayjs(watch('checkIn')).format("HH:mm:ss") : 0, dayjs(watch('checkOut') || dayjs()).format("HH:mm:ss"), getBreakMinutes(watch('breaks') || 0)) || 0 },
-                                                    { label: "Total Break", value: getBreakMinutes(watch('breaks')) + 'm' || '-' },
+                                                    { label: "Total Break", value: watch('breaks')?.length > 0 ? getBreakMinutes(watch('breaks')) + 'm' : '-' },
                                                 ].map((item, index) => (
                                                     <div className='col-12 col-sm-6 attendance_card'>
                                                         <div key={index} className="card border-1 zoom-in them-light shadow-sm m-1 ">
@@ -830,6 +829,7 @@ export default function ManageAttendance() {
                                                     setSelectedEmployee(selectedObj || null);
                                                     setValue(AstroInputTypesEnum?.EMPLOYEE_ID, selectedObj.id)
                                                 }}
+                                                disabled
                                             >
                                                 <option value="">Select employee</option>
                                                 {selectOptionCustomer(customerList)}

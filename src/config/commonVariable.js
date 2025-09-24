@@ -1748,7 +1748,6 @@ export const emiTypes = {
     },
 };
 
-
 export const getStatus = (status) => {
     return status == "present" ? "Present" :
         status == "absent" ? "Absent" :
@@ -1766,7 +1765,10 @@ export const getStatus = (status) => {
                                                         status === 'half-day work and half-day leave (casual)' ? 'Half work Half Casual' :
                                                             status === 'half-day work and half-day leave (compoff)' ? 'Half work Half Compoff' :
                                                                 status == "working" ? "Working" :
-                                                                    "-"
+                                                                    status == "high" ? "High" :
+                                                                        status == "low" ? "Low" :
+                                                                            status == "medium" ? "Medium" :
+                                                                                status
 };
 
 export const getAttendanceStatusColor = (status) => {
@@ -1785,7 +1787,10 @@ export const getAttendanceStatusColor = (status) => {
                                                     status === 'half-day work and half-day leave (casual)' ? STATUS_COLORS.SUCCESS :
                                                         status === 'half-day work and half-day leave (compoff)' ? STATUS_COLORS.SUCCESS :
                                                             status == "working" ? STATUS_COLORS.SUCCESS :
-                                                                STATUS_COLORS.WARNING
+                                                                status == "high" ? STATUS_COLORS.DANGER :
+                                                                    status == "low" ? STATUS_COLORS.WARNING :
+                                                                        status == "medium" ? STATUS_COLORS.SUCCESS :
+                                                                            STATUS_COLORS.WARNING
 };
 
 export const AttendanceStatus = {
@@ -1861,7 +1866,6 @@ export const AttendanceType = {
     },
 
 };
-
 
 // ---------------------------------------------------------- Project Variables ------------------------------------------------------------------------------------------------------------
 

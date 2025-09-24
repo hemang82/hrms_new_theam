@@ -124,27 +124,6 @@ export function listAttendance(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_ATTENDANCE}/admin_emp_attedence_list`, request)
 }
 
-// {
-//     "employee_id": "69",
-//     "date": "2025-09-01",
-//     "check_in_time": "13:09",
-//     "check_out_time": "20:11",
-//     "breaks": [
-//         {
-//             "start": "18:11",
-//             "end": "19:11"
-//         },
-//         {
-//             "id": 2,
-//             "start": "17:12",
-//             "end": "18:13"
-//         }
-//     ],
-//     "lat": "0.000",
-//     "log": "0.000",
-//     "location_id": "TRACEWAVE"
-// }
-
 export function addAttendance(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_ATTENDANCE}/admin_add_attendence`, request)
 }
@@ -154,15 +133,6 @@ export function editAttendance(request) {
 }
 
 // ---------------------------- Bank Details Module  ------------------------------------------------------- 
-
-// {
-//     "employee_id": "69",
-//     "bank_name": "Test  Bank",
-//     "branch": "SG Highway",
-//     "account_holder_name": "Hemang Chandeakr",
-//     "account_no": "1623100400005215",
-//     "ifsc_code": "PUNB0162310"
-// }
 
 export function addBankDetails(request) {
     return AxiosClientApi.post(`/${AUTH_AUTH}/add_bank_details`, request)
@@ -208,6 +178,60 @@ export function saturdayList(request) {
 
 export function editSaturday(request) {
     return AxiosClientApi.post(`/${COMMON}/edit_week_off`, request, true)
+}
+
+// ---------------------------- Project Module  ------------------------------------------------------- 
+
+export function listProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/project_listing`, request, true)
+}
+
+export function addProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/create_project`, request, true)
+}
+
+export function editProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_project`, request, true)
+}
+
+export function deleteProject(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/delete_project`, request, true)
+}
+
+// ---------------------------- Task Module  ------------------------------------------------------- 
+
+export function listAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/assign_task_listing`, request, true)
+}
+
+export function addAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/assign_task`, request, true)
+}
+
+export function editAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_assign_task`, request, true)
+}
+
+export function deleteAssignTask(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/delete_assign_task`, request, true)
+}
+
+// ---------------------------- Ticket Module  ------------------------------------------------------- 
+
+export function listTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/ticket_listing`, request, true)
+}
+
+export function addTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/create_ticket`, request, true)
+}
+
+export function editTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_ticket`, request, true)
+}
+
+export function deleteTicket(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/delete_ticket`, request, true)
 }
 
 // ---------------------------- LOAN  ------------------------------------------------------- 
