@@ -136,7 +136,7 @@ export default function AddAssignTask() {
     const handleChange = value => {
         console.log(`selected ${value}`);
     };
-    
+
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
@@ -181,6 +181,7 @@ export default function AddAssignTask() {
                                                                 optionRender={(option) => (
                                                                     <Space>{option?.label}</Space>
                                                                 )}
+                                                                disabled={AssignTaskData ? true : false}
                                                                 className='border rounded-1'
                                                             />
                                                         )}
@@ -348,6 +349,7 @@ export default function AddAssignTask() {
                                             </div>
 
                                             <div className="modal-footer justify-content-center mb-3">
+                                                <button type='reset' className="btn btn-danger me-2" >Reset</button>
                                                 <button type='submit' className="btn btn-primary" >Submit</button>
                                             </div>
                                         </div>

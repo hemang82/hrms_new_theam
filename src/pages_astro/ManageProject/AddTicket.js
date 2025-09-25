@@ -62,9 +62,6 @@ export default function AddTicket() {
     useEffect(() => {
         if (TicketData && customerList?.length > 0 && assignTaskList?.length > 0) {
 
-            // const AssignTO = TicketData?.assign_to ? TicketData?.assign_to?.split(",").map(Number) : [];
-            // setValue(AstroInputTypesEnum.EMPLOYEE, AssignTO || []);
-
             setValue(AstroInputTypesEnum.PROJECT, TicketData?.project_id || null);
             setValue(AstroInputTypesEnum.TITLE, TicketData?.title || null);
 
@@ -144,9 +141,6 @@ export default function AddTicket() {
         console.log(`selected ${value}`);
     };
 
-    console.log('Watch', watch());
-
-
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
@@ -188,6 +182,7 @@ export default function AddTicket() {
                                                                     label: c.name,
                                                                     value: c.id,
                                                                 })) || []}
+                                                                disabled={TicketData ? true : false}
                                                                 optionRender={(option) => (
                                                                     <Space>{option?.label}</Space>
                                                                 )}
@@ -202,7 +197,7 @@ export default function AddTicket() {
 
                                                 <div className="mb-4">
                                                     <label htmlFor="lastname" className="form-label fw-semibold">
-                                                        Title <span className="text-danger ms-1">*</span>
+                                                        Ticket Name <span className="text-danger ms-1">*</span>
                                                     </label>
                                                     <div className="input-group border rounded-1">
                                                         <input
@@ -266,7 +261,7 @@ export default function AddTicket() {
                                                                     field.onChange(selectedIds);
                                                                     setValue(AstroInputTypesEnum.TASK, selectedIds);
                                                                 }}
-
+                                                                disabled={TicketData ? true : false}
                                                                 // options={assignTaskList?.map((c) => ({
                                                                 //     label: c.title,
                                                                 //     value: c.id,
@@ -334,6 +329,8 @@ export default function AddTicket() {
                                             </div>
 
                                             <div className="modal-footer justify-content-center mb-3">
+                                                <button type='reset' className="btn btn-danger me-2" >Reset</button>
+
                                                 <button type='submit' className="btn btn-primary" >Submit</button>
                                             </div>
                                         </div>

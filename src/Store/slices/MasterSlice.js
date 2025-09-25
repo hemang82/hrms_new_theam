@@ -138,9 +138,9 @@ export const getProjectListThunk = createAsyncThunk("ProjectList", async (submit
 
 export const getAssignTaskListThunk = createAsyncThunk("AssignTaskList", async (submitData, { dispatch }) => {
     try {
-        dispatch(setLoader(true))
+        !submitData?.loader && dispatch(setLoader(true))
         const { data } = await API.listAssignTask(submitData);
-        dispatch(setLoader(false))
+        !submitData?.loader && dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;
@@ -149,9 +149,9 @@ export const getAssignTaskListThunk = createAsyncThunk("AssignTaskList", async (
 
 export const getListTicketThunk = createAsyncThunk("listTicket", async (submitData, { dispatch }) => {
     try {
-        dispatch(setLoader(true))
+        !submitData?.loader && dispatch(setLoader(true))
         const { data } = await API.listTicket(submitData);
-        dispatch(setLoader(false))
+        !submitData?.loader && dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;

@@ -7,7 +7,7 @@ import $, { data } from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
-import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance, deleteProject, deleteAssignTask, deleteTicket } from '../../utils/api.services';
+import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance, deleteProject, deleteAssignTask, deleteTicket, editTicket } from '../../utils/api.services';
 import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import profile_image from '../../assets/Images/default.jpg'
 import ReactDatatable from '../../config/ReactDatatable';
@@ -15,14 +15,14 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getCustomerListThunk, setLoader, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList, getProjectListThunk, updateProjectList, getAssignTaskListThunk, updateAssignTaskList, updateTicketList } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, setLoader, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList, getProjectListThunk, updateProjectList, getAssignTaskListThunk, updateAssignTaskList, updateTicketList, getListTicketThunk } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getWorkingHours, momentDateFormat, momentNormalDateFormat, momentTimeFormate, openModel, QuillContentRowWise, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TimeFormat } from '../../config/commonVariable';
+import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TaskStatus, TimeFormat } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -35,6 +35,7 @@ import Spinner from '../../component/Spinner';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import cloneDeep from "lodash/cloneDeep";
+import { Select } from 'antd';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -78,7 +79,6 @@ export default function AssignTaskList() {
     const [projectEditModal, setProjectEditModel] = useState(false);
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
     const [selectedProject, setSelectedProject] = useState({});
-
 
     useEffect(() => {
         const request = {
@@ -285,6 +285,61 @@ export default function AssignTaskList() {
         setPage(1);
     };
 
+    const { Option } = Select;
+
+    const StatusColumn = ({ rowData }) => {
+
+        const handleChange = (value, taskId) => {
+            console.log(`Status changed to: ${value} ${taskId}`);
+
+            editTicket({
+                status: value,
+                ticket_id: rowData?.id
+            }).then((response) => {
+                if (response?.code == Codes.SUCCESS) {
+                    TOAST_SUCCESS(response?.message);
+                    dispatch(getListTicketThunk({ loader: true }));
+                } else {
+                    TOAST_ERROR(response.message);
+                }
+            });
+        };
+
+        const getStatusStyle = (statusKey) => {
+            const status = TaskStatus[statusKey];
+            return {
+                backgroundColor: status?.color,
+                color: status?.textColor || '#000',
+                borderRadius: 6,
+                padding: '2px 8px',
+                textAlign: 'center',
+            };
+        };
+        return (
+            <Select
+                defaultValue={rowData?.status || 'open'}
+                style={{ width: 120 }}
+                onChange={handleChange}
+                dropdownMatchSelectWidth={false}
+                optionLabelProp="label"
+                className="task-status"
+                value={rowData?.status || 'open'} // Ensure value is passed to maintain default
+            >
+                {Object.entries(TaskStatus).map(([key, { label, u_key }]) => (<>
+                    {u_key == "ticket_status" &&
+                        <Option
+                            key={key}
+                            value={key}
+                            label={<div style={getStatusStyle(key)} className='task_list_item'>{label}</div>}
+                        >
+                            <div style={getStatusStyle(key)}>{label}</div>
+                        </Option>
+
+                    }</>))}
+            </Select>
+        );
+    };
+
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
@@ -311,8 +366,6 @@ export default function AssignTaskList() {
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
-
-
 
                             <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
@@ -382,7 +435,7 @@ export default function AssignTaskList() {
                                     onClick={() => navigat(PATHS.ADD_TICKET)}
                                 >
                                     <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
-                                    <span className="fw-semibold">Add Assign Task</span>
+                                    <span className="fw-semibold">Add Ticket</span>
                                 </button>
                             </div>
 
@@ -417,16 +470,16 @@ export default function AssignTaskList() {
                                 // sortable
                                 />
 
-                                <Column field="project_name" header="Project Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
-                                    <span className='me-2'>{truncateWords(rowData?.project_name) || '-'} </span>
+                                <Column field="title" header="Ticket Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                    <span className='me-2'>{truncateWords(rowData?.title) || '-'} </span>
                                 )} />
 
                                 <Column field="task_name" header="Task Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
                                     <span className='me-2'>{truncateWords(rowData?.task_name) || '-'} </span>
                                 )} />
 
-                                <Column field="title" header="Ticket Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
-                                    <span className='me-2'>{truncateWords(rowData?.title) || '-'} </span>
+                                <Column field="project_name" header="Project Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                    <span className='me-2'>{truncateWords(rowData?.project_name) || '-'} </span>
                                 )} />
 
                                 <Column field="created_at" header="Create Ticket" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
@@ -437,7 +490,7 @@ export default function AssignTaskList() {
                                     <span className='me-2'>{truncateWords(rowData?.reported_by_name) || '-'} </span>
                                 )} />
 
-                                <Column field="status" sortable data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                {/* <Column field="status" sortable data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
                                         <span
                                             className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(rowData?.status) || "bg-secondary"}`}
@@ -449,15 +502,22 @@ export default function AssignTaskList() {
                                             </span>
                                         </span>
                                     </>
-                                )} />
+                                )} /> */}
+
+                                <Column
+                                    field="status"
+                                    header="Status"
+                                    sortable
+                                    style={{ minWidth: '10rem' }}
+                                    body={(rowData) => <StatusColumn rowData={rowData} />}
+                                />
+
 
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
-
                                         <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => navigat(PATHS?.EDIT_TICKET, { state: rowData })} >
                                             <i class="ti ti-edit fs-7"></i>
                                         </a>
-
                                         <Link onClick={() => {
                                             openModelFunc(rowData);
                                         }}
@@ -497,12 +557,11 @@ export default function AssignTaskList() {
                             <div className="row m-2">
                                 {[
                                     { label: "Ticket Date", value: momentNormalDateFormat(selectedTicketList?.created_at, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
-                                    { label: "Project Name", value: selectedTicketList?.project_name || "-" },
-                                    { label: "Task Name", value: '-' },
                                     { label: "Ticket Name", value: selectedTicketList?.title },
-
+                                    { label: "Task Name", value: selectedTicketList?.task_name },
+                                    { label: "Project Name", value: selectedTicketList?.project_name || "-" },
                                     {
-                                        label: "Project Team",
+                                        label: "Team Member",
                                         value: selectedTicketList?.assigned_employee_names
                                             ? (
                                                 <ul className="mb-1 ps-3 ">
@@ -515,18 +574,17 @@ export default function AssignTaskList() {
                                                 </ul>
                                             ) : "-"
                                     },
-                                    { label: "Status", value: selectedTicketList?.status || "-" },
-
-                                    { label: "Project Description", value: QuillContentRowWise(selectedTicketList?.description ? selectedTicketList?.description : "") },
+                                    { label: "Status", value: TaskStatus[selectedTicketList?.status]?.label || "-" },
+                                    { label: "Ticket Description", value: QuillContentRowWise(selectedTicketList?.description ? selectedTicketList?.description : "") },
                                 ].map((item, index) => (<>
                                     {
-                                        item.label != "Project Description" ? (<>
+                                        item.label != "Ticket Description" ? (<>
                                             <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
                                                 {
                                                     item.value &&
                                                     <>
                                                         <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
+                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
                                                     </>
                                                 }
                                             </div>
@@ -535,7 +593,7 @@ export default function AssignTaskList() {
                                                 {
                                                     item.value && <>
                                                         <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
+                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
                                                     </>
                                                 }
                                             </div>

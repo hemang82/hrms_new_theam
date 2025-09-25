@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkHRMS_Admin_Panel=self.webpackChunkHRMS_Admin_Panel||[]).push([[1642],{21642:(a,t,n)=>{n.d(t,{dnm:()=>d});var e=n(35192);function d(a){return(0,e.k5)({tag:"svg",attr:{viewBox:"0 0 24 24"},child:[{tag:"path",attr:{d:"M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"},child:[]}]})(a)}}}]);

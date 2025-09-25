@@ -718,3 +718,41 @@
   }
 
   .status_font_samll {}
+
+  .task-status .ant-select-selector {
+    border: unset !important;
+    box-shadow: unset !important;
+    padding: 0 !important;
+    /* min-width: max-content !important;
+    max-width: max-content !important */
+  }
+
+  .task-status>div>span>span {
+    padding-right: 0 !important;
+  }
+
+  .task-status>div>span>span:last-child>div {
+    text-align: start !important;
+    padding: 0px 15px !important;
+  }
+
+  html body .task-status>div>span>span:last-child>div.task_list_item {
+    padding: 0 20px 0 15px !important;
+  }
+
+  .task-status.ant-select .ant-select-arrow{
+    right: 7px !important;
+  }
+
+  body:has(.task-status) .ant-select-dropdown.ant-select-dropdown-placement-bottomLeft>div>div>div>div>div>div {
+    margin-bottom: 5px;
+  }
+
+  body:has(.task-status) .ant-select-dropdown.ant-select-dropdown-placement-bottomLeft>div>div>div>div>div {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background: #e6f4ffc2
+  }

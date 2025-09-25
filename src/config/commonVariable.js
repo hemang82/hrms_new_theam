@@ -1889,3 +1889,49 @@ export const TASK_LIST = [
     { id: "2", name: "Admin panel" },
     { id: "3", name: "Contact us page" },
 ];
+
+
+export const TaskStatus = {
+    to_do: {
+        u_key: 'task_status',
+        label: "To Do",
+        color: "#CCE5FF",       // light blue background
+        border: "#1F7494",
+        textColor: "#1F7494",
+    },
+    in_progress: {
+        u_key: 'task_status',
+        label: "In Progress",
+        color: "#CCE5FF",       // light blue background
+        border: "#1F7494",
+        textColor: "#1F7494",
+    },
+    pending: {
+        u_key: 'task_status',
+        label: "Pending",
+        color: "#FFF3CD",       // light yellow
+        border: "#FFCA2C",
+        textColor: "#856404",
+    },
+    completed: {
+        u_key: 'task_status',
+        label: "Completed",
+        color: "#D4EDDA",       // light green
+        border: "#1d8149",
+        textColor: "#155724",
+    },
+    resolved: {
+        u_key: 'ticket_status',
+        label: "Resolved",
+        color: "#D1ECF1",       // light cyan
+        border: "#0C5460",
+        textColor: "#0C5460",
+    },
+    open: {
+        u_key: 'ticket_status',
+        label: "Open",
+        color: "#F8D7DA",       // light red
+        border: "#c82333",
+        textColor: "#721c24",
+    },
+};

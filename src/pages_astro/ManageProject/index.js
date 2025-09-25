@@ -337,7 +337,7 @@ export default function ManageProject() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
-                                <label className="form-label fw-semibold mb-1">&nbsp;</label> {/* placeholder for alignment */}
+                                <label className="form-label fw-semibold mb-1">&nbsp;</label>
                                 <button
                                     type="button"
                                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
@@ -348,7 +348,6 @@ export default function ManageProject() {
                                     <span className="fw-semibold">Add Project</span>
                                 </button>
                             </div>
-
                         </div>
                     </div>
 
@@ -378,7 +377,6 @@ export default function ManageProject() {
                                     style={{ minWidth: '4rem' }}
                                     body={(rowData, options) => options?.rowIndex + 1}
                                     showFilterMenu={true}
-                                // sortable
                                 />
 
                                 <Column field="name" header="Project Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
@@ -451,7 +449,7 @@ export default function ManageProject() {
                                     { label: "Date", value: momentNormalDateFormat(selectedProject?.deadline, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
                                     { label: "Title", value: selectedProject?.name },
                                     {
-                                        label: "Project Team",
+                                        label: "Team Member",
                                         value: selectedProject?.team_names
                                             ? (
                                                 <ul className="mb-1 ps-3 ">
@@ -468,7 +466,27 @@ export default function ManageProject() {
                                     { label: "Project Description", value: QuillContentRowWise(selectedProject?.description ? selectedProject?.description : "") },
                                 ].map((item, index) => (<>
                                     {
-                                        item.label != "Project Description" ? (<>
+                                        item.label == "Project Description" ? (<>
+                                            <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
+                                                {
+                                                    item.value && <>
+                                                        <p className="mb-1 fs-3">{item.label}</p>
+                                                        <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
+                                                    </>
+                                                }
+                                            </div>
+                                        </>) : item.label == "Priority" ? (
+                                            <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                                <p className="mb-1 fs-3">{item.label}</p>
+                                                <span className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(selectedProject?.priority) || "bg-secondary"}`}
+                                                    data-pc-name="tag"
+                                                    data-pc-section="root" >
+                                                    <span className="p-tag-value fs-2" data-pc-section="value">
+                                                        {getStatus(selectedProject?.priority) || "-"}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        ) : (<>
                                             <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
                                                 {
                                                     item.value &&
@@ -478,36 +496,10 @@ export default function ManageProject() {
                                                     </>
                                                 }
                                             </div>
-                                        </>) : (<>
-                                            <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
-                                                {
-                                                    item.value && <>
-                                                        <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
-                                                    </>
-                                                }
-                                            </div>
+
                                         </>)
                                     }
                                 </>))}
-                                {
-                                    selectedProject?.reason &&
-                                    <>
-                                        <div className="col-md-6 mb-4">
-                                            <p className="mb-1 fs-4">Reason</p>
-                                            <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{selectedProject?.reason || 'N/A'}</h6>
-                                        </div>
-                                    </>
-                                }
-                                {selectedProject?.admin_reason &&
-                                    <>
-                                        <div className="col-md-6 mb-4">
-                                            <p className="mb-1 fs-4">Admin Reason</p>
-                                            <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{selectedProject?.admin_reason || 'N/A'}</h6>
-                                        </div>
-                                    </>
-                                }
-
                             </div>
                         </div>
                     </div>

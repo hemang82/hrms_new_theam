@@ -315,6 +315,8 @@ export default function AddCustomer() {
                                                         {errors[AstroInputTypesEnum.DEPARTMENT]?.message}
                                                     </label>
                                                 </div>
+
+                                                
                                                 <div className="row mb-4 g-3">
                                                     <div className="col-12 col-md-6">
                                                         <label htmlFor="dob1" className="form-label fw-semibold">

@@ -7,7 +7,7 @@ import $, { data } from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
-import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance, deleteProject, deleteAssignTask } from '../../utils/api.services';
+import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance, deleteProject, deleteAssignTask, editAssignTask } from '../../utils/api.services';
 import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import profile_image from '../../assets/Images/default.jpg'
 import ReactDatatable from '../../config/ReactDatatable';
@@ -22,7 +22,7 @@ import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
-import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TimeFormat } from '../../config/commonVariable';
+import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TaskStatus, TimeFormat } from '../../config/commonVariable';
 import { RiUserReceivedLine } from 'react-icons/ri';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
@@ -35,6 +35,8 @@ import Spinner from '../../component/Spinner';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import cloneDeep from "lodash/cloneDeep";
+import { Select } from 'antd';
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -270,6 +272,60 @@ export default function AssignTaskList() {
         }
     };
 
+    const { Option } = Select;
+
+    const StatusColumn = ({ rowData }) => {
+        const handleChange = (value, taskId) => {
+            console.log(`Status changed to: ${value} ${taskId}`);
+            editAssignTask({
+                status: value,
+                task_id: rowData?.id
+            }).then((response) => {
+                if (response?.code == Codes.SUCCESS) {
+                    TOAST_SUCCESS(response?.message);
+                    dispatch(getAssignTaskListThunk({ loader: true }));
+                } else {
+                    TOAST_ERROR(response.message);
+                }
+            });
+        };
+
+        const getStatusStyle = (statusKey) => {
+            const status = TaskStatus[statusKey];
+            return {
+                backgroundColor: status?.color,
+                color: status?.textColor || '#000',
+                borderRadius: 6,
+                padding: '2px 8px',
+                textAlign: 'center',
+            };
+        };
+
+        return (
+            <Select
+                defaultValue={rowData?.status || 'open'}
+                style={{ width: 120 }}
+                onChange={handleChange}
+                dropdownMatchSelectWidth={false}
+                optionLabelProp="label"
+                className="task-status"
+                value={rowData?.status || 'open'} // Ensure value is passed to maintain default
+            >
+                {Object.entries(TaskStatus).map(([key, { label, u_key }]) => (<>
+                    {u_key == "task_status" &&
+                        <Option
+                            key={key}
+                            value={key}
+                            label={<div style={getStatusStyle(key)} className='task_list_item'>{label}</div>}
+                        >
+                            <div style={getStatusStyle(key)}>{label}</div>
+                        </Option>
+
+                    }</>))}
+            </Select>
+        );
+    };
+
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
@@ -370,7 +426,7 @@ export default function AssignTaskList() {
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 loading={loading}
                                 // globalFilterFields={['name', 'annual_income']}
-                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Project Not Found.</span>}>
+                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Task Not Found.</span>}>
 
                                 <Column field="id"
                                     header="Id"
@@ -388,14 +444,23 @@ export default function AssignTaskList() {
                                     <span className='me-2'>{truncateWords(rowData?.title) || '-'} </span>
                                 )} />
 
+
+                                <Column field="created_at" header="Assign Date" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
+                                    <span className='me-2'>{momentDateFormat(rowData?.created_at, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
+                                )} />
+
                                 <Column field="due_date" header="Deadline Date" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className='me-2'>{momentDateFormat(rowData?.due_date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
                                 )} />
 
 
-                                <Column field="status" header="Status" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.status || '-'} </span>
-                                )} />
+                                <Column
+                                    field="status"
+                                    header="Status"
+                                    sortable
+                                    style={{ minWidth: '10rem' }}
+                                    body={(rowData) => <StatusColumn rowData={rowData} />}
+                                />
 
                                 <Column field="priority" sortable data-pc-section="root" header="Priority" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
@@ -458,12 +523,12 @@ export default function AssignTaskList() {
                                 {[
                                     { label: "Assign Date", value: momentNormalDateFormat(selectedAssignTask?.created_at, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
                                     { label: "Deadline Date", value: momentNormalDateFormat(selectedAssignTask?.due_date, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
-                                    { label: "Project Name", value: selectedAssignTask?.project_name },
                                     { label: "Task Title", value: selectedAssignTask?.title },
-                                    { label: "Status", value: selectedAssignTask?.status || "-" },
+                                    { label: "Project Name", value: selectedAssignTask?.project_name },
+                                    { label: "Status", value: TaskStatus[selectedAssignTask?.status]?.label || "-" },
                                     { label: "Priority", value: selectedAssignTask?.priority },
                                     {
-                                        label: "Project Team",
+                                        label: "Team Member",
                                         value: selectedAssignTask?.assigned_employee_names
                                             ? (
                                                 <ul className="mb-1 ps-3 ">
@@ -476,48 +541,45 @@ export default function AssignTaskList() {
                                                 </ul>
                                             ) : "-"
                                     },
-                                    { label: "Project Description", value: QuillContentRowWise(selectedAssignTask?.description ? selectedAssignTask?.description : "") },
+                                    { label: "Task Description", value: QuillContentRowWise(selectedAssignTask?.description ? selectedAssignTask?.description : "") },
                                 ].map((item, index) => (<>
                                     {
-                                        item.label != "Project Description" ? (<>
+                                        item.label == "Task Description" ? (<>
+                                            <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
+                                                {
+                                                    item.value && <>
+                                                        <p className="mb-1 fs-3">{item.label}</p>
+                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
+                                                    </>
+                                                }
+                                            </div>
+                                        </>) : item.label == "Priority" ? (
+                                            <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                                <p className="mb-1 fs-3">{item.label}</p>
+                                                <span className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(selectedAssignTask?.priority) || "bg-secondary"}`}
+                                                    data-pc-name="tag"
+                                                    data-pc-section="root" >
+                                                    <span className="p-tag-value fs-2" data-pc-section="value">
+                                                        {getStatus(selectedAssignTask?.priority) || "-"}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        ) : (<>
+
                                             <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
                                                 {
                                                     item.value &&
                                                     <>
                                                         <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
+                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
                                                     </>
                                                 }
                                             </div>
-                                        </>) : (<>
-                                            <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
-                                                {
-                                                    item.value && <>
-                                                        <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
-                                                    </>
-                                                }
-                                            </div>
+
                                         </>)
                                     }
                                 </>))}
-                                {
-                                    selectedAssignTask?.reason &&
-                                    <>
-                                        <div className="col-md-6 mb-4">
-                                            <p className="mb-1 fs-4">Reason</p>
-                                            <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{selectedAssignTask?.reason || 'N/A'}</h6>
-                                        </div>
-                                    </>
-                                }
-                                {selectedAssignTask?.admin_reason &&
-                                    <>
-                                        <div className="col-md-6 mb-4">
-                                            <p className="mb-1 fs-4">Admin Reason</p>
-                                            <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{selectedAssignTask?.admin_reason || 'N/A'}</h6>
-                                        </div>
-                                    </>
-                                }
+
 
                             </div>
                         </div>
