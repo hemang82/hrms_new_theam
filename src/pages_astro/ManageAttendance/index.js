@@ -355,6 +355,54 @@ export default function ManageAttendance() {
         }
     };
 
+    // ---------------------------------- Export Data ----------------------------------
+
+    const handleExportApiCall = async () => {
+        dispatch(setLoader(true));
+        let submitData = {
+            search: globalFilterValue
+        }
+        const AttendanceExportData = updatedAttendanceList?.map((item, index) => ({
+            id: index + 1,
+            // employeeID: `${salary?.emp_id || '-'}`,
+            Name: `${item?.name || '-'}`,
+            Date: item?.date || '-',
+            Day: momentDateFormat(item?.date, DateFormat?.DATE_WEEK_NAME_FORMAT) || '-',
+            DayType: item?.type || '-',
+            Status: getStatus(item?.status) || "-",
+            CheckIN: item?.checkInTimes[0]?.length > 0 ? momentTimeFormate(item?.checkInTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-" || '-',
+            CheckOUT: item?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(item?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-" || '-',
+            TotalWorkingHours: item?.checkInTimes[0]?.length > 0 ? getWorkingHours(item?.checkInTimes[0], item?.checkOutTimes[0], getBreakMinutes(item?.breaks?.length > 0 ? item?.breaks : [] || 0)) || '-' : "-",
+            BreakTime: item.breaks?.length > 0 ? getBreakMinutes(item.breaks) + 'm' : '-' || '-',
+            TotalBreak: item.breaks.length > 0 ? item.breaks.map((b, index) => `Break ${index + 1}: ${momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - ${momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} `).join(" | ") : "N/A",
+        }));
+        return { code: 1, data: AttendanceExportData }
+    };
+
+    const handleExportToPdfManage = async () => {
+        const { code, data } = await handleExportApiCall();
+        if (code == Codes.SUCCESS) {
+            ExportToPdf(data, 'Attendance List', 'Attendance List');
+        }
+        dispatch(setLoader(false));
+    };
+
+    const handleExportToCSVManage = async () => {
+        const { code, data } = await handleExportApiCall();
+        if (code == Codes.SUCCESS) {
+            ExportToCSV(data, 'Attendance List');
+        }
+        dispatch(setLoader(false));
+    };
+
+    const handleExportToExcelManage = async () => {
+        const { code, data } = await handleExportApiCall();
+        if (code == Codes.SUCCESS) {
+            ExportToExcel(data, 'Attendance List');
+        }
+        dispatch(setLoader(false));
+    };
+
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
@@ -475,9 +523,8 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 mb-2 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
                                 <label className="d-block mb-1 fw-semibold">Status</label>
-
                                 <div className="btn-group w-100">
                                     <button
                                         type="button"
@@ -513,7 +560,7 @@ export default function ManageAttendance() {
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-1 d-flex flex-column">
-                                <label className="d-block mb-1 fw-semibold">&nbsp;</label> {/* placeholder for alignment */}
+                                <label className="d-block mb-1 fw-semibold">&nbsp;</label>
                                 <button
                                     type="button"
                                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
@@ -525,6 +572,29 @@ export default function ManageAttendance() {
                                 </button>
                             </div>
 
+                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
+                                <label className="d-block mb-1 fw-semibold">&nbsp;</label>
+                                <button
+                                    className="btn btn-info dropdown-toggle w-100 w-md-auto "
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    style={{ height: '40px' }}
+                                >
+                                    Export
+                                </button>
+                                <ul className="dropdown-menu">
+                                    {/* <li>
+                                            <a className="dropdown-item text-black-50" onClick={handleExportToPdfManage}>PDF</a>
+                                        </li> */}
+                                    <li>
+                                        <a className="dropdown-item text-black-50" onClick={handleExportToCSVManage}>CSV</a>
+                                    </li>
+                                    <li>
+                                        <a className="dropdown-item text-black-50" onClick={handleExportToExcelManage}>Excel</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 

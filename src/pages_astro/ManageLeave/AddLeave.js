@@ -6,7 +6,7 @@ import Header from '../../layout/Header';
 import Slidebar from '../../layout/Slidebar';
 import Footer from '../../layout/Footer';
 import { Language, TOAST_ERROR, TOAST_SUCCESS, allowLettersAndSpaces } from '../../config/common';
-import { addEmployeeLeaves, AddUser, CustomerDetails, departnmentList, EditUser, } from '../../utils/api.services';
+import { addEmployeeLeaves, addEmployeeLeavesNew, AddUser, CustomerDetails, departnmentList, EditUser, } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
 import categoryImage from '../../assets/Images/Group 48096953.png'
 import { uploadImageOnAWS } from '../../utils/aws.service';
@@ -15,7 +15,7 @@ import { SketchPicker } from 'react-color';
 import { formatDate, formatDateDyjs, getCommaSeparatedNames, getFileNameFromUrl, handelInputText, selectOption, selectOptionCustomer, textInputValidation, textValidation } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, HALF_DAY_TYPE, InputRegex, InputTypesEnum, LEAVE_DAY, LEAVE_TYPE_LIST } from '../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomerListThunk, setLoader } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, getlistLeavesThunk, setLoader } from '../../Store/slices/MasterSlice';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import CountryMobileNumber from '../../pages/CommonPages/CountryMobileNumber';
 import Spinner from '../../component/Spinner';
@@ -134,10 +134,14 @@ export default function AddCustomer() {
                 //     }
                 // })
             } else {
-                addEmployeeLeaves(request).then((response) => {
+                addEmployeeLeavesNew(request).then((response) => {
                     if (response?.code == Codes.SUCCESS) {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.LEAVE_LIST)
+                        const request = {
+                            emp_leave_company: EMPLOYEE_STATUS[0]?.key
+                        };
+                        dispatch(getlistLeavesThunk(request))
                         dispatch(setLoader(false))
                     } else {
                         dispatch(setLoader(false))

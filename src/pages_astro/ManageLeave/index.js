@@ -698,7 +698,6 @@ export default function ManageCoustomer() {
 
                                 <Column field="status" header="View" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
-
                                         <Link onClick={() => {
                                             // if (rowData?.breaks?.length > 0) {
                                             openViewModelFunc(rowData);

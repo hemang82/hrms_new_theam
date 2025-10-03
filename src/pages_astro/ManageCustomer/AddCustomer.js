@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import {  useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Language, TOAST_ERROR, TOAST_SUCCESS, allowLettersAndSpaces } from '../../config/common';
 import { AddUser, CustomerDetails, departnmentList, EditUser, } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
-import {Codes } from '../../config/constant';
-import { formatDateDyjs,handelInputText,textInputValidation, textValidation } from '../../config/commonFunction';
+import { Codes } from '../../config/constant';
+import { formatDateDyjs, handelInputText, textInputValidation, textValidation } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, InputRegex, InputTypesEnum } from '../../config/commonVariable';
 import { useDispatch } from 'react-redux';
 import { setLoader } from '../../Store/slices/MasterSlice';
@@ -84,7 +84,6 @@ export default function AddCustomer() {
                 joining_date: formatDateDyjs(selectedJoiningDate, DateFormat?.DATE_DASH_TIME_FORMAT),
                 profile_photo: 'test.jpg',
             }
-
             if (userData) {
                 request.employee_id = userData?.id?.toString();
                 request.action = "admin";
@@ -93,6 +92,7 @@ export default function AddCustomer() {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.EMPLOYEE_LIST)
                         dispatch(setLoader(false))
+                        dispatch(getCustomerListThunk(request));
                     } else {
                         TOAST_ERROR(response.message)
                         dispatch(setLoader(false))
@@ -104,6 +104,8 @@ export default function AddCustomer() {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.EMPLOYEE_LIST)
                         dispatch(setLoader(false))
+                        dispatch(getCustomerListThunk(request));
+
                     } else {
                         TOAST_ERROR(response.message)
                         dispatch(setLoader(false))
@@ -125,7 +127,7 @@ export default function AddCustomer() {
             filteredValue = value.replace(InputRegex.ONCHANGE_MOBILE_REGEX, '');
         }
         setValue(key, filteredValue)
-        clearErrors(key);              
+        clearErrors(key);
         await trigger(key);
     };
 
@@ -316,7 +318,7 @@ export default function AddCustomer() {
                                                     </label>
                                                 </div>
 
-                                                
+
                                                 <div className="row mb-4 g-3">
                                                     <div className="col-12 col-md-6">
                                                         <label htmlFor="dob1" className="form-label fw-semibold">
