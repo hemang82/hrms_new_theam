@@ -38,6 +38,7 @@ import Spinner from '../../component/Spinner';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import cloneDeep from "lodash/cloneDeep";
+import { FaDownload } from 'react-icons/fa';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -274,7 +275,6 @@ export default function ManageAttendance() {
         })
     }
 
-
     const openModelFunc = (data) => {
         setStatusModal(true)
         setSelectedAttendance(data)
@@ -366,13 +366,13 @@ export default function ManageAttendance() {
             id: index + 1,
             // employeeID: `${salary?.emp_id || '-'}`,
             Name: `${item?.name || '-'}`,
-            Date: item?.date || '-',
+            Date: momentDateFormat(item?.date, DateFormat?.DATE_FORMAT) || '-',
             Day: momentDateFormat(item?.date, DateFormat?.DATE_WEEK_NAME_FORMAT) || '-',
             DayType: item?.type || '-',
             Status: getStatus(item?.status) || "-",
             CheckIN: item?.checkInTimes[0]?.length > 0 ? momentTimeFormate(item?.checkInTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-" || '-',
             CheckOUT: item?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(item?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-" || '-',
-            TotalWorkingHours: item?.checkInTimes[0]?.length > 0 ? getWorkingHours(item?.checkInTimes[0], item?.checkOutTimes[0], getBreakMinutes(item?.breaks?.length > 0 ? item?.breaks : [] || 0)) || '-' : "-",
+            WorkingHours: item?.checkInTimes[0]?.length > 0 ? getWorkingHours(item?.checkInTimes[0], item?.checkOutTimes[0], getBreakMinutes(item?.breaks?.length > 0 ? item?.breaks : [] || 0)) || '-' : "-",
             BreakTime: item.breaks?.length > 0 ? getBreakMinutes(item.breaks) + 'm' : '-' || '-',
             TotalBreak: item.breaks.length > 0 ? item.breaks.map((b, index) => `Break ${index + 1}: ${momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - ${momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} `).join(" | ") : "N/A",
         }));
@@ -382,6 +382,11 @@ export default function ManageAttendance() {
     const handleExportToPdfManage = async () => {
         const { code, data } = await handleExportApiCall();
         if (code == Codes.SUCCESS) {
+            data.forEach(item => {
+                delete item.id;
+                delete item.TotalBreak;
+                delete item.Day;
+            });
             ExportToPdf(data, 'Attendance List', 'Attendance List');
         }
         dispatch(setLoader(false));
@@ -390,6 +395,7 @@ export default function ManageAttendance() {
     const handleExportToCSVManage = async () => {
         const { code, data } = await handleExportApiCall();
         if (code == Codes.SUCCESS) {
+
             ExportToCSV(data, 'Attendance List');
         }
         dispatch(setLoader(false));
@@ -417,7 +423,7 @@ export default function ManageAttendance() {
                     <div className="card card-body mb-2 p-3">
                         <div className="row g-2">
 
-                            <div className="col-12 col-md-6 col-lg-3">
+                            <div className="col-12 col-md-6 col-lg-4">
                                 <div className="position-relative mt-4 w-75">
                                     <input
                                         type="text"
@@ -432,7 +438,7 @@ export default function ManageAttendance() {
                             </div>
 
                             {/* Start Date */}
-                            <div className="col-12 col-md-6 col-lg-2">
+                            <div className="col-12 col-md-6 col-lg-1">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
@@ -446,7 +452,7 @@ export default function ManageAttendance() {
                                 />
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2">
+                            <div className="col-12 col-md-6 col-lg-1">
                                 <label className="d-block mb-1 fw-semibold">End Date</label>
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
@@ -464,6 +470,42 @@ export default function ManageAttendance() {
                                     disabled={!startDate}
                                     disabledDate={disabledEndDate}
                                 />
+                            </div>
+
+                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
+                                <label className="d-block mb-1 fw-semibold">Status</label>
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling({
+                                                            start_date: startDate,
+                                                            end_date: endDate,
+                                                            employee_id: "",
+                                                            emp_leave_company: option?.key
+                                                        });
+                                                        setEmployeeStatus(option)
+                                                    }}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
 
                             <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
@@ -523,43 +565,7 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
-                                <label className="d-block mb-1 fw-semibold">Status</label>
-                                <div className="btn-group w-100">
-                                    <button
-                                        type="button"
-                                        className="btn btn-info dropdown-toggle w-100"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                        style={{ height: '40px' }}
-                                    >
-                                        {employeeStatus?.value || 'Select Status'}
-                                    </button>
-                                    <ul className="dropdown-menu w-100 border">
-                                        {EMPLOYEE_STATUS?.map((option) => (
-                                            <li key={option.key}>
-                                                <a
-                                                    className="dropdown-item cursor_pointer text-black-50"
-                                                    onClick={() => {
-                                                        onChangeApiCalling({
-                                                            start_date: startDate,
-                                                            end_date: endDate,
-                                                            employee_id: "",
-                                                            emp_leave_company: option?.key
-                                                        });
-                                                        setEmployeeStatus(option)
-                                                    }}
-                                                >
-                                                    {option?.value}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className="col-12 col-md-6 col-lg-1 d-flex flex-column">
+                            <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
                                 <label className="d-block mb-1 fw-semibold">&nbsp;</label>
                                 <button
                                     type="button"
@@ -568,7 +574,7 @@ export default function ManageAttendance() {
                                     onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
                                 >
                                     <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
-                                    <span className="fw-semibold">Add</span>
+                                    <span className="fw-semibold">Add Attendance</span>
                                 </button>
                             </div>
 
@@ -588,13 +594,25 @@ export default function ManageAttendance() {
                                             <a className="dropdown-item text-black-50" onClick={handleExportToPdfManage}>PDF</a>
                                         </li> */}
                                     <li>
-                                        <a className="dropdown-item text-black-50" onClick={handleExportToCSVManage}>CSV</a>
-                                    </li>
-                                    <li>
                                         <a className="dropdown-item text-black-50" onClick={handleExportToExcelManage}>Excel</a>
                                     </li>
+                                    <li>
+                                        <a className="dropdown-item text-black-50" onClick={handleExportToPdfManage}>PDF</a>
+                                    </li>
+
                                 </ul>
                             </div>
+                            {/* <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
+                                <label className="d-block mb-1 fw-semibold">&nbsp;</label>
+                                <button
+                                    className="btn btn-info w-25 d-flex align-items-center justify-content-center"
+                                    style={{ height: '40px' }}
+                                    onClick={handleExportToExcelManage}
+                                >
+                                    <FaDownload size={18} />
+                                </button>
+                            </div> */}
+
                         </div>
                     </div>
 
@@ -672,6 +690,10 @@ export default function ManageAttendance() {
                                     <span className='me-2'>{rowData?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
                                 )} />
 
+                                <Column field="checkInTimes" header="Total Break" style={{ minWidth: '10rem' }} body={(rowData) => (
+                                    <span className=''>{rowData.breaks?.length > 0 ? getBreakMinutes(rowData.breaks) + 'm' : '-'} </span>
+                                )} />
+
                                 <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className=''>{rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "-"} </span>
                                 )} />
@@ -734,7 +756,7 @@ export default function ManageAttendance() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
 
             <div className={`modal custom-modal  ${statusModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">

@@ -34,6 +34,7 @@ import { uploadImageOnAWS } from '../../utils/aws.service';
 import { PATHS } from '../../Router/PATHS';
 import { BsQuestionOctagon } from 'react-icons/bs';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import moment from 'moment';
 
 export default function ManageCoustomer() {
 
@@ -447,7 +448,8 @@ export default function ManageCoustomer() {
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
                             </div>
-
+                            <div className="col-12 col-md-6 col-lg-1">
+                            </div>
                             {/* Start Date */}
                             <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
@@ -506,8 +508,8 @@ export default function ManageCoustomer() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
-                                <label className="d-block mb-1 fw-semibold">Employee Status</label>
+                            <div className="col-12 col-md-6 col-lg-1 mb-3 mb-md-0">
+                                <label className="d-block mb-1 fw-semibold">Status</label>
                                 <div className="btn-group w-100">
 
                                     <button
@@ -653,6 +655,7 @@ export default function ManageCoustomer() {
                                         }
                                     </>
                                 )} />
+
                                 {
                                     getLocalStorageItem(Constatnt?.ROLE_KEY) == '1' && <Column
                                         field="status"
@@ -676,21 +679,33 @@ export default function ManageCoustomer() {
                                                             <i className="ti ti-x fs-7"></i>
                                                         </a>
                                                     </>) : (<>
-                                                        <a className="text-success me-2 disabled-status"
+                                                        <a className="text-success me-2 disabled-status "
                                                         // onClick={() => { handleStatus(rowData?.id, '1') }}
                                                         // onClick={() => { openActionModelFunc(rowData, 'approved') }}
                                                         >
                                                             <i className="ti ti-check fs-7"></i>
                                                         </a>
                                                         <a
-                                                            className="text-danger disabled-status"
-                                                        // onClick={() => { openActionModelFunc(rowData, 'cancel') }}
+                                                            className={`text-danger ${rowData?.status === 1 &&
+                                                                rowData.start_date &&
+                                                                moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
+                                                                ? "cursor_pointer"
+                                                                : "disabled-status"
+                                                                }`}
+                                                            onClick={() => {
+                                                                if (
+                                                                    rowData?.status === 1 &&
+                                                                    rowData.start_date &&
+                                                                    moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
+                                                                ) {
+                                                                    openActionModelFunc(rowData, "cancel");
+                                                                }
+                                                            }}
                                                         >
                                                             <i className="ti ti-x fs-7"></i>
                                                         </a>
                                                     </>)
                                                 }
-
                                             </div>
                                         )}
                                     />
@@ -720,8 +735,8 @@ export default function ManageCoustomer() {
 
                         </div>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
 
             <div className={`modal custom-modal  ${addLeaveModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">

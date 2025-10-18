@@ -225,7 +225,7 @@ export default function ManageDepartnment() {
 
         let sendRequest = {
             dept_name: data[AstroInputTypesEnum?.DEPARTMENT],
-            total_emp: data[AstroInputTypesEnum?.NO_OF_EMPLOYEE],
+            // total_emp: data[AstroInputTypesEnum?.NO_OF_EMPLOYEE],
         };
         if (editLeaveModal) {
             sendRequest.dept_id = selectedUser?.id;
@@ -471,7 +471,7 @@ export default function ManageDepartnment() {
                                                 </label>
                                             </div>
 
-                                            <div className="">
+                                            {/* <div className="">
                                                 <label htmlFor="lastname" className="form-label fw-semibold">
                                                     No of Employees<span className="text-danger ms-1">*</span>
                                                 </label>
@@ -487,7 +487,7 @@ export default function ManageDepartnment() {
                                                 <label className="errorc ps-1 pt-1">
                                                     {errors[AstroInputTypesEnum.NO_OF_EMPLOYEE]?.message}
                                                 </label>
-                                            </div>
+                                            </div> */}
                                             <div className="modal-footer justify-content-center">
                                                 <button type="button" className="btn btn-danger" onClick={() => { closeBankDetailsModelFunc() }}>Cancel</button>
                                                 <button type="submit" className="btn btn-primary">Submit</button>

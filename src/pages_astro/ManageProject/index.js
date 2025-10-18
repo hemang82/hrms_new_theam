@@ -384,7 +384,7 @@ export default function ManageProject() {
                                 )} />
 
                                 <Column field="deadline" header="Deadline Date" sortable style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>{momentDateFormat(rowData?.deadline, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
+                                    <span className='me-2'>{momentDateFormat(rowData.deadline[rowData?.deadline?.length - 1], DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
                                 )} />
 
                                 <Column field="priority" sortable data-pc-section="root" header="Priority" style={{ minWidth: '8rem' }} body={(rowData) => (
@@ -446,27 +446,62 @@ export default function ManageProject() {
                         <div className="modal-body ">
                             <div className="row m-2">
                                 {[
-                                    { label: "Date", value: momentNormalDateFormat(selectedProject?.deadline, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
-                                    { label: "Title", value: selectedProject?.name },
+                                    { label: "Project Name", value: selectedProject?.name },
+                                    { label: "Priority", value: selectedProject?.priority },
+                                    // { label: "Date", value: <ul className="mb-1 ps-3 ">{ momentNormalDateFormat(selectedProject?.deadline, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' }</ul>},
+                                    {
+                                        label: "Deadline Date",
+                                        value: (
+                                            <ul className="mb-1 list-group list-group-numbered">
+                                                {selectedProject?.deadline?.length
+                                                    ? selectedProject.deadline.map((date, index) => {
+                                                        const isLast = index == selectedProject.deadline.length - 1;
+                                                        return (
+                                                            <li
+                                                                key={index}
+                                                                className={`fs-4 p-2 list-group-item ${isLast ? 'text-custom-theam' : ''}`}
+                                                            >
+                                                                {momentNormalDateFormat(date, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT)}
+                                                            </li>
+                                                        );
+                                                    }) : <li>-</li>}
+                                            </ul>
+                                        )
+                                    },
                                     {
                                         label: "Team Member",
                                         value: selectedProject?.team_names
-                                            ? (
-                                                <ul className="mb-1 ps-3 ">
-                                                    {selectedProject.team_names
-                                                        .split(",")
-                                                        .map(name => name.trim())
-                                                        .map((name, index) => (
-                                                            <li key={index} className='fs-4 pb-1 pt-1'>{index + 1}. {name}</li>
-                                                        ))}
-                                                </ul>
-                                            ) : "-"
+                                            ? (<ul className="mb-1 list-group list-group-numbered">
+                                                {selectedProject.team_names
+                                                    .split(",")
+                                                    .map(name => name.trim())
+                                                    .map((name, index) => (
+                                                        <li key={index} className='fs-4 p-2 list-group-item'> {name}</li>
+                                                    ))}
+                                            </ul>) : "-"
                                     },
-                                    { label: "Priority", value: selectedProject?.priority },
                                     { label: "Project Description", value: QuillContentRowWise(selectedProject?.description ? selectedProject?.description : "") },
                                 ].map((item, index) => (<>
                                     {
-                                        item.label == "Project Description" ? (<>
+                                        item.label == "Project Name" || item.label == "Priority" ? (<>
+                                            {
+                                                item.label == "Priority" ? (
+                                                    <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                                        <p className="mb-1 fs-3">{item.label}</p>
+                                                        <span className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(selectedProject?.priority) || "bg-secondary"}`}
+                                                            data-pc-name="tag"
+                                                            data-pc-section="root" >
+                                                            <span className="p-tag-value fs-2" data-pc-section="value">
+                                                                {getStatus(selectedProject?.priority) || "-"}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                ) : <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                                    <p className="mb-1 fs-3">{item.label}</p>
+                                                    <h6 className="modal-title fs-4">{item.value || 'N/A'} </h6>
+                                                </div>
+                                            }
+                                        </>) : item.label == "Project Description" ? (<>
                                             <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
                                                 {
                                                     item.value && <>
@@ -475,18 +510,16 @@ export default function ManageProject() {
                                                     </>
                                                 }
                                             </div>
-                                        </>) : item.label == "Priority" ? (
+                                        </>) : item.label == "Team Member" ? (<>
                                             <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
-                                                <p className="mb-1 fs-3">{item.label}</p>
-                                                <span className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(selectedProject?.priority) || "bg-secondary"}`}
-                                                    data-pc-name="tag"
-                                                    data-pc-section="root" >
-                                                    <span className="p-tag-value fs-2" data-pc-section="value">
-                                                        {getStatus(selectedProject?.priority) || "-"}
-                                                    </span>
-                                                </span>
+                                                {
+                                                    item.value && <>
+                                                        <p className="mb-1 fs-3">{item.label}</p>
+                                                        <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>
+                                                    </>
+                                                }
                                             </div>
-                                        ) : (<>
+                                        </>) : (<>
                                             <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
                                                 {
                                                     item.value &&
@@ -496,7 +529,6 @@ export default function ManageProject() {
                                                     </>
                                                 }
                                             </div>
-
                                         </>)
                                     }
                                 </>))}

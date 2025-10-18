@@ -114,6 +114,7 @@ export default function ManageLeaveBalance() {
     const [updatedLeaveLeast, setupdatedLeavList] = useState(bankDetailsList);
 
     const [addBankDetailsModal, setAddBankDetails] = useState(false);
+    const [editBankDetails, setEditBankDetails] = useState(false);
     const [editBankDetailsModal, setBankDetailsLeave] = useState(false);
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
@@ -259,74 +260,6 @@ export default function ManageLeaveBalance() {
 
     // ----------------------------------Export Data----------------------------------
 
-    const handleExportApiCall = async () => {
-        // dispatch(setLoader(true));
-        // let submitData = {
-        //     search: globalFilterValue
-        // }
-        // const { code, data } = await exportCustomerList(submitData);
-        // return { code, data }
-    }
-
-    // const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-
-    //     console.log('getInterestRateByCibil cibilScorecibilScore', cibilScore);
-    //     console.log('getInterestRateByCibil intrestDropdown', intrestDropdown);
-
-    //     if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = intrestDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.rate_percentage : '';
-    // };
-
-    const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 300;
-
-        if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = intrestDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.rate_percentage : '';
-    };
-
-    // const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-
-    //     console.log('processingDropdown cibilScorecibilScore', cibilScore);
-    //     console.log('processingDropdown intrestDropdown', intrestDropdown);
-    //     if (!Array.isArray(processingDropdown) || processingDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = processingDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.min_fee_percent : '';
-    // };
-
-    const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-        // Fallback to 300 if cibilScore is invalid
-        const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 0;
-
-        console.log('validCibilScorevalidCibilScore', validCibilScore);
-
-        if (!Array.isArray(processingDropdown) || processingDropdown.length === 0) {
-            return '';
-        }
-
-        const matchedRate = processingDropdown.find(
-            (item) => validCibilScore >= item.min_score && validCibilScore <= item.max_score
-        );
-
-        return matchedRate ? matchedRate.min_fee_percent : '';
-    };
 
     const onPageChange = (Data) => {
         setPage(Data)
@@ -361,6 +294,10 @@ export default function ManageLeaveBalance() {
             if (response?.code == Codes.SUCCESS) {
                 dispatch(setLoader(false))
                 TOAST_SUCCESS(response?.message);
+                const request = {
+                    emp_leave_company: employeeStatus?.key,
+                };
+                dispatch(getListBankDetailsThunk(request))
                 closeBankDetailsModelFunc()
             } else {
                 dispatch(setLoader(false))
@@ -380,6 +317,7 @@ export default function ManageLeaveBalance() {
 
     const openEditBankDetailsModelFunc = (data) => {
         setAddBankDetails(true)
+        setEditBankDetails(true)
         setBankDetailsLeave(true)
         setSelectedUser(data)
         setValue(AstroInputTypesEnum?.EMPLOYEE, data?.id)
@@ -393,10 +331,10 @@ export default function ManageLeaveBalance() {
     const closeBankDetailsModelFunc = () => {
         setAddBankDetails(false)
         setBankDetailsLeave(false)
+        setEditBankDetails(false)
         setSelectedUser({})
         reset()
     }
-
 
     const handleSort = (event) => {
         console.log("Sort event triggered:", event);
@@ -644,7 +582,7 @@ export default function ManageLeaveBalance() {
                                                             required: "Select employee",
                                                             // onChange: (e) => changeStatusFunction(e.target.value),
                                                         })}
-                                                        disabled
+                                                        disabled={editBankDetails}
                                                     >
                                                         <option value="">Select employee</option>
                                                         {selectOptionCustomer(customerList)}

@@ -98,6 +98,14 @@ export function listLeaves(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/emp_leave_listing`, request)
 }
 
+export function listLeavesRequest(request) {
+    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/compoff_request_listing`, request)
+}
+
+export function listLeavesRequestAcceptReject(request) {
+    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/compoff_approve_reject`, request)
+}
+
 export function addLeaves(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/add_leave`, request)
 }
@@ -176,6 +184,10 @@ export function saturdayList(request) {
     return AxiosClientApi.post(`/${COMMON}/week_off_listing`, request, true)
 }
 
+export function birthdayAndAnnivarsary(request) {
+    return AxiosClientApi.post(`/${COMMON}/birthday_anniversiry`, request, true)
+}
+
 export function editSaturday(request) {
     return AxiosClientApi.post(`/${COMMON}/edit_week_off`, request, true)
 }
@@ -207,6 +219,12 @@ export function listAssignTask(request) {
 export function addAssignTask(request) {
     return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/assign_task`, request, true)
 }
+
+export function updateTaskStatus(request) {
+    return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_task_status`, request, true)
+}
+
+
 
 export function editAssignTask(request) {
     return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_assign_task`, request, true)

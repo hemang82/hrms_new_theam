@@ -60,7 +60,6 @@ export default function ManageWorkUpdate() {
     const hasInitialLoaded = useRef(false);
 
     const fetchData = async () => {
-
         try {
             const request = {
                 start_date: startDate ? dayjsDateFormat(startDate, DateFormat?.DATE_DASH_TIME_FORMAT) : null,
@@ -506,13 +505,9 @@ export default function ManageWorkUpdate() {
                                     { label: "Work Description", value: QuillContentRowWise(selectedWork?.description ? selectedWork?.description : "") },
                                 ].map((item, index) => (
 
-                                    <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
+                                    <div key={index} className={`${item.label == "Work Description" ? 'col-12' : 'col-6'} mb-3 pb-2 border-1 border-bottom`}>
 
-                                        {item?.label == "Reason" ? (<>
-                                            <p className="mb-1 fs-4">{item.label}</p>
-                                            <h6 dangerouslySetInnerHTML={{ __html: item.value }} />
-                                        </>) :
-                                            item.value &&
+                                        {item.value &&
                                             <>
                                                 <p className="mb-1 fs-3">{item.label}</p>
                                                 <h6 className="fw-meduim mb-0 fs-4 text-capitalize">{item.value || 'N/A'}</h6>

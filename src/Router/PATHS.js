@@ -33,4 +33,6 @@ export const PATHS = {
     ADD_TICKET: '/list_ticket/add_ticket',
     EDIT_TICKET: '/list_ticket/edit_ticket',
 
+    LEAVE_REQUEST_LIST: '/leave_request_list',
+
 }

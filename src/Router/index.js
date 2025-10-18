@@ -29,7 +29,7 @@ const ViewCustomerDetials = Loadable(lazy(() => import("../pages_astro/ManageCus
 const ContactUs = Loadable(lazy(() => import("../pages_astro/ContectUs")));
 const ManageFaq = Loadable(lazy(() => import("../pages_astro/ManageFaq")));
 const ContectUsDetails = Loadable(lazy(() => import("../pages_astro/ContectUs/ContectDetials.js")));
-
+const ManageLeaveRequest = Loadable(lazy(() => import("../pages_astro/ManageLeave/ManageLeaveRequest/index.js")));
 
 
 
@@ -115,6 +115,8 @@ const Router = () => {
                         <Route path={PATHS.HOLIDAYS_LIST} element={<HOLIDAYS />} />
                         <Route path={PATHS.LEAVE_LIST} element={<ManageLeave />} />
                         <Route path={PATHS.ADD_LEAVE} element={<AddLeave />} />
+
+                        <Route path={PATHS.LEAVE_REQUEST_LIST} element={<ManageLeaveRequest />} />
 
                         <Route path={PATHS.LEAVE_BALANCE_LIST} element={<ManageLeaveBalance />} />
 

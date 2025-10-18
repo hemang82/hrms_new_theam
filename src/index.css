@@ -621,7 +621,7 @@
 
   .green_border {
     background: white !important;
-    border: 1px solid rgba(0, 128, 0, 0.397) !important;
+    border: 1px solid rgb(31 116 148) !important;
   }
 
   .custom_border_bottom {
@@ -740,7 +740,7 @@
     padding: 0 20px 0 15px !important;
   }
 
-  .task-status.ant-select .ant-select-arrow{
+  .task-status.ant-select .ant-select-arrow {
     right: 7px !important;
   }
 
@@ -755,4 +755,12 @@
 
   .ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
     background: #e6f4ffc2
+  }
+
+  .badgecolor {
+    background-color: #1f7494 !important
+  }
+
+  .ant-select-dropdown{
+    z-index: 99999 !important;
   }

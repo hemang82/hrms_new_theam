@@ -8,7 +8,7 @@ import { Codes } from '../../config/constant';
 import { formatDateDyjs, handelInputText, textInputValidation, textValidation } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, InputRegex, InputTypesEnum } from '../../config/commonVariable';
 import { useDispatch } from 'react-redux';
-import { setLoader } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, setLoader } from '../../Store/slices/MasterSlice';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { PATHS } from '../../Router/PATHS';
@@ -33,6 +33,14 @@ export default function AddCustomer() {
     } = useForm();
 
     useEffect(() => {
+        departnmentList().then((response) => {
+            if (response?.code == Codes.SUCCESS) {
+                setDepartnmentlistArray(response?.data)
+            }
+        })
+    }, [userData])
+
+    useEffect(() => {
         if (userData) {
             dispatch(setLoader(true))
             CustomerDetails({ employee_id: userData?.id.toString() }).then((response) => {
@@ -53,18 +61,27 @@ export default function AddCustomer() {
                 }
             })
         }
-        departnmentList().then((response) => {
-            if (response?.code == Codes.SUCCESS) {
-                setDepartnmentlistArray(response?.data)
-                if (userData) {
-                    const departmentId = response?.data?.find((dept) => dept.id == userData.department)?.id;
-                    if (departmentId) {
-                        setValue(AstroInputTypesEnum?.DEPARTMENT, departmentId.toString());
-                    }
-                }
+        // departnmentList().then((response) => {
+        //     if (response?.code == Codes.SUCCESS) {
+        //         setDepartnmentlistArray(response?.data)
+        //         if (userData) {
+        //             const departmentId = response?.data?.find((dept) => dept.id == userData.department)?.id;
+        //             if (departmentId) {
+        //                 // setValue(AstroInputTypesEnum?.DEPARTMENT, departmentId.toString());
+        //                 setValue(AstroInputTypesEnum?.DEPARTMENT , departmentId);
+        //             }
+        //         }
+        //     }
+        // })
+    }, [userData, setValue]);
+
+    useEffect(() => {
+        if (userData) {
+            if (departnmentlistArray?.length > 0) {
+                setValue(AstroInputTypesEnum?.DEPARTMENT, userData?.department.toString());
             }
-        })
-    }, [userData]);
+        }
+    }, [departnmentlistArray])
 
     const onSubmitData = async (data) => {
         try {
@@ -104,8 +121,7 @@ export default function AddCustomer() {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.EMPLOYEE_LIST)
                         dispatch(setLoader(false))
-                        dispatch(getCustomerListThunk(request));
-
+                        dispatch(getCustomerListThunk({ emp_leave_company: '1' }));
                     } else {
                         TOAST_ERROR(response.message)
                         dispatch(setLoader(false))
@@ -192,7 +208,6 @@ export default function AddCustomer() {
                                                         {errors[AstroInputTypesEnum.MOBILE]?.message}
                                                     </label>
                                                 </div>
-
 
                                                 <div className="mb-4">
                                                     <label htmlFor="lastname" className="form-label fw-semibold">
@@ -298,19 +313,20 @@ export default function AddCustomer() {
                                                             id="gender1"
                                                             className="form-control ps-2 p-2"
                                                             autoComplete="nope"
+                                                            // value={userData?.department || ""}
+                                                            // defaultValue={userData?.department || ""}
                                                             {...register(AstroInputTypesEnum.DEPARTMENT, {
                                                                 required: "Select department",
                                                             })}
-                                                            value={userData?.department || ""}
                                                         >
                                                             <option value="">Select department</option>
-                                                            {departnmentlistArray?.length > 0 &&
-                                                                departnmentlistArray?.map((dept, index) => (
-                                                                    <option key={index} value={dept?.id}>
-                                                                        {dept?.dept_name}
-                                                                    </option>
-                                                                ))
-                                                            }
+                                                            {/* {departnmentlistArray?.length > 0 && */}
+                                                            {departnmentlistArray?.map((dept, index) => (
+                                                                <option key={index} value={dept?.id}>
+                                                                    {dept?.dept_name}
+                                                                </option>
+                                                            ))}
+                                                            {/* } */}
                                                         </select>
                                                     </div>
                                                     <label className="errorc ps-1 pt-1">

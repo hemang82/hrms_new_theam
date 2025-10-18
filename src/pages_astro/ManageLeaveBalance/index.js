@@ -422,11 +422,11 @@ export default function ManageLeaveBalance() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-5 mb-3 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-6 mb-3 mb-md-0">
                             </div>
 
                             {/* Status Dropdown */}
-                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-1 mb-3 mb-md-0">
                                 <div className="btn-group w-100">
                                     <button
                                         type="button"
@@ -475,7 +475,6 @@ export default function ManageLeaveBalance() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <div className="card card-body">

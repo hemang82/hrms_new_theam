@@ -60,18 +60,20 @@ export default function AddTicket() {
     }, [])
 
     useEffect(() => {
-        if (TicketData && customerList?.length > 0 && assignTaskList?.length > 0) {
+        if (TicketData && customerList?.length > 0) {
 
             setValue(AstroInputTypesEnum.PROJECT, TicketData?.project_id || null);
+
             setValue(AstroInputTypesEnum.TITLE, TicketData?.title || null);
 
-            watch(AstroInputTypesEnum.PROJECT) && setValue(AstroInputTypesEnum.TASK, TicketData?.task_id?.toString() || null);
+            // watch(AstroInputTypesEnum.PROJECT) && setValue(AstroInputTypesEnum.TASK, TicketData?.task_id?.toString() || null);
 
             setValue(AstroInputTypesEnum.DESCRIPTION, TicketData?.description || null);
 
             // get selected objects
             const selectedObjects = projectList?.filter((p) => (p.id == TicketData?.project_id));
             setSelectedProject(selectedObjects?.length > 0 ? selectedObjects[0]?.team?.split(",").map((id) => id.trim()) : []);
+
             if (selectedObjects?.length > 0) {
                 const AssignTO = TicketData?.assign_to ? TicketData?.assign_to?.split(",").map(String) : [];
                 setValue(AstroInputTypesEnum.EMPLOYEE, AssignTO || []);
@@ -85,7 +87,7 @@ export default function AddTicket() {
             dispatch(setLoader(true))
             let request = {
                 project_id: data[AstroInputTypesEnum.PROJECT],
-                task_id: data[AstroInputTypesEnum.TASK],
+                // task_id: data[AstroInputTypesEnum.TASK],
                 title: data[AstroInputTypesEnum.TITLE],
                 description: data[AstroInputTypesEnum.DESCRIPTION],
                 // deadline: formatDateDyjs(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_DASH_TIME_FORMAT),
@@ -195,23 +197,7 @@ export default function AddTicket() {
                                                     </label>
                                                 </div>
 
-                                                <div className="mb-4">
-                                                    <label htmlFor="lastname" className="form-label fw-semibold">
-                                                        Ticket Name <span className="text-danger ms-1">*</span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control ps-2"
-                                                            placeholder="Enter title"
-                                                            autoComplete='nope'
-                                                            {...register(AstroInputTypesEnum.TITLE, textInputValidation(AstroInputTypesEnum.TITLE, 'Enter title'))}
-                                                        />
-                                                    </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.TITLE]?.message}
-                                                    </label>
-                                                </div>
+
 
                                                 <div className="mb-4">
                                                     <label
@@ -243,7 +229,7 @@ export default function AddTicket() {
                                             </div>
 
                                             <div className='col-md-6'>
-                                                <div className="mb-4">
+                                                {/* <div className="mb-4">
                                                     <label htmlFor="gender1" className="form-label fw-semibold">
                                                         Select Task<span className="text-danger ms-1">*</span>
                                                     </label>
@@ -269,7 +255,7 @@ export default function AddTicket() {
 
                                                                 options={watch(AstroInputTypesEnum.PROJECT) && assignTaskList?.filter((c) => watch(AstroInputTypesEnum.PROJECT) ? watch(AstroInputTypesEnum.PROJECT) == c.project_id : [""]).map((c) => ({
                                                                     label: c.title,
-                                                                    value: String(c.id),
+                                                                    value: String(c.task_id),
                                                                 })) || []}
 
                                                                 optionRender={(option) => (
@@ -285,8 +271,24 @@ export default function AddTicket() {
                                                     <label className="errorc ps-1 pt-1">
                                                         {errors[AstroInputTypesEnum.TASK]?.message}
                                                     </label>
+                                                </div> */}
+                                                <div className="mb-4">
+                                                    <label htmlFor="lastname" className="form-label fw-semibold">
+                                                        Ticket Name <span className="text-danger ms-1">*</span>
+                                                    </label>
+                                                    <div className="input-group border rounded-1">
+                                                        <input
+                                                            type="text"
+                                                            className="form-control ps-2"
+                                                            placeholder="Enter title"
+                                                            autoComplete='nope'
+                                                            {...register(AstroInputTypesEnum.TITLE, textInputValidation(AstroInputTypesEnum.TITLE, 'Enter title'))}
+                                                        />
+                                                    </div>
+                                                    <label className="errorc ps-1 pt-1">
+                                                        {errors[AstroInputTypesEnum.TITLE]?.message}
+                                                    </label>
                                                 </div>
-
                                                 <div className="mb-4">
                                                     <label htmlFor="gender1" className="form-label fw-semibold">
                                                         Select Employee<span className="text-danger ms-1">*</span>
@@ -329,10 +331,10 @@ export default function AddTicket() {
                                             </div>
 
                                             <div className="modal-footer justify-content-center mb-3">
-                                                <button type='reset' className="btn btn-danger me-2" >Reset</button>
-
+                                                <button type='reset' className="btn btn-danger me-2" onClick={() => { navigation(PATHS?.LIST_TICKET) }}>Cancel</button>
                                                 <button type='submit' className="btn btn-primary" >Submit</button>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

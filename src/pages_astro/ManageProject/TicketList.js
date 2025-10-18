@@ -15,7 +15,7 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getCustomerListThunk, setLoader, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList, getProjectListThunk, updateProjectList, getAssignTaskListThunk, updateAssignTaskList, updateTicketList, getListTicketThunk } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, setLoader, getlistLeavesThunk, updateLeaveList, getlistAttendanceThunk, updateAttendanceList, getProjectListThunk, updateProjectList, getAssignTaskListThunk, updateAssignTaskList, updateTicketList, getListTicketThunk, updateTicketStatus } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getWorkingHours, momentDateFormat, momentNormalDateFormat, momentTimeFormate, openModel, QuillContentRowWise, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
@@ -290,15 +290,16 @@ export default function AssignTaskList() {
     const StatusColumn = ({ rowData }) => {
 
         const handleChange = (value, taskId) => {
-            console.log(`Status changed to: ${value} ${taskId}`);
-
             editTicket({
                 status: value,
                 ticket_id: rowData?.id
             }).then((response) => {
                 if (response?.code == Codes.SUCCESS) {
                     TOAST_SUCCESS(response?.message);
-                    dispatch(getListTicketThunk({ loader: true }));
+
+                    // ✅ Soft update Redux state
+                    dispatch(updateTicketStatus({ ticket_id: rowData?.id, status: value }));
+                    // dispatch(getListTicketThunk({ loader: true }));
                 } else {
                     TOAST_ERROR(response.message);
                 }
@@ -315,6 +316,7 @@ export default function AssignTaskList() {
                 textAlign: 'center',
             };
         };
+
         return (
             <Select
                 defaultValue={rowData?.status || 'open'}
@@ -338,6 +340,7 @@ export default function AssignTaskList() {
                     }</>))}
             </Select>
         );
+
     };
 
     return (
@@ -452,11 +455,7 @@ export default function AssignTaskList() {
                                 sortField={sortField}
                                 sortOrder={sortOrder}
                                 onSort={handleSort}
-                                rowsPerPageOptions={
-                                    updatedTicketList?.length > 50
-                                        ? [20, 30, 50, updatedTicketList?.length]
-                                        : [20, 30, 40]
-                                }
+                                rowsPerPageOptions={updatedTicketList?.length > 50 ? [20, 30, 50, updatedTicketList?.length] : [20, 30, 40]}
                                 currentPageReportTemplate='Showing {first} to {last} of {totalRecords} entries'
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 loading={loading}
@@ -472,10 +471,6 @@ export default function AssignTaskList() {
 
                                 <Column field="title" header="Ticket Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
                                     <span className='me-2'>{truncateWords(rowData?.title) || '-'} </span>
-                                )} />
-
-                                <Column field="task_name" header="Task Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
-                                    <span className='me-2'>{truncateWords(rowData?.task_name) || '-'} </span>
                                 )} />
 
                                 <Column field="project_name" header="Project Name" style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
@@ -511,7 +506,6 @@ export default function AssignTaskList() {
                                     style={{ minWidth: '10rem' }}
                                     body={(rowData) => <StatusColumn rowData={rowData} />}
                                 />
-
 
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
@@ -558,8 +552,9 @@ export default function AssignTaskList() {
                                 {[
                                     { label: "Ticket Date", value: momentNormalDateFormat(selectedTicketList?.created_at, DateFormat?.DATE_DASH_TIME_FORMAT, DateFormat?.DATE_FORMAT) || '-' },
                                     { label: "Ticket Name", value: selectedTicketList?.title },
-                                    { label: "Task Name", value: selectedTicketList?.task_name },
+                                    // { label: "Task Name", value: selectedTicketList?.task_name },
                                     { label: "Project Name", value: selectedTicketList?.project_name || "-" },
+                                    { label: "Status", value: TaskStatus[selectedTicketList?.status]?.label || "-" },
                                     {
                                         label: "Team Member",
                                         value: selectedTicketList?.assigned_employee_names
@@ -574,7 +569,6 @@ export default function AssignTaskList() {
                                                 </ul>
                                             ) : "-"
                                     },
-                                    { label: "Status", value: TaskStatus[selectedTicketList?.status]?.label || "-" },
                                     { label: "Ticket Description", value: QuillContentRowWise(selectedTicketList?.description ? selectedTicketList?.description : "") },
                                 ].map((item, index) => (<>
                                     {
@@ -584,20 +578,33 @@ export default function AssignTaskList() {
                                                     item.value &&
                                                     <>
                                                         <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
+                                                        {/* <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6> */}
+                                                        <div className="fw-semibold mb-0 fs-3 text-capitalize ">{item.value || 'N/A'}</div>
                                                     </>
                                                 }
                                             </div>
-                                        </>) : (<>
-                                            <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
-                                                {
-                                                    item.value && <>
-                                                        <p className="mb-1 fs-3">{item.label}</p>
-                                                        <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6>
-                                                    </>
-                                                }
-                                            </div>
-                                        </>)
+                                        </>) : item.label != "Status" ? <div key={index} className="col-6 mb-3 pb-2 border-1 border-bottom">
+                                            <p className="mb-1 fs-3">{item.label}</p>
+                                            <span className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(selectedTicketList?.status) || "bg-secondary"}`}
+                                                data-pc-name="tag"
+                                                data-pc-section="root" >
+                                                <span className="p-tag-value fs-2" data-pc-section="value">
+                                                    {getStatus(selectedTicketList?.status) || "-"}
+                                                </span>
+                                            </span>
+                                        </div> :
+
+                                            (<>
+                                                <div key={index} className="col-12 mb-3 pb-2 border-1 border-bottom">
+                                                    {
+                                                        item.value && <>
+                                                            <p className="mb-1 fs-3">{item.label}</p>
+                                                            {/* <h6 className="fw-meduim mb-0 fs-3 text-capitalize">{item.value || 'N/A'}</h6> */}
+                                                            <div className="fw-semibold mb-0 fs-3 text-capitalize ">{item.value || 'N/A'}</div>
+                                                        </>
+                                                    }
+                                                </div>
+                                            </>)
                                     }
                                 </>))}
                                 {

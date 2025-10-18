@@ -9,7 +9,7 @@ import { LogoutComponent } from '../../pages/CommonPages/CommonComponent';
 import { DateFormat, EMPLOYEE_STATUS, ModelName } from '../../config/commonVariable';
 
 // /dist/images/logos/lone_logo.png
-import { getAssignTaskListThunk, getCustomerListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesThunk, getListTicketThunk, getProjectListThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
+import { getAssignTaskListThunk, getBirthdayAndAnnivarsaryListThunk, getCustomerListThunk, getEmpLeaveBalanceListThunk, getHolidayListThunk, getlistAttendanceThunk, getListBankDetailsThunk, getListDepartnmentThunk, getlistLeavesRequestThunk, getlistLeavesThunk, getListTicketThunk, getProjectListThunk, getSalaryListThunk, getSaturdayListThunk, setLoader, updatePageScroll, updateSlidebarToggle } from '../../Store/slices/MasterSlice';
 import dayjs from 'dayjs';
 
 const Header = ({ page_name }) => {
@@ -46,6 +46,17 @@ const Header = ({ page_name }) => {
                     dispatch(getListDepartnmentThunk({})),
                     dispatch(getListBankDetailsThunk(request)),
                     dispatch(getlistLeavesThunk(request)),
+
+                    dispatch(getlistLeavesRequestThunk({
+                        action: "admin"
+                    })),
+                       dispatch(getBirthdayAndAnnivarsaryListThunk({
+                        action: "admin"
+                    })),
+
+
+                    
+
                     dispatch(getEmpLeaveBalanceListThunk(request)),
                     dispatch(getSaturdayListThunk({ year: formatDateDyjs(dayjs(), 'YYYY') })),
                     dispatch(getHolidayListThunk({ year: formatDateDyjs(dayjs(), DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR) })),

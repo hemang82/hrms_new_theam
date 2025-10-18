@@ -5,7 +5,7 @@ import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import { addAssignTask, addAttendance, editAssignTask } from '../../utils/api.services';
 import SubNavbar from '../../layout/SubNavbar';
 import Constatnt, { AwsFolder, Codes } from '../../config/constant';
-import { formatDate, formatDateDyjs, getBreakMinutes, getWorkingHours, selectOption, selectOptionCustomer, textInputValidation, } from '../../config/commonFunction';
+import { formatDate, formatDateDyjs, formatDateIncommingDyjs, getBreakMinutes, getWorkingHours, selectOption, selectOptionCustomer, textInputValidation, } from '../../config/commonFunction';
 import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, InputRegex, PROJECT_LIST, PROJECT_PRIORITY, TimeFormat } from '../../config/commonVariable';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAssignTaskListThunk, getCustomerListThunk, getProjectListThunk, setLoader } from '../../Store/slices/MasterSlice';
@@ -31,13 +31,14 @@ export default function AddAssignTask() {
 
     const { register, handleSubmit, setValue, clearErrors, reset, watch, control, trigger, formState: { errors }, } = useForm({
         defaultValues: {
-            breaks: [{ start: null, end: null }], // ✅ at least one row
-        },
+            dates: [{ value: "", isEdit: false }]
+            // dates: defaultDates.map(date => ({ value: date, isEdit: true }))
+        }
     });
 
     const { fields, append, remove } = useFieldArray({
         control,
-        name: "breaks",
+        name: "dates"
     });
 
     useEffect(() => {
@@ -57,6 +58,7 @@ export default function AddAssignTask() {
 
     useEffect(() => {
         if (AssignTaskData && customerList?.length > 0) {
+
             dispatch(setLoader(true))
 
             setValue(AstroInputTypesEnum.PROJECT, AssignTaskData?.project_id || null);
@@ -68,28 +70,45 @@ export default function AddAssignTask() {
             const selectedObjects = projectList?.filter((p) => (p.id == AssignTaskData?.project_id));
             setSelectedProject(selectedObjects?.length > 0 ? selectedObjects[0]?.team?.split(",").map((id) => id.trim()) : []);
             if (selectedObjects?.length > 0) {
-                const teamArray = AssignTaskData?.assign_to ? AssignTaskData?.assign_to?.split(",").map(String) : [];
-                setValue(AstroInputTypesEnum.EMPLOYEE, teamArray || []);
+                // Extract user_id as strings
+                const teamArray = AssignTaskData?.assigned_users?.map(user => String(user.user_id)) || [];
+                // Set value in form
+                setValue(AstroInputTypesEnum.EMPLOYEE, teamArray);
             }
+
+            const formattedDates = AssignTaskData?.due_date && AssignTaskData?.due_date?.map(date => ({
+                value: dayjs(date, "YYYY-MM-DD").format("DD-MM-YYYY"), // convert to display format
+                isEdit: true
+            }));
+
+            // If empty, fallback to default empty field
+            const datesForForm = formattedDates.length > 0
+                ? formattedDates
+                : [{ value: "", isEdit: false }];
+
+            setValue("dates", datesForForm);
             dispatch(setLoader(false))
         }
     }, [AssignTaskData, customerList]);
 
     const onSubmitData = async (data) => {
         try {
+            const newDateValue = data.dates.find(item => item.isEdit === false)?.value ?? "";
+
             dispatch(setLoader(true))
             let request = {
                 project_id: data[AstroInputTypesEnum.PROJECT],
                 title: data[AstroInputTypesEnum.NAME],
                 description: data[AstroInputTypesEnum.DESCRIPTION],
-                due_date: formatDateDyjs(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_DASH_TIME_FORMAT),
+                due_date: newDateValue ? [formatDateIncommingDyjs(newDateValue, DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT)] : [],
                 assign_to: data[AstroInputTypesEnum.EMPLOYEE]?.length == 1 ? data[AstroInputTypesEnum.EMPLOYEE][0]?.toString() : data[AstroInputTypesEnum.EMPLOYEE],
                 priority: data[AstroInputTypesEnum.PRIORITY],
                 status: ""
             };
+            console.log('request', request, 'newDateValue', data[AstroInputTypesEnum.EMPLOYEE]);
             if (AssignTaskData) {
-                request.task_id = AssignTaskData?.id?.toString();
-                editAssignTask(request).then((response) => {
+                request.task_id = AssignTaskData?.task_id?.toString();
+                addAssignTask(request).then((response) => {
                     if (response?.code == Codes.SUCCESS) {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.LIST_ASSIGN_TASK)
@@ -191,73 +210,6 @@ export default function AddAssignTask() {
                                                     </label>
                                                 </div>
 
-                                                <div className="2 d-flex gap-2">
-                                                    <div className="col-12 col-md-6">
-
-                                                        <label htmlFor="dob1" className="form-label fw-semibold">
-                                                            Deadline Date<span className="text-danger ms-1">*</span>
-                                                        </label>
-                                                        <Controller
-                                                            name={AstroInputTypesEnum.DATE}
-                                                            control={control}
-                                                            rules={{ required: "Select Deadline Date" }}
-                                                            render={({ field }) => (
-                                                                <DatePicker
-                                                                    id={AstroInputTypesEnum.DATE}
-                                                                    className="form-control custom-datepicker w-100"
-                                                                    format={DateFormat?.DATE_FORMAT}
-                                                                    value={field.value ? dayjs(field.value) : null}
-                                                                    onChange={(date) => field.onChange(date ? date.toISOString() : null)}
-                                                                    allowClear={false}
-                                                                    picker="date"
-                                                                />
-                                                            )}
-                                                            className='border rounded-1'
-                                                        />
-                                                        {errors[AstroInputTypesEnum.DATE] && (
-                                                            <small className="text-danger">{errors[AstroInputTypesEnum.DATE].message}</small>
-                                                        )}
-                                                    </div>
-                                                    <div className="col-12 col-md-6">
-                                                        <div className="mb-4">
-                                                            <label htmlFor="priority" className="form-label fw-semibold">
-                                                                Priority<span className="text-danger ms-1">*</span>
-                                                            </label>
-                                                            <div className="input-group">
-                                                                <Controller
-                                                                    name={AstroInputTypesEnum.PRIORITY}
-                                                                    control={control}
-                                                                    rules={{ required: "Select priority" }}
-                                                                    render={({ field }) => (
-                                                                        <Select
-                                                                            style={{ width: "100%", height: "40px" }}
-                                                                            placeholder="Select priority"
-                                                                            value={field.value || undefined} // single value
-                                                                            onChange={(selectedId) => {
-                                                                                field.onChange(selectedId); // update form
-                                                                                setValue(AstroInputTypesEnum.PRIORITY, selectedId); // optional extra
-                                                                            }}
-                                                                            options={PROJECT_PRIORITY?.map((c) => ({
-                                                                                label: c.value,
-                                                                                value: c.key,
-                                                                            })) || []
-                                                                            }
-                                                                            // optionFilterProp="label"
-                                                                            // filterSort={(optionA, optionB) =>
-                                                                            //     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                                                            // }
-                                                                            optionRender={(option) => <Space>{option?.label}</Space>}
-                                                                            className='border rounded-1'
-                                                                        />
-                                                                    )}
-                                                                />
-                                                            </div>
-                                                            <label className="errorc ps-1 pt-1">
-                                                                {errors[AstroInputTypesEnum.PRIORITY]?.message}
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                                 <div className="mb-4">
                                                     <label
                                                         htmlFor="leave_reason"
@@ -346,10 +298,106 @@ export default function AddAssignTask() {
                                                         {errors[AstroInputTypesEnum.EMPLOYEE]?.message}
                                                     </label>
                                                 </div>
+
+                                                <div className="2 d-flex gap-2">
+                                                    <div className="col-12 col-md-4">
+                                                        <div className="mb-4">
+                                                            <label htmlFor="priority" className="form-label fw-semibold mb-2">
+                                                                Priority<span className="text-danger ms-1">*</span>
+                                                            </label>
+                                                            <div className="input-group">
+                                                                <Controller
+                                                                    name={AstroInputTypesEnum.PRIORITY}
+                                                                    control={control}
+                                                                    rules={{ required: "Select priority" }}
+                                                                    render={({ field }) => (
+                                                                        <Select
+                                                                            style={{ width: "100%", height: "40px" }}
+                                                                            placeholder="Select priority"
+                                                                            value={field.value || undefined} // single value
+                                                                            onChange={(selectedId) => {
+                                                                                field.onChange(selectedId); // update form
+                                                                                setValue(AstroInputTypesEnum.PRIORITY, selectedId); // optional extra
+                                                                            }}
+                                                                            options={PROJECT_PRIORITY?.map((c) => ({
+                                                                                label: c.value,
+                                                                                value: c.key,
+                                                                            })) || []}
+                                                                            // optionFilterProp="label"
+                                                                            // filterSort={(optionA, optionB) =>
+                                                                            //     (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                                                            // }
+                                                                            optionRender={(option) => <Space>{option?.label}</Space>}
+                                                                            className='border rounded-1'
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                            <label className="errorc ps-1 pt-1">
+                                                                {errors[AstroInputTypesEnum.PRIORITY]?.message}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12 col-md-8 mb-4">
+                                                        <div className="d-flex justify-content-between mb-0 align-items-center ">
+                                                            <label className="form-label fw-semibold mb-2">
+                                                                Deadline Date <span className="text-danger ms-1">*</span>
+                                                            </label>
+                                                            {!fields?.some(item => item.isEdit === false) && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-info mb-1"
+                                                                    onClick={() => append({ value: "", isEdit: false })}
+                                                                >
+                                                                    + Add
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                        {fields.map((item, index) => (
+                                                            <div key={item.id} className="d-flex align-items-center mb-2">
+                                                                <Controller
+                                                                    name={`dates.${index}.value`}
+                                                                    control={control}
+                                                                    rules={{ required: "Select Deadline Date" }}
+                                                                    render={({ field }) => (
+                                                                        <DatePicker
+                                                                            className="form-control custom-datepicker w-100"
+                                                                            format="DD-MM-YYYY"
+                                                                            value={field.value ? dayjs(field.value, "DD-MM-YYYY") : null}
+                                                                            onChange={(date) =>
+                                                                                field.onChange(date ? dayjs(date).format("DD-MM-YYYY") : null)
+                                                                            }
+                                                                            allowClear={false}
+                                                                            disabled={item.isEdit === true} // disable if value already exists
+                                                                            placeholder="Select Deadline Date"
+                                                                        />
+                                                                    )}
+                                                                />
+
+                                                                {/* {item.isEdit !== true && (
+                                                                         <button
+                                                                                                                           type="button"
+                                                                                                                           className="btn btn-sm btn-danger ms-2"
+                                                                                                                           onClick={() => remove(index)}
+                                                                                                                       >
+                                                                                                                           ✕
+                                                                                                                       </button>
+                                                                                                                   )} */}
+                                                            </div>
+                                                        ))}
+
+                                                        {errors.dates && (
+                                                            <small className="text-danger">
+                                                                {errors.dates?.map((err, i) => err?.value?.message).filter(Boolean).join(", ")}
+                                                            </small>
+                                                        )}
+                                                    </div>
+
+                                                </div>
                                             </div>
 
                                             <div className="modal-footer justify-content-center mb-3">
-                                                <button type='reset' className="btn btn-danger me-2" >Reset</button>
+                                                <button type='reset' className="btn btn-danger me-2" onClick={() => { navigation(PATHS?.LIST_ASSIGN_TASK) }}>Cancel</button>
                                                 <button type='submit' className="btn btn-primary" >Submit</button>
                                             </div>
                                         </div>

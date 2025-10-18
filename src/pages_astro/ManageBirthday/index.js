@@ -211,11 +211,10 @@ export default function ManageBirthday() {
                         {isBirthdayToday && (
                             <Badge
                                 style={{
-                                    backgroundColor: "#1f7494",
                                     fontSize: "0.75rem",
                                     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.15)",
                                 }}
-                                className="position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill text-white"
+                                className="position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill text-white badgecolor"
                             >
                                 🎉 Happy Birthday!
                             </Badge>
@@ -285,12 +284,11 @@ export default function ManageBirthday() {
     return (
         <>
             <div className="container-fluid mw-100">
-                <SubNavbar title={"Birthday List"} header={'Birthday List'} />
-                {/* <div className="widget-content searchable-container list"> */}
+                <SubNavbar title={"  Employees' Birthdays"} header={"  Employees' Birthdays"} />
 
                 <div className="card card-body p-2 mb-2">
                     <div className="row">
-                        <h3 className="text-center text-custom-theam mt-2 fw-semibold">Employee Birthday</h3>
+                        <h3 className="text-center text-custom-theam mt-2 fw-semibold">  Employees' Birthdays</h3>
                     </div>
                 </div>
 

@@ -47,6 +47,17 @@ export const getlistLeavesThunk = createAsyncThunk("listLeaves", async (submitDa
     }
 });
 
+export const getlistLeavesRequestThunk = createAsyncThunk("listLeavesRequest", async (submitData, { dispatch }) => {
+    try {
+        // dispatch(setLoader(true))
+        const { data } = await API.listLeavesRequest(submitData);
+        // dispatch(setLoader(false))
+        return data;
+    } catch (error) {
+        throw error;
+    }
+});
+
 export const getEmpLeaveBalanceListThunk = createAsyncThunk("empLeaveBalanceList", async (submitData, { dispatch }) => {
     try {
         dispatch(setLoader(true))
@@ -158,10 +169,25 @@ export const getListTicketThunk = createAsyncThunk("listTicket", async (submitDa
     }
 });
 
+export const getBirthdayAndAnnivarsaryListThunk = createAsyncThunk("birthdayAndAnnivarsary", async (submitData, { dispatch }) => {
+    try {
+        // dispatch(setLoader(true))
+        const { data } = await API.birthdayAndAnnivarsary(submitData);
+        // dispatch(setLoader(false))
+        return data
+    } catch (error) {
+        throw error;
+    }
+});
+
 const initialState = {
     isLoading: false,
 
     customerList: {
+        data: [],
+        error: null,
+    },
+    birthdayAndAnnivarsary: {
         data: [],
         error: null,
     },
@@ -174,6 +200,10 @@ const initialState = {
         error: null,
     },
     leaveList: {
+        data: [],
+        error: null,
+    },
+    leaveRequestList: {
         data: [],
         error: null,
     },
@@ -242,7 +272,9 @@ const masterSlice = createSlice({
             state.customModel.modalType = modalType;
             state.customModel.isOpen = isOpen;
         },
-
+        updateLeaveRequestList: (state, action) => {
+            state.leaveRequestList.data = action.payload;
+        },
 
         // ---------------------- HRMS -----------------------------
 
@@ -284,6 +316,27 @@ const masterSlice = createSlice({
         updateAssignTaskList: (state, action) => {
             state.assignTaskList.data = action.payload;
         },
+
+        // ✅ SOFT UPDATE one task's status in the list
+        updateAssignTaskStatus: (state, action) => {
+            const { taskId, taskStatus } = action.payload;
+            if (!state.assignTaskList?.data?.length) return;
+
+            state.assignTaskList.data = state.assignTaskList.data.map((task) =>
+                task.task_id == taskId
+                    ? { ...task, task_status: taskStatus }
+                    : task
+            );
+        },
+
+        updateTicketStatus: (state, action) => {
+            const { ticketId, status } = action.payload;
+            if (!state.ticketList?.data?.length) return;
+            state.ticketList.data = state.ticketList.data.map((ticket) =>
+                ticket.ticket_id == ticketId ? { ...ticket, status: status } : ticket
+            );
+        },
+
         updateTicketList: (state, action) => {
             state.ticketList.data = action.payload;
         },
@@ -291,6 +344,7 @@ const masterSlice = createSlice({
         updatePageScroll: (state, action) => {
             state.pageScroll = action.payload;
         },
+
     },
 
     extraReducers: (builder) => {
@@ -346,6 +400,12 @@ const masterSlice = createSlice({
                 state.saturdayList.error = action.error.message;
             })
 
+            .addCase(getlistLeavesRequestThunk.fulfilled, (state, action) => {
+                state.leaveRequestList.data = action.payload;
+            })
+            .addCase(getlistLeavesRequestThunk.rejected, (state, action) => {
+                state.leaveRequestList.error = action.error.message;
+            })
 
             .addCase(getlistAttendanceThunk.fulfilled, (state, action) => {
                 state.attendanceList.data = action.payload || [];
@@ -392,9 +452,16 @@ const masterSlice = createSlice({
                 state.ticketList.error = action.error.message;
             })
 
+            .addCase(getBirthdayAndAnnivarsaryListThunk.fulfilled, (state, action) => {
+                state.birthdayAndAnnivarsary.data = action.payload;
+            })
+            .addCase(getBirthdayAndAnnivarsaryListThunk.rejected, (state, action) => {
+                state.birthdayAndAnnivarsary.error = action.error.message;
+            })
+
 
     },
 });
 
-export const { setLoader, setModalStatus, updatePostList, updateAttendanceList, updateTicketList, updateAssignTaskList, updateProjectList, updateDailyTaskList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateIntrestList, updateCustomerList, updateBannerList, updateCelebrityList, updateNewsList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
+export const { setLoader, setModalStatus, updatePostList, updateAttendanceList, updateLeaveRequestList, updateTicketList, updateTicketStatus, updateAssignTaskList, updateAssignTaskStatus, updateProjectList, updateDailyTaskList, updateSaterdayList, updateDepartnmentList, updateLeaveBalanceList, updateBankDetailsList, updateHolidayList, updateSlidebarToggle, updateLeaveList, updateIntrestList, updateCustomerList, updateBannerList, updateCelebrityList, updateNewsList, updateWalletOfferList, updateContactUsList, updateNewsLatterList, updatePageScroll, updateProcessingFeeList } = masterSlice.actions;
 export default masterSlice.reducer;

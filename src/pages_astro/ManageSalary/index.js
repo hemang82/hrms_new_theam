@@ -234,6 +234,9 @@ export default function ManageSalary() {
                                 </div>
                             </div>
 
+                            <div className="col-12 col-md-6 col-lg-2 ">
+
+                            </div>
                             <div className="col-12 col-md-6 col-lg-2">
                                 {/* <label className="form-label fw-semibold mb-1">Date Filter</label> */}
                                 <DatePicker
@@ -250,7 +253,7 @@ export default function ManageSalary() {
                                 />
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 mb-2 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
                                 {/* <label className="form-label fw-semibold mb-1">Status</label> */}
                                 <div className="btn-group w-100">
                                     <button
@@ -283,7 +286,7 @@ export default function ManageSalary() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 ">
+                            <div className="col-12 col-md-6 col-lg-1 ">
                                 <button
                                     className="btn btn-info dropdown-toggle w-100 w-md-auto "
                                     type="button"

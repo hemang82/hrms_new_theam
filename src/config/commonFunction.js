@@ -118,6 +118,9 @@ export const formatDateDyjs = (dateString, formatPattern) => {
     return dayjs(dateString).format(formatPattern);
 };
 
+export const formatDateIncommingDyjs = (dateString, incommingFormate , formatPattern) => {
+    return dayjs(dateString, incommingFormate).format(formatPattern);
+};
 export const getArrayFromCommaSeparated = (str) => {
     return str.split(',');
 };
@@ -724,7 +727,6 @@ export const disablePastDates = (current) => {
 export const disableBeforeStartDate = (startDate) => (current) => {
     return current && current < dayjs(startDate).startOf("day");
 };
-
 
 export const getLocalStorageItem = (key) => {
   return localStorage.getItem(key);
