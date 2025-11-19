@@ -18,12 +18,12 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, setLoader, updateLoanList, getlistAttendanceThunk, updateAttendanceList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
+import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatDateIncommingDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
 import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TimeFormat } from '../../config/commonVariable';
-import { RiUserReceivedLine } from 'react-icons/ri';
+import { RiAddCircleFill, RiUserReceivedLine } from 'react-icons/ri';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
@@ -225,11 +225,12 @@ export default function ManageAttendance() {
     }
 
     const onSubmitData = async (data) => {
+
         dispatch(setLoader(true))
 
         let sendRequest = {
             employee_id: selectedEmployee?.id,
-            date: formatDateDyjs(data?.dob1, DateFormat?.DATE_DASH_TIME_FORMAT),
+            date: formatDateIncommingDyjs(data?.dob1, DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT),
             check_in_time: data?.checkIn ? dayjs(data.checkIn).format("HH:mm") : null,
             check_out_time: data?.checkOut ? dayjs(data.checkOut).format("HH:mm") : null,
             // breaks: data?.breaks.length > 0 ? data?.breaks : [],
@@ -248,6 +249,9 @@ export default function ManageAttendance() {
             location_id: "TRACEWAVE",
         };
 
+        console.log('sendRequest', data);
+
+        // return
         editAttendance(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
                 dispatch(setLoader(false))
@@ -421,13 +425,14 @@ export default function ManageAttendance() {
                     {/* --------------------- start Contact ---------------- */}
 
                     <div className="card card-body mb-2 p-3">
-                        <div className="row g-2">
+                        <div className="row g-2 align-items-end">
 
-                            <div className="col-12 col-md-6 col-lg-4">
-                                <div className="position-relative mt-4 w-75">
+                            {/* Search */}
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <div className="position-relative mt-2 mt-lg-0">
                                     <input
                                         type="text"
-                                        className="form-control ps-5 "
+                                        className="form-control ps-5"
                                         id="input-search"
                                         placeholder="Search Attendance ..."
                                         value={globalFilterValue}
@@ -437,8 +442,11 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            {/* Start Date */}
                             <div className="col-12 col-md-6 col-lg-1">
+
+                            </div>
+                            {/* Start Date */}
+                            <div className="col-6 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
@@ -452,7 +460,8 @@ export default function ManageAttendance() {
                                 />
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-1">
+                            {/* End Date */}
+                            <div className="col-6 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">End Date</label>
                                 <DatePicker
                                     className="custom-datepicker w-100 p-2"
@@ -465,54 +474,19 @@ export default function ManageAttendance() {
                                             end_date: end_date,
                                             start_date: startDate,
                                             status: ""
-                                        })
+                                        });
                                     }}
                                     disabled={!startDate}
                                     disabledDate={disabledEndDate}
                                 />
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
-                                <label className="d-block mb-1 fw-semibold">Status</label>
-                                <div className="btn-group w-100">
-                                    <button
-                                        type="button"
-                                        className="btn btn-info dropdown-toggle w-100"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                        style={{ height: '40px' }}
-                                    >
-                                        {employeeStatus?.value || 'Select Status'}
-                                    </button>
-                                    <ul className="dropdown-menu w-100 border">
-                                        {EMPLOYEE_STATUS?.map((option) => (
-                                            <li key={option.key}>
-                                                <a
-                                                    className="dropdown-item cursor_pointer text-black-50"
-                                                    onClick={() => {
-                                                        onChangeApiCalling({
-                                                            start_date: startDate,
-                                                            end_date: endDate,
-                                                            employee_id: "",
-                                                            emp_leave_company: option?.key
-                                                        });
-                                                        setEmployeeStatus(option)
-                                                    }}
-                                                >
-                                                    {option?.value}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
+                            {/* Employee Filter */}
+                            <div className="col-12 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Employees Filter</label>
                                 <div className="dropdown w-100">
                                     <button
-                                        className="btn btn-sm btn-info fw-semibold dropdown-toggle w-100"
+                                        className="btn btn-info dropdown-toggle w-100"
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
@@ -522,20 +496,17 @@ export default function ManageAttendance() {
                                     </button>
                                     <ul
                                         className="dropdown-menu w-100"
-                                        style={{
-                                            maxHeight: "300px", // adjust height as needed
-                                            overflowY: "auto",
-                                        }}
+                                        style={{ maxHeight: '300px', overflowY: 'auto' }}
                                     >
                                         <li key="all">
                                             <button
-                                                className="dropdown-item text-black-50 p-2 fs-4"
+                                                className="dropdown-item text-black-50 p-2"
                                                 type="button"
                                                 onClick={() => {
                                                     onChangeApiCalling({
                                                         start_date: startDate,
                                                         end_date: endDate,
-                                                        employee_id: "" // empty for all employees
+                                                        employee_id: ""
                                                     });
                                                     handleSelect({ id: "", name: "All Employees" });
                                                 }}
@@ -565,53 +536,66 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 d-flex flex-column">
-                                <label className="d-block mb-1 fw-semibold">&nbsp;</label>
+                            {/* Status */}
+                            <div className="col-12 col-md-6 col-lg-1">
+                                <label className="d-block mb-1 fw-semibold">Status</label>
+                                <div className="dropdown w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {employeeStatus?.value || 'Select Status'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item text-black-50 cursor_pointer"
+                                                    onClick={() => {
+                                                        onChangeApiCalling({
+                                                            start_date: startDate,
+                                                            end_date: endDate,
+                                                            employee_id: "",
+                                                            emp_leave_company: option?.key
+                                                        });
+                                                        setEmployeeStatus(option);
+                                                    }}
+                                                >
+                                                    {option?.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Add + Download */}
+                            <div className="col-12 col-md-6 col-lg-1 d-flex align-items-end justify-content-between gap-2">
+                                {/* Add Button */}
                                 <button
                                     type="button"
-                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center w-100"
-                                    style={{ height: '40px' }}
+                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
+                                    style={{ height: '40px', minWidth: '40px', padding: 0 }}
                                     onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
+                                    title="Add Attendance"
                                 >
-                                    <IoAddCircleOutline className="me-1" style={{ fontSize: '1.2rem' }} />
-                                    <span className="fw-semibold">Add Attendance</span>
+                                    <RiAddCircleFill style={{ fontSize: '1rem' }} />
                                 </button>
-                            </div>
 
-                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
-                                <label className="d-block mb-1 fw-semibold">&nbsp;</label>
+                                {/* Download Button */}
                                 <button
-                                    className="btn btn-info dropdown-toggle w-100 w-md-auto "
                                     type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    style={{ height: '40px' }}
-                                >
-                                    Export
-                                </button>
-                                <ul className="dropdown-menu">
-                                    {/* <li>
-                                            <a className="dropdown-item text-black-50" onClick={handleExportToPdfManage}>PDF</a>
-                                        </li> */}
-                                    <li>
-                                        <a className="dropdown-item text-black-50" onClick={handleExportToExcelManage}>Excel</a>
-                                    </li>
-                                    <li>
-                                        <a className="dropdown-item text-black-50" onClick={handleExportToPdfManage}>PDF</a>
-                                    </li>
-
-                                </ul>
-                            </div>
-                            {/* <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
-                                <label className="d-block mb-1 fw-semibold">&nbsp;</label>
-                                <button
-                                    className="btn btn-info w-25 d-flex align-items-center justify-content-center"
-                                    style={{ height: '40px' }}
+                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
+                                    style={{ height: '40px', minWidth: '40px', padding: 0 }}
                                     onClick={handleExportToExcelManage}
+                                    title="Download"
                                 >
-                                    <FaDownload size={18} />
+                                    <FaDownload style={{ fontSize: '0.95rem' }} />
                                 </button>
-                            </div> */}
+                            </div>
 
                         </div>
                     </div>
@@ -690,12 +674,34 @@ export default function ManageAttendance() {
                                     <span className='me-2'>{rowData?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
                                 )} />
 
+                                {/* <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
+                                    <span className=''>{checkOutTimes?.checkOutTimes?.length > 0  rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "-"} </span>
+                                )} /> */}
+
+                                <Column
+                                    field="checkInTimes"
+                                    header="Work Hours"
+                                    style={{ minWidth: "10rem" }}
+                                    body={(rowData) => {
+                                        const checkIns = rowData?.checkInTimes || [];
+                                        const checkOuts = rowData?.checkOutTimes || [];
+                                        const breaks = rowData?.breaks || [];
+
+                                        const isToday = new Date(rowData?.date).toDateString() === new Date().toDateString();
+
+                                        // Condition: If today and no checkout → show "-"
+                                        if (!isToday && checkOuts.length === 0) {
+                                            return <span>-</span>;
+                                        }
+
+                                        // Final calculation
+                                        const workHours = getWorkingHours(checkIns[0], checkOuts[0], getBreakMinutes(breaks.length > 0 ? breaks : [])) || "-";
+                                        return <span>{workHours}</span>;
+                                    }}
+                                />
+
                                 <Column field="checkInTimes" header="Total Break" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className=''>{rowData.breaks?.length > 0 ? getBreakMinutes(rowData.breaks) + 'm' : '-'} </span>
-                                )} />
-
-                                <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className=''>{rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "-"} </span>
                                 )} />
 
                                 <Column field="type" sortable data-pc-section="root" header="Day Type" style={{ minWidth: '8rem' }} body={(rowData) => (
@@ -755,6 +761,7 @@ export default function ManageAttendance() {
 
                         </div>
                     </div>
+
                 </div>
             </div >
 

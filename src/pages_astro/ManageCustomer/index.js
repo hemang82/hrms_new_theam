@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import SubNavbar from '../../layout/SubNavbar';
-import { EditUser } from '../../utils/api.services';
+import { DeleteEmployee, EditUser } from '../../utils/api.services';
 import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -24,7 +24,7 @@ export default function ManageCoustomer() {
     let navigat = useNavigate();
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, reset, control, formState: { errors } } = useForm();
+    const { register, handleSubmit, setValue, reset, control, watch ,formState: { errors } } = useForm();
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
     const [selectedUser, setSelectedUser] = useState()
@@ -51,28 +51,33 @@ export default function ManageCoustomer() {
         }
     }, [debounce]);
 
-    const handleDelete = (is_true) => {
-        if (is_true) {
-            dispatch(setLoader(true));
-            let submitData = {
-                action: "admin",
-                user_id: selectedUser?.id,
-                is_deleted: 1
+    const handleDelete = async (is_true) => {
+        if (!is_true) return;
+
+        dispatch(setLoader(true));
+        try {
+            const submitData = {
+                employee_id: selectedUser?.id,
+            };
+
+            const response = await DeleteEmployee(submitData);
+            if (response.code == Codes?.SUCCESS) {
+                const updatedList = customerList?.filter(
+                    (item) => item.id !== selectedUser?.id
+                );
+                dispatch(updateCustomerList(updatedList));
+                closeModel(dispatch);
+                TOAST_SUCCESS(response?.message);
+            } else {
+                TOAST_ERROR(response?.message);
+                closeModel(dispatch);
             }
-            EditUser(submitData).then((response) => {
-                if (response.status_code === Codes?.SUCCESS) {
-                    const updatedList = customerList?.filter((item) => item.id !== selectedUser?.id);
-                    dispatch(updateCustomerList(updatedList))
-                    closeModel(dispatch)
-                    dispatch(setLoader(false))
-                    TOAST_SUCCESS(response?.message);
-                    // fetchData()
-                } else {
-                    closeModel(dispatch)
-                    TOAST_ERROR(response?.message)
-                    dispatch(setLoader(false))
-                }
-            });
+        } catch (error) {
+            console.error("Delete Employee Error:", error);
+            TOAST_ERROR("Something went wrong while deleting the employee.");
+            closeModel(dispatch);
+        } finally {
+            dispatch(setLoader(false));
         }
     };
 
@@ -90,6 +95,7 @@ export default function ManageCoustomer() {
 
     const openLeaveModelFunc = (data) => {
         setValue(AstroInputTypesEnum.ID, data?.id)
+        setValue(AstroInputTypesEnum.EMPLOYEE_LEAVE, data?.emp_leave_company == "0" ? true : false )
         setAddEmployueeLeave(true)
     }
 
@@ -299,7 +305,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-5">{'Leave Employee Details'} </h6>
+                            <h6 className="modal-title fs-5">{watch(AstroInputTypesEnum.EMPLOYEE_LEAVE) ? 'Leave Employee Details' : "Rejoin Employee" } </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveModelFunc() }} />
                         </div>
 

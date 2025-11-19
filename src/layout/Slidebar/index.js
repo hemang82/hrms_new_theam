@@ -11,7 +11,7 @@ import { FaRegCalendarAlt, FaRegNewspaper, FaStackExchange, FaUsers } from "reac
 import { TbBuildingBank, TbCalendarUser, TbCoinRupee, TbDashboardFilled, TbMoneybag } from "react-icons/tb";
 import { GrBlog, GrMoney, GrSettingsOption } from "react-icons/gr";
 import { RiCoupon3Line, RiScalesLine } from "react-icons/ri";
-import { PiFlagBannerFoldThin } from "react-icons/pi";
+import { PiFlagBannerFoldThin, PiSecurityCameraDuotone } from "react-icons/pi";
 import { FiUsers } from "react-icons/fi";
 import { TfiDashboard } from "react-icons/tfi";
 import { FaNimblr } from "react-icons/fa";
@@ -32,7 +32,6 @@ import { CiCalendarDate } from "react-icons/ci";
 import { CgList } from "react-icons/cg";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import { GoProjectSymlink } from 'react-icons/go';
-
 
 const Slidebar = () => {
 
@@ -475,6 +474,18 @@ const Slidebar = () => {
                                         <CgList style={{ fontSize: '1.2rem' }} />
                                     </span>
                                     <span className="hide-menu">Department</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.ADMIN_LOG ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.ADMIN_LOG)}
+                            >
+                                <Link to={PATHS.ADMIN_LOG} className={`sidebar-link ${path === PATHS.ADMIN_LOG ? "active" : ""}`} aria-expanded="false"
+                                >
+                                    <span>
+                                        <PiSecurityCameraDuotone style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Admin Logs</span>
                                 </Link>
                             </li>
 

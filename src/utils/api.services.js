@@ -32,6 +32,7 @@ const ADMIN_EMPLOYEE = "admin_employee";
 const ADMIN_DEPARTMENT = "admin_department";
 const ADMIN_HOLIDAYS = "admin_holidays";
 const ADMIN_EMP_LEAVE = "admin_emp_leave";
+const EMPLOYEE_LEAVE = "employee_leave";
 const ADMIN_EMP_ATTENDANCE = "admin_emp_attendence";
 const ADMIN_DAILY_TASK = "admin_daily_task";
 
@@ -43,6 +44,10 @@ export function DashboardCount(request) {
 
 export function login(request) {
     return AxiosClientApi.post(`/${AUTH_AUTH}/login`, request, true)
+}
+
+export function adminLogs(request) {
+    return AxiosClientApi.post(`/${COMMON}/get_api_logs`, request, true)
 }
 
 // ----------------------- LONE Auth --------------------------------------------
@@ -67,6 +72,10 @@ export function EditUser(request) {
 
 export function CustomerDetails(request) {
     return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/emp_details`, request, true)
+}
+
+export function DeleteEmployee(request) {
+    return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/delete_employee`, request)
 }
 
 export function DeleteUser(request) {
@@ -108,6 +117,10 @@ export function listLeavesRequestAcceptReject(request) {
 
 export function addLeaves(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/add_leave`, request)
+}
+
+export function availableLeaveBalanceList(request) {
+    return AxiosClientApi.post(`/${EMPLOYEE_LEAVE}/avilable_leave_balance_date`, request)
 }
 
 export function addEmployeeLeaves(request) {
@@ -223,8 +236,6 @@ export function addAssignTask(request) {
 export function updateTaskStatus(request) {
     return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_task_status`, request, true)
 }
-
-
 
 export function editAssignTask(request) {
     return AxiosClientApi.post(`/${ADMIN_DAILY_TASK}/update_assign_task`, request, true)

@@ -141,27 +141,6 @@ export default function ManageCoustomer() {
         setSelectedOption({})
     }, [])
 
-    // useEffect(() => {
-    //     dispatch(setLoader(true));
-    //     let request = {
-    //         // page: page,
-    //         // search: globalFilterValue,
-    //         // status_filter: selectedOption?.key,
-    //         // order_by: sortField,
-    //         // order_direction: sortOrder === 1 ? 'asc' : 'desc',
-    //         start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-    //         end_date: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
-    //         status: selectedOption?.key || ""
-    //         // limit: perPage,
-    //         // offset: page
-    //     };
-    //     console.log('request', request);
-    //     let filteredList = leaves?.filter((item) => item.status == request?.status);
-    //     setupdatedLeavList(filteredList)
-    //     // dispatch(updateLeaveList(filteredList))
-    //     dispatch(setLoader(false));
-    // }, [page, selectedOption, sortField, sortOrder, endDate, perPage, page]);
-
     useEffect(() => {
         let request = {
             start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
@@ -276,21 +255,6 @@ export default function ManageCoustomer() {
         // return { code, data }
     }
 
-    // const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
-
-    //     console.log('getInterestRateByCibil cibilScorecibilScore', cibilScore);
-    //     console.log('getInterestRateByCibil intrestDropdown', intrestDropdown);
-
-    //     if (!Array.isArray(intrestDropdown) || intrestDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = intrestDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.rate_percentage : '';
-    // };
-
     const getInterestRateByCibil = (cibilScore, intrestDropdown = []) => {
         const validCibilScore = cibilScore != null && cibilScore !== '' && cibilScore > 0 ? cibilScore : 300;
 
@@ -304,20 +268,6 @@ export default function ManageCoustomer() {
 
         return matchedRate ? matchedRate.rate_percentage : '';
     };
-
-    // const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
-
-    //     console.log('processingDropdown cibilScorecibilScore', cibilScore);
-    //     console.log('processingDropdown intrestDropdown', intrestDropdown);
-    //     if (!Array.isArray(processingDropdown) || processingDropdown.length === 0 || cibilScore === undefined) {
-    //         return '';
-    //     }
-    //     const matchedRate = processingDropdown.find(
-    //         (item) => cibilScore >= item.min_score && cibilScore <= item.max_score
-    //     );
-
-    //     return matchedRate ? matchedRate.min_fee_percent : '';
-    // };
 
     const getProcessingFeeRateByCibil = (cibilScore, processingDropdown = []) => {
         // Fallback to 300 if cibilScore is invalid
@@ -641,17 +591,21 @@ export default function ManageCoustomer() {
 
                                 <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
-                                        {rowData?.status == 1 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
-                                                <span className="p-tag-value" data-pc-section="value">Approved</span>
+                                        {rowData?.user_status == 3 ?
+                                            <span className={`p-tag p-component  badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
+                                                <span className="p-tag-value" data-pc-section="value">Cancel</span>
                                             </span>
-                                        ) : rowData?.status == 2 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
-                                                <span className="p-tag-value" data-pc-section="value">Rejected</span>
+                                            : rowData?.status == 1 ? (
+                                                <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
+                                                    <span className="p-tag-value" data-pc-section="value">Approved</span>
+                                                </span>
+                                            ) : rowData?.status == 2 ? (
+                                                <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
+                                                    <span className="p-tag-value" data-pc-section="value">Rejected</span>
+                                                </span>
+                                            ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
+                                                <span className="p-tag-value" data-pc-section="value">Pending</span>
                                             </span>
-                                        ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
-                                            <span className="p-tag-value" data-pc-section="value">Pending</span>
-                                        </span>
                                         }
                                     </>
                                 )} />
@@ -664,10 +618,9 @@ export default function ManageCoustomer() {
                                         body={(rowData) => (
                                             <div className="action-btn d-flex align-items-center">
                                                 {
-                                                    rowData?.status == 0 ? (<>
+                                                    rowData?.status == 0 && rowData?.user_status != 3 ? (<>
                                                         <a
                                                             className="text-success cursor_pointer me-2"
-                                                            // onClick={() => { handleStatus(rowData?.id, '1') }}
                                                             onClick={() => { openActionModelFunc(rowData, 'approved') }}
                                                         >
                                                             <i className="ti ti-check fs-7"></i>
@@ -679,24 +632,18 @@ export default function ManageCoustomer() {
                                                             <i className="ti ti-x fs-7"></i>
                                                         </a>
                                                     </>) : (<>
-                                                        <a className="text-success me-2 disabled-status "
-                                                        // onClick={() => { handleStatus(rowData?.id, '1') }}
-                                                        // onClick={() => { openActionModelFunc(rowData, 'approved') }}
-                                                        >
+                                                        <a className="text-success me-2 disabled-status" >
                                                             <i className="ti ti-check fs-7"></i>
                                                         </a>
                                                         <a
-                                                            className={`text-danger ${rowData?.status === 1 &&
-                                                                rowData.start_date &&
-                                                                moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
+                                                            className={`text-danger ${rowData?.status == 1 && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
                                                                 ? "cursor_pointer"
                                                                 : "disabled-status"
                                                                 }`}
                                                             onClick={() => {
                                                                 if (
-                                                                    rowData?.status === 1 &&
-                                                                    rowData.start_date &&
-                                                                    moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
+                                                                    rowData?.status == 1 
+                                                                    // && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
                                                                 ) {
                                                                     openActionModelFunc(rowData, "cancel");
                                                                 }
@@ -967,7 +914,6 @@ export default function ManageCoustomer() {
                     <div className="modal-backdrop fade show"></div>
                 )
             }
-
 
             {
                 customModel.isOpen && customModel?.modalType === ModelName.DELETE_MODEL && (

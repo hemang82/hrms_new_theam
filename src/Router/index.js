@@ -65,8 +65,12 @@ const AddAssignTask = Loadable(lazy(() => import("../pages_astro/ManageProject/A
 const TicketList = Loadable(lazy(() => import("../pages_astro/ManageProject/TicketList.js")));
 const AddTicket = Loadable(lazy(() => import("../pages_astro/ManageProject/AddTicket.js")));
 
+const ManageAdminLogs = Loadable(lazy(() => import("../pages_astro/ManageAdminLogs/index.js")));
+
+// const ManageSubAdmin = Loadable(lazy(() => import("../pages/ManageSubAdmin/index.js")));
 
 const Router = () => {
+    
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -146,6 +150,10 @@ const Router = () => {
                         <Route path={PATHS.LIST_TICKET} element={<TicketList />} />
                         <Route path={PATHS.ADD_TICKET} element={<AddTicket />} />
                         <Route path={PATHS.EDIT_TICKET} element={<AddTicket />} />
+
+                        <Route path={PATHS.ADMIN_LOG} element={<ManageAdminLogs />} />
+
+
 
                         <Route path="/faq" element={<ManageFaq />} />
 

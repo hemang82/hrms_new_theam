@@ -5,12 +5,13 @@ import * as API from '../../utils/api.services';
 
 export const getCustomerListThunk = createAsyncThunk("customerList", async (submitData, { dispatch }) => {
     try {
-        dispatch(setLoader(true))
+        dispatch(setLoader(true));
         const { data } = await API.CustomerList(submitData);
-        dispatch(setLoader(false))
         return data;
     } catch (error) {
         throw error;
+    } finally {
+        dispatch(setLoader(false));
     }
 });
 
@@ -344,7 +345,6 @@ const masterSlice = createSlice({
         updatePageScroll: (state, action) => {
             state.pageScroll = action.payload;
         },
-
     },
 
     extraReducers: (builder) => {

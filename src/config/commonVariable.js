@@ -5,7 +5,7 @@ export const DateFormat = {
     ABBREVIATED_DATE_FORMAT: "D MMM", // 12 Jun
     ABBREVIATED_FULL_DATE_FORMAT: "DD MMM YYYY", // 12 Jun, 2024
     DATE_SLASH_FORMAT: "DD/MM/YYYY", // 12/06/2024
-    DATE_YEAR_WISE_SLASH_TIME_FORMAT: "DD-MM-YYYY h:mm A", // 2024-06-12 3:45 PM
+    DATE_YEAR_WISE_SLASH_TIME_FORMAT: "DD / MM / YYYY h:mm A", // 2024-06-12 3:45 PM
     DATE_TIME_FORMAT: "DD MMMM YYYY", // 12 Jun 2024, 03:45 PM
     DATE_TIME_MONTH_WISE_FORMAT: "MMM DD YYYY, hh:mm A", // Jun 12 2024, 03:45 PM
     DATE_DASH_TIME_FORMAT: "YYYY-MM-DD", // 12-6-2024 3:45 PM
@@ -124,7 +124,8 @@ export const AstroInputTypesEnum = {
 
     PASSWORD: 'password',
     PROFILE_IMAGE: 'aadhaar_file',
-
+    EMPLOYEE_LEAVE: 'employee_leave',
+    SELECTED_LEAVE_DATES: 'selected_leave_date',
 
     BANNER_EN: 'banner_en',
     BANNER_GU: 'banner_gu',
@@ -1946,3 +1947,9 @@ export const TaskStatus = {
         textColor: "#721c24",
     },
 };
+
+export const LEAVE_TYPE_LIST_AVAILABLE = [
+    { key: "0", value: "Used" },
+    { key: "1", value: "Full Day" },
+    { key: "2", value: "Half Day" },
+];
