@@ -57,6 +57,7 @@ export default function ManageAttendance() {
     const { attendanceList: { data: attendanceList } } = useSelector((state) => state.masterslice);
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
+
     // const { register, handleSubmit, setValue, clearErrors, reset, watch, trigger, control, formState: { errors } } = useForm();
     const {
         register,
@@ -111,9 +112,9 @@ export default function ManageAttendance() {
         const request = {
             emp_leave_company: employeeStatus?.key,
         };
-        if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk(request));
-        }
+        // if (customerList?.length === 0) {
+        dispatch(getCustomerListThunk(request));
+        // }
         setSelectedOption({})
     }, [])
 
@@ -348,6 +349,9 @@ export default function ManageAttendance() {
 
     const onChangeApiCalling = async (data) => {
         try {
+
+            console.log('onChangeApiCalling data', data);
+
             const request = {
                 start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 end_date: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
@@ -355,11 +359,18 @@ export default function ManageAttendance() {
                 emp_leave_company: data?.emp_leave_company || "0"
             };
             await dispatch(getlistAttendanceThunk(request));
+
+            const request2 = {
+                emp_leave_company: data?.emp_leave_company || "0",
+            };
+            // if (customerList?.length === 0) {
+            dispatch(getCustomerListThunk(request2));
+            // }
         } finally {
         }
     };
 
-    // ---------------------------------- Export Data ----------------------------------
+    // ---------------------------------- Export Data -----------------------------------------------
 
     const handleExportApiCall = async () => {
         dispatch(setLoader(true));
@@ -413,6 +424,10 @@ export default function ManageAttendance() {
         dispatch(setLoader(false));
     };
 
+    console.log('selectedOption', selectedOption);
+
+    console.log('customerList attendance', customerList);
+
     return (
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
@@ -455,7 +470,7 @@ export default function ManageAttendance() {
                                     onChange={(date) => {
                                         setStartDate(date);
                                         setEndDate(null);
-                                        handleSelect({ id: "", name: "All Employees" });
+                                        // handleSelect({ id: "", name: "All Employees" });
                                     }}
                                 />
                             </div>
@@ -473,7 +488,9 @@ export default function ManageAttendance() {
                                         onChangeApiCalling({
                                             end_date: end_date,
                                             start_date: startDate,
-                                            status: ""
+                                            status: "",
+                                            emp_leave_company: employeeStatus?.key,
+                                            employee_id: selectedOption?.id ? selectedOption?.id : ""
                                         });
                                     }}
                                     disabled={!startDate}
@@ -506,7 +523,8 @@ export default function ManageAttendance() {
                                                     onChangeApiCalling({
                                                         start_date: startDate,
                                                         end_date: endDate,
-                                                        employee_id: ""
+                                                        employee_id: "",
+                                                        emp_leave_company: employeeStatus?.key
                                                     });
                                                     handleSelect({ id: "", name: "All Employees" });
                                                 }}
@@ -514,6 +532,7 @@ export default function ManageAttendance() {
                                                 All Employees
                                             </button>
                                         </li>
+
                                         {customerList?.map((option) => (
                                             <li key={option.id}>
                                                 <button
@@ -523,7 +542,8 @@ export default function ManageAttendance() {
                                                         onChangeApiCalling({
                                                             start_date: startDate,
                                                             end_date: endDate,
-                                                            employee_id: option?.id
+                                                            employee_id: option?.id,
+                                                            emp_leave_company: employeeStatus?.key
                                                         });
                                                         handleSelect(option);
                                                     }}
@@ -558,10 +578,12 @@ export default function ManageAttendance() {
                                                         onChangeApiCalling({
                                                             start_date: startDate,
                                                             end_date: endDate,
-                                                            employee_id: "",
-                                                            emp_leave_company: option?.key
+                                                            emp_leave_company: option?.key,
+                                                            employee_id: ""
                                                         });
                                                         setEmployeeStatus(option);
+                                                        handleSelect({ id: "", name: "All Employees" });
+
                                                     }}
                                                 >
                                                     {option?.value}

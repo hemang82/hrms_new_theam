@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import SubNavbar from '../../layout/SubNavbar';
-import { DeleteEmployee, EditUser } from '../../utils/api.services';
+import { DeleteEmployee, EditUser, UpdateLeaveJoinDate } from '../../utils/api.services';
 import { TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -10,7 +10,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, setLoader, updateCustomerList } from '../../Store/slices/MasterSlice';
 import { Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, openModel } from '../../config/commonFunction';
+import { closeModel, formatDate, openModel } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import { AstroInputTypesEnum, DateFormat, EMPLOYEE_STATUS, STATUS_COLORS } from '../../config/commonVariable';
@@ -24,7 +24,7 @@ export default function ManageCoustomer() {
     let navigat = useNavigate();
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, reset, control, watch ,formState: { errors } } = useForm();
+    const { register, handleSubmit, setValue, reset, control, watch, formState: { errors } } = useForm();
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
     const [selectedUser, setSelectedUser] = useState()
@@ -46,9 +46,9 @@ export default function ManageCoustomer() {
     };
 
     useEffect(() => {
-        if (customerList?.length === 0) {
-            fetchData();
-        }
+        // if (customerList?.length === 0) {
+        fetchData();
+        // }
     }, [debounce]);
 
     const handleDelete = async (is_true) => {
@@ -95,7 +95,7 @@ export default function ManageCoustomer() {
 
     const openLeaveModelFunc = (data) => {
         setValue(AstroInputTypesEnum.ID, data?.id)
-        setValue(AstroInputTypesEnum.EMPLOYEE_LEAVE, data?.emp_leave_company == "0" ? true : false )
+        setValue(AstroInputTypesEnum.EMPLOYEE_LEAVE, data?.emp_leave_company == "0" ? true : false)
         setAddEmployueeLeave(true)
     }
 
@@ -106,25 +106,51 @@ export default function ManageCoustomer() {
 
     const onSubmitData = async (data) => {
         dispatch(setLoader(true))
-        let submitData = {
-            action: "admin",
-            emp_leave_company: "1",
-            emp_leave_date: data[AstroInputTypesEnum.DATE],
-            emp_leave_reason: data[AstroInputTypesEnum.REASON],
-            employee_id: data[AstroInputTypesEnum.ID],
-        }
-        EditUser(submitData).then((response) => {
-            if (response.code == Codes.SUCCESS) {
-                TOAST_SUCCESS(response?.message)
-                const updatedList = customerList?.filter((item) => item.id !== data[AstroInputTypesEnum.ID]);
-                dispatch(updateCustomerList(updatedList))
-                dispatch(setLoader(false))
-                closeLeaveModelFunc()
-            } else {
-                dispatch(setLoader(false))
-                TOAST_ERROR(response?.message)
+
+        console.log('onSubmitData data', data);
+
+        // return
+        if (!data.employee_leave) {
+            let submitData = {
+                action: "admin",
+                emp_id: data?.id,
+                emp_leave_company: "0",
+                joining_date: formatDate(data[AstroInputTypesEnum.DATE], DateFormat?.DATE_LOCAL_DASH_TIME_FORMAT),
+                emp_leave_reason: data[AstroInputTypesEnum.REASON],
             }
-        })
+            UpdateLeaveJoinDate(submitData).then((response) => {
+                if (response.code == Codes.SUCCESS) {
+                    TOAST_SUCCESS(response?.message)
+                    const updatedList = customerList?.filter((item) => item.id !== data[AstroInputTypesEnum.ID]);
+                    dispatch(updateCustomerList(updatedList))
+                    dispatch(setLoader(false))
+                    closeLeaveModelFunc()
+                } else {
+                    dispatch(setLoader(false))
+                    TOAST_ERROR(response?.message)
+                }
+            })
+        } else {
+            let submitData = {
+                action: "admin",
+                emp_leave_company: "1",
+                emp_leave_date: data[AstroInputTypesEnum.DATE],
+                emp_leave_reason: data[AstroInputTypesEnum.REASON],
+                employee_id: data[AstroInputTypesEnum.ID],
+            }
+            EditUser(submitData).then((response) => {
+                if (response.code == Codes.SUCCESS) {
+                    TOAST_SUCCESS(response?.message)
+                    const updatedList = customerList?.filter((item) => item.id !== data[AstroInputTypesEnum.ID]);
+                    dispatch(updateCustomerList(updatedList))
+                    dispatch(setLoader(false))
+                    closeLeaveModelFunc()
+                } else {
+                    dispatch(setLoader(false))
+                    TOAST_ERROR(response?.message)
+                }
+            })
+        }
     }
 
     const onChangeApiCalling = async (data) => {
@@ -305,7 +331,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-5">{watch(AstroInputTypesEnum.EMPLOYEE_LEAVE) ? 'Leave Employee Details' : "Rejoin Employee" } </h6>
+                            <h6 className="modal-title fs-5">{watch(AstroInputTypesEnum.EMPLOYEE_LEAVE) ? 'Leave Employee Details' : "Rejoin Employee"} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeLeaveModelFunc() }} />
                         </div>
 
@@ -314,7 +340,9 @@ export default function ManageCoustomer() {
                                 <div className="col-lg-12">
                                     <div className="card-body p-2">
                                         <div className="row g-3">
+
                                             <input type="hidden" value="some_default_value" {...register(AstroInputTypesEnum.ID)} />
+
                                             <div className="">
                                                 <div className="col-12 ">
                                                     <label htmlFor="dob1" className="form-label fw-semibold">
@@ -340,29 +368,34 @@ export default function ManageCoustomer() {
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="">
-                                                <label htmlFor="leave_reason" className="form-label fw-semibold">
-                                                    Reason<span className="text-danger ms-1">*</span>
-                                                </label>
-                                                <div className="input-group border rounded-1">
-                                                    <textarea
-                                                        className="form-control ps-2"
-                                                        rows={3}
-                                                        placeholder="Enter reason for leave"
-                                                        {...register(AstroInputTypesEnum.REASON, {
-                                                            required: "Enter reason for leave",
-                                                        })}
-                                                    ></textarea>
+
+                                            {
+                                                watch(AstroInputTypesEnum.EMPLOYEE_LEAVE) &&
+                                                <div className="">
+                                                    <label htmlFor="leave_reason" className="form-label fw-semibold">
+                                                        Reason<span className="text-danger ms-1">*</span>
+                                                    </label>
+                                                    <div className="input-group border rounded-1">
+                                                        <textarea
+                                                            className="form-control ps-2"
+                                                            rows={3}
+                                                            placeholder="Enter reason for leave"
+                                                            {...register(AstroInputTypesEnum.REASON, {
+                                                                required: "Enter reason for leave",
+                                                            })}
+                                                        ></textarea>
+                                                    </div>
+                                                    <label className="errorc ps-1 pt-1">
+                                                        {errors[AstroInputTypesEnum.REASON]?.message}
+                                                    </label>
                                                 </div>
-                                                <label className="errorc ps-1 pt-1">
-                                                    {errors[AstroInputTypesEnum.REASON]?.message}
-                                                </label>
-                                            </div>
+                                            }
 
                                             <div className="modal-footer justify-content-center">
                                                 <button type="button" className="btn btn-danger" onClick={() => { closeLeaveModelFunc() }}>Cancel</button>
                                                 <button type="submit" className="btn btn-primary">Submit</button>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

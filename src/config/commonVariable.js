@@ -13,11 +13,9 @@ export const DateFormat = {
     DATE_DOT_TIME_FORMAT: "DD-MM-YYYY H:mm", // 12.06.2024 15:45
     DATE_WEEK_MONTH_NAME_FORMAT: "DD-MM-YYYY , ddd",
     DATE_WEEK_MONTH_NAME_FORMAT_WEEK: "DD-MM-YYYY , dddd",
-
     DATE_WEEK_NAME_FORMAT: "dddd",
     DATE_WEEK_NAME_FORMAT_YEAR: "YYYY",
-
-    DATE_MONTH_NAME_FORMAT: "(MMMM - MM)"
+    DATE_MONTH_NAME_FORMAT: "(MMMM - MM)",
 };
 
 // Time Formats

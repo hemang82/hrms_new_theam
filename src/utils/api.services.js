@@ -70,6 +70,12 @@ export function EditUser(request) {
     return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/edit_employee`, request)
 }
 
+export function UpdateLeaveJoinDate(request) {
+    return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/update_leave_join_date`, request)
+}
+
+// /api/admin_employee/update_leave_join_date
+
 export function CustomerDetails(request) {
     return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/emp_details`, request, true)
 }
