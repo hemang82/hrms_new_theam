@@ -164,7 +164,6 @@ const Slidebar = () => {
 
                     <nav className="sidebar-nav scroll-sidebar" data-simplebar>
                         <ul id="sidebarnav">
-
                             <li className={`sidebar-item ${path === "/dashboard" || path === "/" ? "selected" : ""}`}
                                 onClick={() => toggleMenu('/dashboard')}
                             >

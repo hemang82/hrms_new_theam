@@ -132,9 +132,9 @@ export default function ManageLeaveBalance() {
         const request = {
             emp_leave_company: employeeStatus?.key,
         };
-        if (customerList?.length === 0) {
-            dispatch(getCustomerListThunk(request));
-        }
+        // if (customerList?.length === 0) {
+        dispatch(getCustomerListThunk(request));
+        // }
     }, [])
 
     // useEffect(() => {
@@ -287,6 +287,7 @@ export default function ManageLeaveBalance() {
             account_holder_name: data[AstroInputTypesEnum?.ACCOUNT_HOLDER_NAME],
             account_no: data[AstroInputTypesEnum?.ACCOUNT_NUMBER],
             ifsc_code: data[AstroInputTypesEnum?.IFSC_CODE],
+            pan_card: data[AstroInputTypesEnum?.PANCARD],
         };
         if (editBankDetailsModal) {
         }
@@ -326,6 +327,7 @@ export default function ManageLeaveBalance() {
         setValue(AstroInputTypesEnum?.ACCOUNT_HOLDER_NAME, data?.account_holder_name)
         setValue(AstroInputTypesEnum?.ACCOUNT_NUMBER, data?.account_no)
         setValue(AstroInputTypesEnum?.IFSC_CODE, data?.ifsc_code)
+        setValue(AstroInputTypesEnum?.PANCARD, data?.pan_card)
     }
 
     const closeBankDetailsModelFunc = () => {
@@ -384,6 +386,8 @@ export default function ManageLeaveBalance() {
                 emp_leave_company: data?.key,
             };
             await dispatch(getListBankDetailsThunk(request));
+            await dispatch(getCustomerListThunk(request));
+
         } finally {
         }
     };
@@ -503,6 +507,9 @@ export default function ManageLeaveBalance() {
                                     <span className='me-2'>{truncateWords(rowData.name) || '-'} </span>
                                 )} />
 
+
+
+
                                 {/* <Column field="start_date" header="From" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <span className='me-2'>{formatDate(rowData.start_date, DateFormat?.DATE_WEEK_MONTH_NAME_FORMAT) || '-'} </span>
                                 )} />
@@ -531,6 +538,9 @@ export default function ManageLeaveBalance() {
                                     <span className='me-2'>{rowData?.ifsc_code || '-'}</span>
                                 )} />
 
+                                <Column field="pan_card" header="Pancard Number" sortable style={{ minWidth: '12rem', textTransform: 'capitalize' }} body={(rowData) => (
+                                    <span className='me-2'>{truncateWords(rowData.pan_card) || '-'} </span>
+                                )} />
 
                                 <Column field="statuss" header="Action" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <div className="action-btn">
@@ -549,7 +559,6 @@ export default function ManageLeaveBalance() {
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -684,6 +693,7 @@ export default function ManageLeaveBalance() {
                                                         // onKeyPress={allowLettersAndSpaces}
                                                         autoComplete='nope'
                                                         {...register(AstroInputTypesEnum.IFSC_CODE, textInputValidation(AstroInputTypesEnum.IFSC_CODE, 'Enter IFSC Code'))}
+
                                                     />
                                                 </div>
                                                 <label className="errorc ps-1 pt-1">
@@ -691,6 +701,29 @@ export default function ManageLeaveBalance() {
                                                 </label>
                                             </div>
 
+                                            <div className="mb-1">
+                                                <label htmlFor="lastname" className="form-label fw-semibold">
+                                                    Pancard Number<span className="text-danger ms-1">*</span>
+                                                </label>
+                                                <div className="input-group border rounded-1">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control ps-2"
+                                                        placeholder="Enter pancard number"
+                                                        // onKeyPress={allowLettersAndSpaces}
+                                                        maxLength={11}
+                                                        autoComplete='nope'
+                                                        {...register(AstroInputTypesEnum.PANCARD, textInputValidation(AstroInputTypesEnum.PANCARD, 'Enter Pancard Number'))}
+                                                        onChange={(e) => {
+                                                            e.target.value = e.target.value
+                                                                .toUpperCase().replace(/[^A-Z0-9]/g, "");
+                                                        }}
+                                                    />
+                                                </div>
+                                                <label className="errorc ps-1 pt-1">
+                                                    {errors[AstroInputTypesEnum.PANCARD]?.message}
+                                                </label>
+                                            </div>
                                             <div className="modal-footer justify-content-center">
                                                 <button type="button" className="btn btn-danger" onClick={() => { closeBankDetailsModelFunc() }}>Cancel</button>
                                                 <button type="submit" className="btn btn-primary">Submit</button>

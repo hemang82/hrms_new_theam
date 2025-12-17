@@ -181,6 +181,7 @@ export const AstroInputTypesEnum = {
     IFSC_CODE: 'ifsc_code',
     ACCOUNT_NUMBER: 'account_number',
     ACCOUNT_HOLDER_NAME: 'account_holder_name',
+    PANCARD: 'pancard',
 
 
 

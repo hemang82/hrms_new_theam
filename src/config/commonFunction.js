@@ -118,7 +118,7 @@ export const formatDateDyjs = (dateString, formatPattern) => {
     return dayjs(dateString).format(formatPattern);
 };
 
-export const formatDateIncommingDyjs = (dateString, incommingFormate , formatPattern) => {
+export const formatDateIncommingDyjs = (dateString, incommingFormate, formatPattern) => {
     return dayjs(dateString, incommingFormate).format(formatPattern);
 };
 export const getArrayFromCommaSeparated = (str) => {
@@ -650,6 +650,14 @@ export const textInputValidation = (inputType, error) => {
                 message: 'Mobile number must be 10 digits',
             },
         });
+    } else if (inputType === AstroInputTypesEnum.PANCARD) {
+        return {
+            required: error,
+            pattern: {
+                value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                message: "Enter a valid PAN card number (e.g. ABCDE1234F)",
+            },
+        };
     } else if (inputType === InputTypesEnum.TITLE || inputType === InputTypesEnum.LINK || inputType === InputTypesEnum.THUMBNAIL || InputTypesEnum.IMAGE) {
         return ({
             required: error,
@@ -729,5 +737,5 @@ export const disableBeforeStartDate = (startDate) => (current) => {
 };
 
 export const getLocalStorageItem = (key) => {
-  return localStorage.getItem(key);
+    return localStorage.getItem(key);
 };

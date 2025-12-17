@@ -106,9 +106,7 @@ export default function ManageCoustomer() {
 
     const onSubmitData = async (data) => {
         dispatch(setLoader(true))
-
-        console.log('onSubmitData data', data);
-
+        // console.log('onSubmitData data', data);
         // return
         if (!data.employee_leave) {
             let submitData = {
