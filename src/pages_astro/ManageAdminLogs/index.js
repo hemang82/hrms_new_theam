@@ -273,7 +273,7 @@ export default function ManageSalary() {
                                 sortField={sortField}
                                 sortOrder={sortOrder}
                                 // onSort={handleSort}
-                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>No Salary found.</span>}
+                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>No Logs found.</span>}
                             >
                                 <Column
                                     field="id"

@@ -757,7 +757,7 @@ export default function ManageAttendance() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
                                         {
-                                            getLocalStorageItem(Constatnt?.ROLE_KEY) == '1' && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                            getLocalStorageItem(Constatnt?.ROLE_KEY) != '1' && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
                                                 <i class="ti ti-edit fs-7"></i>
                                             </a>
                                         }

@@ -83,8 +83,11 @@ export default function DetailsCustomer() {
                                                         style={{ objectFit: 'cover' }}
                                                     />
                                                 ) : <>
-                                                    <p className="mb-1 fs-4">{item.label}</p>
-                                                    <h6 className={`fw-meduim mb-0 fs-5 ${item.label != 'Email Address' && 'text-capitalize'}`}>{item.value || 'N/A'}</h6>
+                                                    {
+                                                        item.value && (<>
+                                                            <p className="mb-1 fs-4">{item.label}</p>
+                                                            <h6 className={`fw-meduim mb-0 fs-5 ${item.label != 'Email Address' && 'text-capitalize'}`}>{item.value || 'N/A'}</h6>
+                                                        </>)}
                                                 </>
                                             }
                                         </div>
@@ -113,7 +116,7 @@ export default function DetailsCustomer() {
                                             { label: "Account Number", value: userDetails?.account_no },
                                             { label: "IFSC Code Address", value: userDetails?.ifsc_code },
                                             { label: "Bank Branch", value: userDetails?.branch },
-
+                                            { label: "Pancard Number", value: userDetails?.pan_card },
                                         ].map((item, index) => (
 
                                             <div key={index} className="col-md-4 mb-4">
