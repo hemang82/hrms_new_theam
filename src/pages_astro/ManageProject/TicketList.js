@@ -416,7 +416,7 @@ export default function AssignTaskList() {
                                         {selectedOption?.name || 'Select Project'}
                                     </button>
                                     <ul className="dropdown-menu w-100">
-                                        {projectList?.map((option) => (
+                                        {projectList?.length > 0 && projectList?.map((option) => (
                                             <li key={option.value}>
                                                 <a
                                                     className="dropdown-item cursor_pointer text-black-50"

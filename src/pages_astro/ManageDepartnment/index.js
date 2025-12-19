@@ -15,7 +15,7 @@ import { Helmet } from 'react-helmet';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { getCustomerListThunk,  setLoader, getListDepartnmentThunk, updateDepartnmentList } from '../../Store/slices/MasterSlice';
+import { getCustomerListThunk, setLoader, getListDepartnmentThunk, updateDepartnmentList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
 import { closeModel, formatDate, formatDateDyjs, formatIndianPrice, getFileNameFromUrl, getLoanStatusObject, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
@@ -36,6 +36,7 @@ import { BsQuestionOctagon } from 'react-icons/bs';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { GoDotFill } from 'react-icons/go';
 import { CiCalendarDate } from 'react-icons/ci';
+import { NoDataFound } from '../CommonPages/NoDataFound';
 
 
 export default function ManageDepartnment() {
@@ -162,7 +163,7 @@ export default function ManageDepartnment() {
             status: selectedOption?.key // can be "", 0, 1, 2
         };
 
-        const filteredList = departnmentList?.filter((item) => {
+        const filteredList = departnmentList?.length > 0 && departnmentList?.filter((item) => {
 
             // ----- STATUS FILTER -----
             let statusMatch = true;
@@ -193,7 +194,7 @@ export default function ManageDepartnment() {
             }
             deleteDepartnment(submitData).then((response) => {
                 if (response?.code == Codes?.SUCCESS) {
-                    const updatedList = departnmentList?.filter((item) => item.id !== selectedUser?.id)
+                    const updatedList = departnmentList?.length > 0 && departnmentList?.filter((item) => item.id !== selectedUser?.id)
                     dispatch(updateDepartnmentList(updatedList))
                     closeModel(dispatch)
                     dispatch(setLoader(false))
@@ -424,9 +425,9 @@ export default function ManageDepartnment() {
                     <div className="card card-body">
                         <div className="my-2 p-2">
                             <Row >
-                                {departnmentList?.length > 0 && departnmentList?.map((dept) => (
-                                    <DepartnmentCard key={dept.id} dept={dept} />
-                                ))}
+                                {departnmentList?.length > 0 ? departnmentList?.map((dept) => (
+                                    <DepartnmentCard key={dept?.id} dept={dept} />
+                                )) : <NoDataFound />}
                             </Row>
                         </div>
                         <div className=''>

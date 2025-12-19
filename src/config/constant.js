@@ -105,7 +105,7 @@ export const Codes = {
     NOT_FOUND: 2,
     ERROR: 0,
     INTERNAL_ERROR: 500,
-    UNAUTHORIZED: 401,
+    UNAUTHORIZED: -1,
     REFRESH_TOKEN_EXPIRED: 410,
 };
 

@@ -46,16 +46,19 @@ AxiosClientApi.interceptors.request.use(function (request) {
 AxiosClientApi.interceptors.response.use(
     async response => {
         const resData = response?.data;
+        console.log('resData axios', response);
+
         // ✅ Token expired based on response code (not HTTP error)
-        if (resData?.status_code === Codes.ACCESS_TOKEN_EXPIRE) {
+        if (resData?.code == Codes.ACCESS_TOKEN_EXPIRE) {
             logoutRedirection();
-        } else if (resData?.status_code === Codes.UNAUTHORIZED) {
+        } else if (resData?.code == Codes.UNAUTHORIZED) {
             logoutRedirection();
-        } else if (resData?.status_code === Codes.REFRESH_TOKEN_EXPIRED) {
+        } else if (resData?.code == Codes.REFRESH_TOKEN_EXPIRED) {
             logoutRedirection();
-        } else if (resData?.status_code === Codes.INTERNAL_ERROR) {
+        } else if (resData?.code == Codes.INTERNAL_ERROR) {
             // TOAST_INFO('Internal server error. Please try again later.');
         }
+
         return resData; // ✅ Return normal data if no retry
     },
 
@@ -64,6 +67,7 @@ AxiosClientApi.interceptors.response.use(
         // if (error?.response?.status === Codes.UNAUTHORIZED) {
         //     logoutRedirection();
         // }
+        logoutRedirection();
         return Promise.reject(error);
     }
 );

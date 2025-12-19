@@ -172,7 +172,7 @@ export default function ManageLeaveBalance() {
         //     return Number(item.status) === Number(request.status);
         // });
 
-        const filteredList = bankDetailsList?.filter((item) => {
+        const filteredList = bankDetailsList?.length > 0 && bankDetailsList?.filter((item) => {
 
             // ----- STATUS FILTER -----
             let statusMatch = true;
@@ -259,7 +259,6 @@ export default function ManageLeaveBalance() {
     };
 
     // ----------------------------------Export Data----------------------------------
-
 
     const onPageChange = (Data) => {
         setPage(Data)

@@ -95,7 +95,7 @@ export default function ManageProject() {
 
     const updatedData = (taskList, startDate, endDate, priority) => {
 
-        console.log('taskList', taskList, 'startDatestar', startDate, 'endDate', endDate);
+        // console.log('taskList', taskList, 'startDatestar', startDate, 'endDate', endDate);
 
         let start, end;
 
@@ -148,7 +148,7 @@ export default function ManageProject() {
             }
             deleteProject(submitData).then((response) => {
                 if (response.code == Codes?.SUCCESS) {
-                    const updatedList = projectList?.filter((item) => item.id !== selectedProject?.id)
+                    const updatedList = projectList?.length > 0 && projectList?.filter((item) => item.id !== selectedProject?.id)
                     dispatch(updateProjectList(updatedList))
                     closeModel(dispatch)
                     dispatch(setLoader(false))

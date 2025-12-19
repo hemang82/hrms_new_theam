@@ -154,7 +154,7 @@ export default function ManageCoustomer() {
         //     return Number(item.status) === Number(request.status);
         // });
 
-        const filteredList = leaves?.filter((item) => {
+        const filteredList = leaves?.length > 0 && leaves?.filter((item) => {
 
             // ----- STATUS FILTER -----
             let statusMatch = true;
@@ -190,7 +190,7 @@ export default function ManageCoustomer() {
         approvedRejectLeaves(submitData).then((response) => {
             if (response.code == Codes.SUCCESS) {
                 TOAST_SUCCESS(response?.message)
-                let updatedList = leaves?.map((item) => {
+                let updatedList = leaves?.length > 0 && leaves?.map((item) => {
                     if (selectedLeave?.leave_id === item.leave_id) {
                         return {
                             ...item,
