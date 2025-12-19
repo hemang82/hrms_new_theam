@@ -59,7 +59,7 @@ export function uploadFile(request) {
 // ----------------------- Customer ------------------------------------------------
 
 export function CustomerList(request) {
-    return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/emp_listing`, request, true)
+    return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/emp_listingpannel`, request, true)
 }
 
 export function AddUser(request) {
@@ -149,6 +149,8 @@ export function listEmpLeaveBalance(request) {
 
 export function listAttendance(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_ATTENDANCE}/admin_emp_attedence_list`, request)
+    // return AxiosClientApi.post(`/${ADMIN_EMP_ATTENDANCE}/emp_listingpannel`, request)
+
 }
 
 export function addAttendance(request) {

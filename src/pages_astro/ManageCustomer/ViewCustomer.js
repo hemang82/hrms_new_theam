@@ -58,20 +58,19 @@ export default function DetailsCustomer() {
                                         { label: "Name", value: userDetails?.name },
                                         { label: "Gender", value: userDetails?.gender == "M" ? "Male" : userDetails?.gender == "F" ? "Female" : "Other" },
                                         { label: "Email Address", value: userDetails?.email },
-                                        { label: "Mobile Number", value: `+91 ${userDetails?.phone_number}` },
-                                        { label: "Date Of Birth", value: formatDate(userDetails?.birth_date, DateFormat?.DATE_FORMAT) },
+                                        { label: "Mobile Number", value: userDetails?.phone_number ? `+91 ${userDetails?.phone_number}` : null },
+                                        { label: "Date Of Birth", value: userDetails?.birth_date ? formatDate(userDetails?.birth_date, DateFormat?.DATE_FORMAT) : null },
                                         { label: "Password", value: userDetails?.password },
                                         { label: "Designation", value: userDetails?.designation },
                                         { label: "Department", value: userDetails?.dept_name },
                                         { label: "Monthly Salary", value: userDetails?.salary_monthly },
                                         { label: "Senior Name", value: userDetails?.senior_name },
-                                        { label: "Create Employee", value: formatDate(userDetails?.created_at, DateFormat?.DATE_FORMAT) },
+                                        { label: "Create Employee", value: userDetails?.created_at ? formatDate(userDetails?.created_at, DateFormat?.DATE_FORMAT) : null },
                                         { label: "Address", value: userDetails?.location },
                                         { label: "Employee Leave Date", value: userDetails?.emp_leave_company == '1' ? userDetails?.emp_leave_date : null },
                                         { label: "Employee Leave Reason", value: userDetails?.emp_leave_company == '1' ? userDetails?.emp_leave_reason : null },
-                                    ].map((item, index) => (
-
-                                        <div key={index} className="col-md-4 mb-4">
+                                    ].map((item, index) => (<>
+                                        {item.value && <div key={index} className="col-md-4 mb-4">
                                             {
                                                 item.label === "Image" ? (
                                                     <LazyLoadImage
@@ -90,13 +89,14 @@ export default function DetailsCustomer() {
                                                         </>)}
                                                 </>
                                             }
-                                        </div>
-                                    ))}
+                                        </div>}
+                                    </>))}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 {
                     userDetails?.account_no &&
                     <div className="justify-content-center">
@@ -134,7 +134,6 @@ export default function DetailsCustomer() {
                                                         <p className="mb-1 fs-4">{item.label}</p>
                                                         <h6 className="fw-meduim mb-0 fs-5 text-capitalize">{item.value || 'N/A'}</h6>
                                                     </>
-
                                                 }
                                             </div>
                                         ))}

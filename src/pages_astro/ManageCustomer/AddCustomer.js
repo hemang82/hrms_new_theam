@@ -78,7 +78,7 @@ export default function AddCustomer() {
     useEffect(() => {
         if (userData) {
             if (departnmentlistArray?.length > 0) {
-                setValue(AstroInputTypesEnum?.DEPARTMENT, userData?.department.toString());
+                setValue(AstroInputTypesEnum?.DEPARTMENT, userData?.department?.toString());
             }
         }
     }, [departnmentlistArray])
