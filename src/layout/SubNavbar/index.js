@@ -32,8 +32,6 @@ export default function SubNavbar({ title, header, subHeader, subHeaderOnlyView 
         }
     };
 
-    console.log('userDetailsuserDetails', userDetails);
-
     return (
         <>
             {/* </header> */}
@@ -79,8 +77,8 @@ export default function SubNavbar({ title, header, subHeader, subHeaderOnlyView 
                         </div>
 
                         <div
-                            className="col-12 col-md-3 d-flex justify-content-md-end justify-content-center "
-                        // onClick={() => navigate(PATHS?.MY_PROFILE)} // 🔗 Navigate to profile page
+                            className="col-12 col-md-3 d-flex justify-content-md-end justify-content-center cursor-pointer "
+                        onClick={() => navigate(PATHS?.MY_PROFILE)} // 🔗 Navigate to profile page
                         // style={{ cursor: "pointer" }}
                         >
                             <img

@@ -70,7 +70,7 @@ const ManageAdminLogs = Loadable(lazy(() => import("../pages_astro/ManageAdminLo
 // const ManageSubAdmin = Loadable(lazy(() => import("../pages/ManageSubAdmin/index.js")));
 
 const Router = () => {
-    
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -153,6 +153,7 @@ const Router = () => {
 
                         <Route path={PATHS.ADMIN_LOG} element={<ManageAdminLogs />} />
 
+                        <Route path={PATHS.MY_PROFILE} element={<MyProfile />} />
 
 
                         <Route path="/faq" element={<ManageFaq />} />
@@ -161,7 +162,6 @@ const Router = () => {
                         <Route path="/contact_us_list/contact_details" element={<ContectUsDetails />} />
 
                         <Route path="/application_content" element={<ApplicationContent />} />
-                        <Route path="/my_profile" element={<MyProfile />} />
                         <Route path="/change_password" element={<ChangePassword />} />
 
                         <Route path="*" element={<PageNotFound />} />

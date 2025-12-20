@@ -167,7 +167,7 @@ export default function AddCustomer() {
                         end: b?.end
                             ? dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
                             : null
-                })) : [],
+                    })) : [],
                 lat: "0.000",
                 log: "0.000",
                 location_id: "TRACEWAVE",
@@ -247,7 +247,9 @@ export default function AddCustomer() {
         <>
             {<Spinner isActive={is_loding} message={'Please Wait'} />}
             <div className="container-fluid mw-100">
+
                 <SubNavbar title={attendanceData ? 'Edit Attendance' : 'Add Attendance'} header={'Attendance List'} subHeaderOnlyView={attendanceData ? 'Edit Attendance' : 'Add Attendance'} />
+
                 <div className="row">
                     {
                         selectedEmployee &&

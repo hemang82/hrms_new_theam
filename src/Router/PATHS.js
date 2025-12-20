@@ -35,7 +35,8 @@ export const PATHS = {
 
     ADMIN_LOG: '/admin_logs',
 
+    MY_PROFILE: '/my_profile',
 
     LEAVE_REQUEST_LIST: '/leave_request_list',
-    
+
 }

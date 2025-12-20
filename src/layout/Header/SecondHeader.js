@@ -464,7 +464,9 @@ const SecondHeader = () => {
                             </a>
                         </div>
                     </li>
+
                     {/* Right Bar offcanvas button (Theme Customization Panel) */}
+                    
                     <li>
                         <a className="nav-link waves-effect waves-light" data-bs-toggle="offcanvas" href="#theme-settings-offcanvas">
                             <i className="fe-settings font-22" />

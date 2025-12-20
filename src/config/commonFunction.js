@@ -385,35 +385,82 @@ export const dayjsNormalDateFormat = (date, dateFormat) => {
     return date ? dayjs(date).format(dateFormat) : "";
 };
 
+// export const getWorkingHours = (startTime, endTime, breakMinutes = 0) => {
 
-export const getWorkingHours = (startTime, endTime, breakMinutes = 0) => {
+//     console.log('startTime', startTime, 'endTime', endTime, 'breakMinutes', breakMinutes);
 
-    console.log('startTime', startTime, 'endTime', endTime, 'breakMinutes', breakMinutes);
+//     if (!startTime) return 0;
+//     const start = moment.utc(startTime, "HH:mm:ss");
+//     let end;
 
-    if (!startTime) return 0;
-    const start = moment.utc(startTime, "HH:mm:ss");
-    let end;
+//     if (endTime) {
+//         end = moment.utc(endTime, "HH:mm:ss");
+//         if (end.isBefore(start)) {
+//             end.add(1, "day");
+//         }
+//     } else {
+//         end = moment.utc();
+//     }
 
-    if (endTime) {
-        end = moment.utc(endTime, "HH:mm:ss");
+//     // Total duration
+//     let duration = moment.duration(end.diff(start));
+
+//     // Subtract break minutes
+//     duration = moment.duration(duration.asMinutes() - breakMinutes, "minutes");
+
+//     const hours = Math.floor(duration.asHours());
+//     const minutes = duration.minutes();
+
+//     return `${hours}h ${minutes}m`;
+// };
+
+
+export const getWorkingHours = (
+    checkInTimes = [],
+    checkOutTimes = [],
+    breakMinutes = 0
+) => {
+    if (!Array.isArray(checkInTimes) || !Array.isArray(checkOutTimes)) {
+        return "-";
+    }
+
+    let totalMinutes = 0;
+
+    checkInTimes.forEach((checkIn, index) => {
+        if (!checkIn) return;
+
+        const checkOut = checkOutTimes[index];
+
+        const start = moment.utc(checkIn, "HH:mm:ss");
+
+        // ✅ If checkout missing → use current time
+        let end = checkOut
+            ? moment.utc(checkOut, "HH:mm:ss")
+            : moment.utc();
+
+        // 🌙 Handle next-day case
         if (end.isBefore(start)) {
             end.add(1, "day");
         }
-    } else {
-        end = moment.utc();
-    }
 
-    // Total duration
-    let duration = moment.duration(end.diff(start));
+        const diffMinutes = moment
+            .duration(end.diff(start))
+            .asMinutes();
 
-    // Subtract break minutes
-    duration = moment.duration(duration.asMinutes() - breakMinutes, "minutes");
+        totalMinutes += diffMinutes;
+    });
 
-    const hours = Math.floor(duration.asHours());
-    const minutes = duration.minutes();
+    // ➖ Subtract break minutes
+    totalMinutes -= breakMinutes;
+
+    if (totalMinutes <= 0) return "0h 0m";
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = Math.round(totalMinutes % 60);
 
     return `${hours}h ${minutes}m`;
 };
+
 
 export const getBreakMinutes = (breaks = []) => {
 
@@ -434,6 +481,31 @@ export const getBreakMinutes = (breaks = []) => {
 
         // Round to nearest whole minute
         return total + Math.round(diff);
+    }, 0);
+};
+
+export const getCheckInOutMinutes = (checkInTimes = [], checkOutTimes = []) => {
+
+    if (!Array.isArray(checkInTimes) || !Array.isArray(checkOutTimes)) {
+        return 0;
+    }
+
+    return checkInTimes.reduce((total, checkIn, index) => {
+        const checkOut = checkOutTimes[index];
+        // ❌ If checkout not available, skip (still checked-in)
+        if (!checkIn || !checkOut) return total;
+
+        const start = moment(checkIn, "HH:mm:ss");
+        let end = moment(checkOut, "HH:mm:ss");
+
+        // 🌙 Handle next-day checkout
+        if (end.isBefore(start)) {
+            end.add(1, "day");
+        }
+
+        const diffMinutes = moment.duration(end.diff(start)).asMinutes();
+
+        return total + Math.round(diffMinutes);
     }, 0);
 };
 

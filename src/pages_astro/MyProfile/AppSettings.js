@@ -114,7 +114,7 @@ const AppSettings = () => {
 
                                             <div className="mb-4">
                                                 <label htmlFor="lastname" className="form-label fw-semibol  d">
-                                                  Chat Value<span className="text-danger ms-1"></span>
+                                                    Chat Value<span className="text-danger ms-1"></span>
                                                 </label>
                                                 <div className="input-group border rounded-1">
                                                     <input
@@ -134,7 +134,7 @@ const AppSettings = () => {
 
                                             <div className="mb-4">
                                                 <label htmlFor="product_name" className="form-label fw-semibold">
-                                                   Chat Duration <span className="text-danger ms-1"></span>
+                                                    Chat Duration <span className="text-danger ms-1"></span>
                                                 </label>
                                                 <div className="input-group border rounded-1">
                                                     <input
@@ -169,13 +169,9 @@ const AppSettings = () => {
                                                     {errors[AstroInputTypesEnum.EXPIRY_COUNT]?.message}
                                                 </label>
                                             </div>
-
                                         </div>
 
                                         <div className='col-md-6'>
-
-
-
                                             {/* <div className="mb-4">
                                                     <label htmlFor="product_name" className="form-label fw-semibold">
                                                         Category Image <span className="text-danger ms-1">*</span>
@@ -196,13 +192,13 @@ const AppSettings = () => {
                                                 </div> */}
 
                                         </div>
+
                                         <div className="modal-footer justify-content-center mb-3">
                                             <button type='button' className="btn btn-danger m-2">Cancel</button>
                                             <button type='submit' className="btn btn-primary" >Submit</button>
                                         </div>
 
                                     </div>
-
                                 </div>
                             </div>
                         </form>

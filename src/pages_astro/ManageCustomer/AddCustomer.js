@@ -413,6 +413,7 @@ export default function AddCustomer() {
                                                 <button type='submit' className="btn btn-primary" >Submit</button>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </form>

@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, setLoader, updateLoanList, getlistAttendanceThunk, updateAttendanceList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatDateIncommingDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
+import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatDateIncommingDyjs, formatIndianPrice, getBreakMinutes, getCheckInOutMinutes, getCheckOutMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -349,9 +349,6 @@ export default function ManageAttendance() {
 
     const onChangeApiCalling = async (data) => {
         try {
-
-            console.log('onChangeApiCalling data', data);
-
             const request = {
                 start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 end_date: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
@@ -359,7 +356,6 @@ export default function ManageAttendance() {
                 emp_leave_company: data?.emp_leave_company || "0"
             };
             await dispatch(getlistAttendanceThunk(request));
-
             const request2 = {
                 emp_leave_company: data?.emp_leave_company || "0",
             };
@@ -423,10 +419,6 @@ export default function ManageAttendance() {
         }
         dispatch(setLoader(false));
     };
-
-    console.log('selectedOption', selectedOption);
-
-    console.log('customerList attendance', customerList);
 
     return (
         <>
@@ -597,7 +589,7 @@ export default function ManageAttendance() {
                             {/* Add + Download */}
                             <div className="col-12 col-md-6 col-lg-1 d-flex align-items-end justify-content-between gap-2">
                                 {/* Add Button */}
-                                <button
+                                {/* <button
                                     type="button"
                                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
                                     style={{ height: '40px', minWidth: '40px', padding: 0 }}
@@ -605,9 +597,10 @@ export default function ManageAttendance() {
                                     title="Add Attendance"
                                 >
                                     <RiAddCircleFill style={{ fontSize: '1rem' }} />
-                                </button>
+                                </button> */}
 
                                 {/* Download Button */}
+
                                 <button
                                     type="button"
                                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
@@ -617,8 +610,8 @@ export default function ManageAttendance() {
                                 >
                                     <FaDownload style={{ fontSize: '0.95rem' }} />
                                 </button>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
 
@@ -687,21 +680,21 @@ export default function ManageAttendance() {
                                     <span className='text-center'>{rowData?.day || '-'} </span>
                                 )} /> */}
 
-                                <Column field="checkInTimes" header="Check In" style={{ minWidth: '10rem' }} body={(rowData) => (
+                                <Column field="checkInTimes" header="First Check In" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className='me-2'>
                                         {rowData?.checkInTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkInTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
                                 )} />
 
-                                <Column field="checkInTimes" header="Check Out" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(rowData?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-"} </span>
+                                <Column field="checkInTimes" header="Last Check Out" style={{ minWidth: '10rem' }} body={(rowData) => (
+                                    <span className='me-2'>{rowData?.checkInTimes?.length > 0 && rowData?.checkOutTimes?.length > 0 && rowData.checkOutTimes.length === rowData.checkInTimes.length
+                                        ? dayjs(`${rowData.date} ${momentTimeFormate(rowData.checkOutTimes[rowData.checkOutTimes.length - 1], "HH:mm:ss")}`, "YYYY-MM-DD HH:mm:ss").format(TimeFormat.TIME_12_HOUR_FORMAT) : "-"} </span>
                                 )} />
 
                                 {/* <Column field="checkInTimes" header="Work Hours" style={{ minWidth: '10rem' }} body={(rowData) => (
                                     <span className=''>{checkOutTimes?.checkOutTimes?.length > 0  rowData?.checkInTimes[0]?.length > 0 ? getWorkingHours(rowData?.checkInTimes[0], rowData?.checkOutTimes[0], getBreakMinutes(rowData?.breaks?.length > 0 ? rowData?.breaks : [] || 0)) || '-' : "-"} </span>
                                 )} /> */}
 
-                                <Column
-                                    field="checkInTimes"
+                                <Column field="checkInTimes"
                                     header="Work Hours"
                                     style={{ minWidth: "10rem" }}
                                     body={(rowData) => {
@@ -710,23 +703,21 @@ export default function ManageAttendance() {
                                         const breaks = rowData?.breaks || [];
 
                                         const isToday = new Date(rowData?.date).toDateString() === new Date().toDateString();
-
                                         // Condition: If today and no checkout → show "-"
                                         if (!isToday && checkOuts.length === 0) {
                                             return <span>-</span>;
                                         }
-
                                         // Final calculation
-                                        const workHours = getWorkingHours(checkIns[0], checkOuts[0], getBreakMinutes(breaks.length > 0 ? breaks : [])) || "-";
+                                        const workHours = getWorkingHours(rowData?.checkInTimes || [], rowData?.checkOutTimes || [], 0) || "-";
                                         return <span>{workHours}</span>;
                                     }}
                                 />
 
-                                <Column field="checkInTimes" header="Total Break" style={{ minWidth: '10rem' }} body={(rowData) => (
-                                    <span className=''>{rowData.breaks?.length > 0 ? getBreakMinutes(rowData.breaks) + 'm' : '-'} </span>
-                                )} />
+                                {/* <Column field="checkInTimes" header="Total Break" style={{ minWidth: '10rem' }} body={(rowData) => (
+                                    <span className=''>{rowData.checkInTimes?.length > 0 ? getBreakMinutes(rowData.checkInTimes) + 'm' : '-'} </span>
+                                )} /> */}
 
-                                <Column field="type" sortable data-pc-section="root" header="Day Type" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                {/* <Column field="type" sortable data-pc-section="root" header="Day Type" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
                                         <span
                                             className={`p-tag p-component badge p-1 text-light fw-semibold px-3 status_font rounded-4 py-2 ${getAttendanceStatusColor(rowData?.type) || "bg-secondary"}`}
@@ -738,7 +729,7 @@ export default function ManageAttendance() {
                                             </span>
                                         </span>
                                     </>
-                                )} />
+                                )} /> */}
 
                                 <Column field="status" sortable data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <>
@@ -762,16 +753,15 @@ export default function ManageAttendance() {
                                             </a>
                                         }
                                         <Link onClick={() => {
-                                            if (rowData?.breaks?.length > 0) {
+                                            if (rowData?.checkInTimes?.length > 0) {
                                                 openModelFunc(rowData);
                                             }
                                         }}
                                             state={rowData}
-                                            className={`text-info edit ${rowData?.breaks?.length > 0 ? "cursor_pointer text-custom-theam" : "disabled-status"}`}
+                                            className={`text-info edit ${rowData?.checkInTimes?.length > 0 ? "cursor_pointer text-custom-theam" : "disabled-status"}`}
                                         >
                                             <i className="ti ti-eye fs-7" />
                                         </Link>
-
                                     </div>
                                 )} />
 
@@ -783,7 +773,6 @@ export default function ManageAttendance() {
 
                         </div>
                     </div>
-
                 </div>
             </div >
 
@@ -802,45 +791,68 @@ export default function ManageAttendance() {
                                     {[
                                         // { label: "Employee Id", value: selectedEmployee?.employee_id },
                                         { label: "Date", value: momentDateFormat(selectedAttendance?.date, DateFormat?.DATE_FORMAT) || '-' },
-                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
+                                        // { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
                                         {
-                                            label: "Check In",
-                                            value: selectedAttendance?.checkInTimes?.[0]
-                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                : '-'
+                                            label: "Total Work Hours",
+                                            value: getWorkingHours(selectedAttendance?.checkInTimes || [], selectedAttendance?.checkOutTimes || [], 0) || "-"
                                         },
                                         {
-                                            label: "Check Out",
-                                            value: selectedAttendance?.checkOutTimes?.[0]
-                                                ? dayjs(`${selectedAttendance?.date} ${momentTimeFormate(selectedAttendance?.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss').format(TimeFormat?.TIME_12_HOUR_FORMAT)
-                                                : '-'
+                                            label: "First Check In",
+                                            value: selectedAttendance?.checkInTimes?.length > 0 ? dayjs(`${selectedAttendance.date} ${momentTimeFormate(selectedAttendance.checkInTimes[0], "HH:mm:ss")}`, "YYYY-MM-DD HH:mm:ss").format(TimeFormat.TIME_12_HOUR_FORMAT) : "-"
                                         },
-                                        { label: "Break Timeline", value: "-" },
-                                        { label: "Total Break", value: selectedAttendance?.breaks?.length > 0 ? getBreakMinutes(selectedAttendance?.breaks) + 'm' : "-" },
+                                        {
+                                            label: "Last Check Out",
+                                            value:
+                                                selectedAttendance?.checkInTimes?.length > 0 && selectedAttendance?.checkOutTimes?.length > 0 && selectedAttendance.checkOutTimes.length === selectedAttendance.checkInTimes.length
+                                                    ? dayjs(`${selectedAttendance.date} ${momentTimeFormate(selectedAttendance.checkOutTimes[selectedAttendance.checkOutTimes.length - 1], "HH:mm:ss")}`, "YYYY-MM-DD HH:mm:ss").format(TimeFormat.TIME_12_HOUR_FORMAT) : "-"
+                                        },
+                                        { label: `Check In - Check Out Timeline`, value: "-" },
+
+                                        // { label: "Total Break", value: selectedAttendance?.checkInTimes?.length > 0 ? getCheckInOutMinutes(selectedAttendance?.checkInTimes, selectedAttendance?.checkOutTimes) : "-" },
+
                                     ].map((item, index) => (<>
-                                        <div className='col-12 col-sm-6 attendance_card'>
+                                        <div className={`${item.label == "Check In - Check Out Timeline" ? 'col-12' : 'col-12 col-sm-6 attendance_card'}`}>
                                             <div key={index} className="card border-1 them-light shadow-sm mt-2 ">
                                                 <div className="card-body text-center m-1 p-1">
                                                     <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
                                                     {
-                                                        item.label == "Break Timeline" ? (<>
-                                                            <div className="timeline position-relative ms-4">
+                                                        item.label == "Check In - Check Out Timeline" ? (<>
 
-                                                                <div className=" border-custom-theam border-2 position-absolute top-0 bottom-0 start-0" style={{ marginLeft: "7px" }} ></div>
-                                                                {selectedAttendance?.breaks?.length > 0 && selectedAttendance?.breaks?.map((b, index) => (
-                                                                    <div key={index}>
-                                                                        <div className="mt-2 d-flex align-items-start">
-                                                                            <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
-                                                                            <div>
-                                                                                <span className="badge bg-light text-dark fs-4 fw-medium">
-                                                                                    {momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - {momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
-                                                                                </span>
+                                                            <div
+                                                                className="timeline position-relative ms-4 overflow-y-auto"
+                                                                style={{ maxHeight: "250px" }}   // adjust height as needed
+                                                            >
+                                                                <div
+                                                                    className="border-custom-theam border-2 position-absolute top-0 bottom-0 start-0"
+                                                                    style={{ marginLeft: "7px" }}
+                                                                ></div>
+
+                                                                {selectedAttendance?.checkInTimes?.length > 0 &&
+                                                                    selectedAttendance?.checkInTimes.map((checkIn, index) => {
+                                                                        const checkOut = selectedAttendance?.checkOutTimes?.[index];
+
+                                                                        return (
+                                                                            <div key={index}>
+                                                                                <div className="mt-2 d-flex align-items-start">
+                                                                                    <i className="bi bi-circle-fill text-success fs-5 me-3"></i>
+                                                                                    <div>
+                                                                                        <span className="badge bg-light text-dark fs-4 fw-medium">
+                                                                                            {momentTimeFormate(checkIn, TimeFormat.DATE_TIME_12_HOUR_FORMAT)}
+                                                                                            {" - "}
+                                                                                            {checkOut
+                                                                                                ? momentTimeFormate(
+                                                                                                    checkOut,
+                                                                                                    TimeFormat.DATE_TIME_12_HOUR_FORMAT
+                                                                                                )
+                                                                                                : "Ongoing"}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-
+                                                                        );
+                                                                    })}
                                                             </div>
+
                                                         </>) : (<>
                                                             <h5 className="fw-medium text-dark mb-0 fs-5">
                                                                 {item?.value || '0'}
@@ -1046,106 +1058,7 @@ export default function ManageAttendance() {
                                         </div>
                                     </div>
 
-                                    <div className="mb-3">
-                                        {fields.map((field, index) => (
-                                            <div className="row g-3 mb-3" key={field.id}>
 
-                                                <div className={`col-12  ${fields.length > 1 ? 'col-md-5' : 'col-md-6'}`}>
-                                                    <label
-                                                        htmlFor={`breaks[${index}].start`}
-                                                        className="form-label fw-semibold"
-                                                    >
-                                                        Break In Time <span className="text-danger">*</span>
-                                                    </label>
-
-                                                    <Controller
-                                                        name={`breaks.${index}.start`}
-                                                        control={control}
-                                                        rules={{ required: "Break In is required" }}
-                                                        render={({ field, fieldState: { error } }) => (
-                                                            <>
-                                                                <DatePicker
-                                                                    id={`breakIn-${index}`}
-                                                                    className="form-control custom-datepicker w-100"
-                                                                    picker="time"
-                                                                    format={TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT}
-                                                                    value={field.value ? dayjs(field.value, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null}
-                                                                    onChange={(time) =>
-                                                                        field.onChange(time ? dayjs(time).format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null)
-                                                                    }
-                                                                    allowClear={false}
-                                                                />
-                                                                {error && (
-                                                                    <small className="text-danger">{error.message}</small>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    />
-                                                </div>
-
-                                                <div className="col-12 col-md-6">
-                                                    <label
-                                                        htmlFor={`breaks[${index}].end`}
-                                                        className="form-label fw-semibold"
-                                                    >
-                                                        Break Out Time <span className="text-danger">*</span>
-                                                    </label>
-
-                                                    <Controller
-                                                        name={`breaks.${index}.end`}
-                                                        control={control}
-                                                        rules={{ required: "Break Out is required" }}
-                                                        render={({ field, fieldState: { error } }) => (
-                                                            <>
-                                                                <DatePicker
-                                                                    id={`breakOut-${index}`}
-                                                                    className="form-control custom-datepicker w-100"
-                                                                    picker="time"
-                                                                    format={TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT}
-                                                                    value={field.value ? dayjs(field.value, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null}
-                                                                    onChange={(time) =>
-                                                                        field.onChange(time ? dayjs(time).format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null)
-                                                                    }
-                                                                    allowClear={false}
-                                                                />
-                                                                {error && (
-                                                                    <small className="text-danger">{error.message}</small>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    />
-                                                </div>
-
-                                                {fields.length > 1 && (
-                                                    <div className="col-12 col-md-1 d-flex align-items-end">
-                                                        <button
-                                                            type="button"
-                                                            className="btn text-white bg-danger btn-sm mb-1"
-                                                            style={{ border: "1px solid transparent" }}
-                                                            onMouseEnter={(e) =>
-                                                                (e.currentTarget.style.border = "1px solid #fa896b")
-                                                            }
-                                                            onMouseLeave={(e) =>
-                                                                (e.currentTarget.style.border = "1px solid transparent")
-                                                            }
-                                                            onClick={() => remove(index)}
-                                                        >
-                                                            <IoClose />
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-
-                                        {/* ✅ Add Break Row */}
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            onClick={() => append({ start: null, end: null })}
-                                        >
-                                            + Add Break
-                                        </button>
-                                    </div>
                                 </div>
 
                                 <div className="modal-footer justify-content-center mb-3">

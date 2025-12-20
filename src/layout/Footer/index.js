@@ -11,7 +11,6 @@ const Footer = () => {
                         <div className="col-md-6">
                             Copyright &copy; <label id='Footer_DATE'></label>  | All Rights Reserved
                         </div>
-
                     </div>
                 </div>
             </footer>

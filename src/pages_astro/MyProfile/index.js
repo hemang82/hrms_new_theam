@@ -131,18 +131,18 @@ const MyProfile = () => {
                     <li className="nav-item" role="presentation">
                         <button className="nav-link position-relative rounded-0 active d-flex align-items-center justify-content-center bg-transparent fs-3 py-6" id="pills-followers-tab" data-bs-toggle="pill" data-bs-target="#pills-followers" type="button" role="tab" aria-controls="pills-followers" aria-selected="true">
                             <i class="ti ti-key me-2 fs-6"></i>
-                            <span className="d-none d-md-block">Change Password</span>
+                            <span className="d-none d-md-block">App Settings </span>
                         </button>
                     </li>
 
                     {/* <li className="nav-item" role="presentation">
                         <button className="nav-link position-relative rounded-0 active d-flex align-items-center justify-content-center bg-transparent fs-3 py-6" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-settings" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">
                             <i className="ti ti-user-circle me-2 fs-6" />
-                            <span className="d-none d-md-block">App Settings</span>
+                            <span className="d-none d-md-block">Change Password</span>
                         </button>
                     </li>
-                    <li className="nav-item" role="presentation"> */}
-                    {/* <button className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-6" id="pills-settings-tab" data-bs-toggle="pill" data-bs-target="#pills-settings" type="button" role="tab" aria-controls="pills-settings" aria-selected="false">
+                    <li className="nav-item" role="presentation">
+                        <button className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-6" id="pills-settings-tab" data-bs-toggle="pill" data-bs-target="#pills-settings" type="button" role="tab" aria-controls="pills-settings" aria-selected="false">
                             <i className="ti ti-settings me-2 fs-6" />
                             <span className="d-none d-md-block">Chat Setting</span>
                         </button>
@@ -165,9 +165,8 @@ const MyProfile = () => {
                 <div className="tab-content" id="pills-tabContent">
 
                     <div className="tab-pane fade show active" id="pills-followers" role="tabpanel" aria-labelledby="pills-followers-tab" tabIndex={1}>
-
-                        <ChangePassword />
-
+                        {/* <ChangePassword /> */}
+                        <AppSettings />
                     </div>
 
                     <div className="tab-pane fade" id="pills-settings" role="tabpanel" aria-labelledby="pills-settings-tab" tabIndex={0}>
@@ -194,14 +193,12 @@ const MyProfile = () => {
                                                     <div className="p-9 py-3 border-bottom chat-meta-user d-flex align-items-center justify-content-between">
                                                         <h5 className="text-dark mb-0 fw-semibold">Profile Details</h5>
                                                         <ul className="list-unstyled mb-0 d-flex align-items-center">
-
                                                             <li className="nav-item ms-auto">
                                                                 <a className="btn btn-primary d-flex align-items-center px-3" id="add-notes" onClick={() => { setProfileModel(true) }}>
                                                                     <i className="ti  me-0 me-md-1 fs-4" />
                                                                     <span className="d-none d-md-block font-weight-medium fs-3" >Edit Profile</span>
                                                                 </a>
                                                             </li>
-
                                                         </ul>
                                                     </div>
 

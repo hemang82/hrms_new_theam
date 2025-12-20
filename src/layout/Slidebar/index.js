@@ -197,7 +197,7 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "selected" : ""}`}
+                            {/* <li className={`sidebar-item ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "selected" : ""}`}
                                 onClick={() => toggleMenu(PATHS.LIST_DAILY_WORK_UPDATE)}
                             >
                                 <Link to={PATHS.LIST_DAILY_WORK_UPDATE} className={`sidebar-link ${path === PATHS.LIST_DAILY_WORK_UPDATE ? "active" : ""}`} aria-expanded="false">
@@ -206,9 +206,9 @@ const Slidebar = () => {
                                     </span>
                                     <span className="hide-menu">Daily Work Update</span>
                                 </Link>
-                            </li>
+                            </li> */}
 
-                            <li className={`sidebar-item ${path === PATHS.LIST_PROJECT || path === PATHS.LIST_ASSIGN_TASK || path === PATHS.LIST_TICKET ? "selected" : ""}`} >
+                            {/* <li className={`sidebar-item ${path === PATHS.LIST_PROJECT || path === PATHS.LIST_ASSIGN_TASK || path === PATHS.LIST_TICKET ? "selected" : ""}`} >
                                 <div
                                     className={`sidebar-link has-arrow ${expanded["project"] ? "active" : ""}`}
                                     role="button"
@@ -263,9 +263,9 @@ const Slidebar = () => {
                                         </Link>
                                     </li>
                                 </ul>
-                            </li>
+                            </li> */}
 
-                            <li className={`sidebar-item ${path === PATHS.LEAVE_LIST || path === PATHS.LEAVE_REQUEST_LIST || path === PATHS.LEAVE_BALANCE_LIST ? "selected" : ""}`} >
+                            {/* <li className={`sidebar-item ${path === PATHS.LEAVE_LIST || path === PATHS.LEAVE_REQUEST_LIST || path === PATHS.LEAVE_BALANCE_LIST ? "selected" : ""}`} >
                                 <div
                                     className={`sidebar-link has-arrow ${expanded["leave"] ? "active" : ""}`}
                                     role="button"
@@ -319,7 +319,7 @@ const Slidebar = () => {
                                         </Link>
                                     </li>
                                 </ul>
-                            </li>
+                            </li> */}
 
                             <li className={`sidebar-item ${path === PATHS?.HOLIDAYS_LIST || path === PATHS?.LIST_BIRTHDAY || path === PATHS.SATERDAY_LIST ? "selected" : ""}`} >
                                 <div
@@ -363,7 +363,7 @@ const Slidebar = () => {
                                         </Link>
                                     </li>
 
-                                    <li className="sidebar-item">
+                                    {/* <li className="sidebar-item">
                                         <Link
                                             to={PATHS.SATERDAY_LIST}
                                             className={`sidebar-link ${path === PATHS.SATERDAY_LIST ? "active" : ""
@@ -374,7 +374,7 @@ const Slidebar = () => {
                                             </div>
                                             <span className="hide-menu">Saturday</span>
                                         </Link>
-                                    </li>
+                                    </li> */}
                                 </ul>
                             </li>
 
@@ -476,7 +476,7 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.ADMIN_LOG ? "selected" : ""}`}
+                            {/* <li className={`sidebar-item ${path === PATHS.ADMIN_LOG ? "selected" : ""}`}
                                 onClick={() => toggleMenu(PATHS.ADMIN_LOG)}
                             >
                                 <Link to={PATHS.ADMIN_LOG} className={`sidebar-link ${path === PATHS.ADMIN_LOG ? "active" : ""}`} aria-expanded="false"
@@ -486,7 +486,7 @@ const Slidebar = () => {
                                     </span>
                                     <span className="hide-menu">Admin Logs</span>
                                 </Link>
-                            </li>
+                            </li> */}
 
                             {/* <li class="nav-small-cap">
                                 <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
