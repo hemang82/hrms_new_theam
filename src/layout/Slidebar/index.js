@@ -24,7 +24,7 @@ import { FaMoneyBillTransfer } from "react-icons/fa6";
 import Model from '../../component/Model';
 import { LogoutComponent } from '../../pages/CommonPages/CommonComponent';
 import { IoCalendarOutline, IoLogOutOutline } from "react-icons/io5";
-import { LuCalendarSync, LuHandCoins, LuNotebookPen } from "react-icons/lu";
+import { LuCalendarSync, LuHandCoins, LuNotebookPen, LuScanFace } from "react-icons/lu";
 import { updateSlidebarToggle } from '../../Store/slices/MasterSlice';
 import { PATHS } from '../../Router/PATHS';
 import { FcLeave } from "react-icons/fc";
@@ -194,6 +194,17 @@ const Slidebar = () => {
                                         <LuCalendarSync style={{ fontSize: '1.2rem' }} />
                                     </span>
                                     <span className="hide-menu">Attendance</span>
+                                </Link>
+                            </li>
+
+                            <li className={`sidebar-item ${path === PATHS.LEAVE_REQUEST_LIST ? "selected" : ""}`}
+                                onClick={() => toggleMenu(PATHS.LEAVE_REQUEST_LIST)}
+                            >
+                                <Link to={PATHS.LEAVE_REQUEST_LIST} className={`sidebar-link ${path === PATHS.LEAVE_REQUEST_LIST ? "active" : ""}`} aria-expanded="false">
+                                    <span>
+                                        <LuScanFace style={{ fontSize: '1.2rem' }} />
+                                    </span>
+                                    <span className="hide-menu">Veried Face</span>
                                 </Link>
                             </li>
 

@@ -114,11 +114,11 @@ export function listLeaves(request) {
 }
 
 export function listLeavesRequest(request) {
-    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/compoff_request_listing`, request)
+    return AxiosClientApi.post(`/${COMMON}/face_embedding_list`, request)
 }
 
 export function listLeavesRequestAcceptReject(request) {
-    return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/compoff_approve_reject`, request)
+    return AxiosClientApi.post(`/${COMMON}/face_embedding_delete`, request)
 }
 
 export function addLeaves(request) {

@@ -331,7 +331,7 @@ export const findIndexArray = (oldArray, id) => {
 }
 
 export const selectOptionCustomer = (option, name) => {
-    const optionData = option?.map((option, index) => (
+    const optionData = option?.length > 0 && option?.map((option, index) => (
         <option key={option.id} value={option.id}>
             {
                 option.name

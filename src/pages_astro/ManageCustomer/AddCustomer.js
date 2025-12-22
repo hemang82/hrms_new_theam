@@ -121,7 +121,7 @@ export default function AddCustomer() {
                         TOAST_SUCCESS(response?.message)
                         navigation(PATHS?.EMPLOYEE_LIST)
                         dispatch(setLoader(false))
-                        dispatch(getCustomerListThunk({ emp_leave_company: '1' }));
+                        dispatch(getCustomerListThunk({ emp_leave_company: '0' }));
                     } else {
                         TOAST_ERROR(response.message)
                         dispatch(setLoader(false))

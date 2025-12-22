@@ -125,7 +125,6 @@ export const getListContactUsThunk = createAsyncThunk("listContactUs", async (su
     }
 });
 
-
 export const getHolidayListThunk = createAsyncThunk("HolidayList", async (submitData, { dispatch }) => {
     try {
         dispatch(setLoader(true))

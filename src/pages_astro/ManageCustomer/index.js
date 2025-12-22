@@ -25,7 +25,7 @@ export default function ManageCoustomer() {
     const dispatch = useDispatch();
 
     const { register, handleSubmit, setValue, reset, control, watch, formState: { errors } } = useForm();
-    const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
+    const { customerList: { data: customerList } } = useSelector((state) => state.masterslice);
     const { customModel } = useSelector((state) => state.masterslice);
     const [selectedUser, setSelectedUser] = useState()
     const [filters, setFilters] = useState({ global: { value: '' } });
@@ -243,7 +243,7 @@ export default function ManageCoustomer() {
                     <div className="card card-body">
                         <div className="table-responsive">
                             <DataTable
-                                value={customerList}
+                                value={customerList?.length > 0 ? customerList : []}
                                 paginator
                                 rows={15}
                                 globalFilter={globalFilterValue}

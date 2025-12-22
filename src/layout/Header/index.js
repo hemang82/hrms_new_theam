@@ -47,15 +47,8 @@ const Header = ({ page_name }) => {
                     dispatch(getListBankDetailsThunk(request)),
                     dispatch(getlistLeavesThunk(request)),
 
-                    dispatch(getlistLeavesRequestThunk({
-                        action: "admin"
-                    })),
-                       dispatch(getBirthdayAndAnnivarsaryListThunk({
-                        action: "admin"
-                    })),
-
-
-                    
+                    dispatch(getlistLeavesRequestThunk({ action: "admin" })),
+                    dispatch(getBirthdayAndAnnivarsaryListThunk({ action: "admin" })),
 
                     dispatch(getEmpLeaveBalanceListThunk(request)),
                     dispatch(getSaturdayListThunk({ year: formatDateDyjs(dayjs(), 'YYYY') })),
@@ -65,9 +58,9 @@ const Header = ({ page_name }) => {
                         year: formatDateDyjs(dayjs().subtract(1, 'month'), 'YYYY') || null,
                         emp_leave_company: "0"
                     })),
-                    dispatch(getProjectListThunk({})),
-                    dispatch(getAssignTaskListThunk({})),
-                    dispatch(getListTicketThunk({})),
+                    // dispatch(getProjectListThunk({})),
+                    // dispatch(getAssignTaskListThunk({})),
+                    // dispatch(getListTicketThunk({})),
                 ]);
             } finally {
                 dispatch(setLoader(false)); // ✅ stops loader only after all are done

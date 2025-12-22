@@ -37,6 +37,6 @@ export const PATHS = {
 
     MY_PROFILE: '/my_profile',
 
-    LEAVE_REQUEST_LIST: '/leave_request_list',
+    LEAVE_REQUEST_LIST: '/veried_face_list',
 
 }

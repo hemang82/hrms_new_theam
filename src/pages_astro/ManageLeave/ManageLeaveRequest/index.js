@@ -88,9 +88,11 @@ export default function ManageCoustomer() {
         const request = {
             emp_leave_company: EMPLOYEE_STATUS[0]?.key,
         };
+
         // if (leaves?.length == 0) {
         //     dispatch(getlistLeavesRequestThunk(request));
         // }
+
         setSelectedOption({})
     }, [])
 
@@ -179,38 +181,29 @@ export default function ManageCoustomer() {
         if (is_true) {
             try {
                 dispatch(setLoader(true));
-
                 const submitData = {
-                    request_id: selectedLeave?.id,
-                    emp_id: selectedLeave?.emp_id,
-                    days: "1",
-                    status: selectedLeave?.actionType == "approved" ? "1" : "2",
-                    date: momentNormalDateFormat(selectedLeave?.date, DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT)
+                    id: selectedLeave?.id,
                 };
-
                 const response = await listLeavesRequestAcceptReject(submitData);
 
                 if (response.code == Codes?.SUCCESS) {
-                    dispatch(getlistLeavesRequestThunk({
-                        action: "admin"
-                    }))
-                    // const updatedList = leaves?.filter(
-                    //     (item) => item.id !== selectedLeave?.id
-                    // );
-                    // dispatch(
-                    //     updateLeaveRequestList({
-                    //         ...leaves,
-                    //         loan_applications: updatedList,
-                    //     })
-                    // );
+
+                    // dispatch(getlistLeavesRequestThunk({
+                    //     action: "admin"
+                    // }))
+                    const updatedList = leaves?.filter(
+                        (item) => item.id !== selectedLeave?.id
+                    );
+                    dispatch(
+                        updateLeaveRequestList(updatedList)
+                    );
 
                     TOAST_SUCCESS(response?.message);
                 } else {
                     TOAST_ERROR(response?.message || "Something went wrong!");
                 }
             } catch (error) {
-                console.error("Delete leave error:", error);
-                TOAST_ERROR("Failed to delete leave. Please try again.");
+                TOAST_ERROR("Please try again.");
                 closeModel(dispatch);
                 setAction(false)
             } finally {
@@ -343,7 +336,7 @@ export default function ManageCoustomer() {
     return (
         <>
             <div className="container-fluid mw-100">
-                <SubNavbar title={"Comp Off Request"} header={'Comp Off Request'} />
+                <SubNavbar title={"Verified Face"} header={'Verified Face'} />
 
                 <div className="widget-content searchable-container list">
                     {/* --------------------- start Contact ---------------- */}
@@ -390,7 +383,7 @@ export default function ManageCoustomer() {
                                         type="text"
                                         className="form-control ps-5  "
                                         id="input-search"
-                                        placeholder="Search Comp Off Request ..."
+                                        placeholder="Search Verified Face ..."
                                         value={globalFilterValue}
                                         onChange={onGlobalFilterChange}
                                     />
@@ -495,7 +488,7 @@ export default function ManageCoustomer() {
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 loading={loading}
                                 // globalFilterFields={['name', 'annual_income']}
-                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Leave Not Found.</span>}>
+                                emptyMessage={<span style={{ textAlign: 'center', display: 'block' }}>Verified Not Found.</span>}>
 
                                 <Column
                                     field="id"
@@ -509,34 +502,10 @@ export default function ManageCoustomer() {
                                     <span className='me-2'>{truncateWords(rowData.name) || '-'} </span>
                                 )} />
 
-                                <Column field="date" header="Date" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <span className='me-2'>{formatDate(rowData.date, DateFormat?.DATE_FORMAT) || '-'} </span>
-                                )} />
-
-                                <Column field="days" header="Day" style={{ minWidth: '6rem' }} body={(rowData) => (
-                                    <span className='me-2'>{rowData?.leave_day_type == 'half' ? '0.5' : '1'} </span>
-                                )} />
-
-                                <Column field="created_at" header="Request Date" style={{ minWidth: '9rem' }} body={(rowData) => (
+                                <Column field="created_at" header="Created Date" style={{ minWidth: '9rem' }} body={(rowData) => (
                                     <span className='me-2'>{formatDate(rowData.created_at, DateFormat?.DATE_YEAR_WISE_SLASH_TIME_FORMAT) || '-'} </span>
                                 )} />
 
-                                <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '8rem' }} body={(rowData) => (
-                                    <>
-                                        {rowData?.status == 1 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.SUCCESS}`} data-pc-name="tag" data-pc-section="root"  >
-                                                <span className="p-tag-value" data-pc-section="value">Approved</span>
-                                            </span>
-                                        ) : rowData?.status == 2 ? (
-                                            <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" >
-                                                <span className="p-tag-value" data-pc-section="value">Rejected</span>
-                                            </span>
-                                        ) : <span className={`p-tag p-component cursor_pointer badge  text-light fw-semibold px-3 rounded-4 py-2 me-2 status_font ${STATUS_COLORS.WARNING}`} data-pc-name="tag" data-pc-section="root" >
-                                            <span className="p-tag-value" data-pc-section="value">Pending</span>
-                                        </span>
-                                        }
-                                    </>
-                                )} />
 
                                 {/* <Column field="is_active" data-pc-section="root" header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <>
@@ -554,54 +523,6 @@ export default function ManageCoustomer() {
                                         }
                                     </>
                                 )} /> */}
-
-                                {
-                                    getLocalStorageItem(Constatnt?.ROLE_KEY) == '1' && <Column
-                                        field="status"
-                                        header="Action"
-                                        style={{ minWidth: "6rem" }}
-                                        body={(rowData) => (
-                                            <div className="action-btn d-flex align-items-center">
-                                                {
-                                                    rowData?.status == 0 ? (<>
-                                                        <a
-                                                            className="text-success cursor_pointer me-2"
-                                                            // onClick={() => { handleStatus(rowData?.id, '1') }}
-                                                            onClick={() => { openActionModelFunc(rowData, 'approved') }}
-                                                        >
-                                                            <i className="ti ti-check fs-7"></i>
-                                                        </a>
-                                                        <a
-                                                            className="text-danger cursor_pointer"
-                                                            onClick={() => { openActionModelFunc(rowData, 'cancel') }}
-                                                        >
-                                                            <i className="ti ti-x fs-7"></i>
-                                                        </a>
-                                                    </>) : (<>
-                                                        <a className="text-success me-2 disabled-status "
-                                                        // onClick={() => { handleStatus(rowData?.id, '1') }}
-                                                        // onClick={() => { openActionModelFunc(rowData, 'approved') }}
-                                                        >
-                                                            <i className="ti ti-check fs-7"></i>
-                                                        </a>
-                                                        <a
-                                                            className={`text-danger disabled-status`}
-                                                            onClick={() => {
-                                                                if (
-                                                                    rowData?.status === 1
-                                                                ) {
-                                                                    openActionModelFunc(rowData, "cancel");
-                                                                }
-                                                            }}
-                                                        >
-                                                            <i className="ti ti-x fs-7"></i>
-                                                        </a>
-                                                    </>)
-                                                }
-                                            </div>
-                                        )}
-                                    />
-                                }
 
                                 {/* <Column
                                     field="status"
@@ -646,33 +567,13 @@ export default function ManageCoustomer() {
 
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
-
-                                        <Link onClick={() => {
-                                            // if (rowData?.breaks?.length > 0) {
-                                            openViewModelFunc(rowData);
-                                            // }
-                                        }}
-                                            state={rowData}
-                                            className={`text-custom-theam edit cursor_pointer`}
+                                        <a
+                                            className="text-danger  ms-2 cursor_pointer"
+                                            onClick={() => { openActionModelFunc(rowData, 'cancel') }}
                                         >
-                                            <i className="ti ti-eye fs-7" />
-                                        </Link>
-                                        {/* {rowData?.status == 0 ?
-                                            <a
-                                                className="text-danger delete ms-2 cursor_pointer"
-                                                onClick={() => { openActionModelFunc(rowData, 'cancel') }}
-                                            >
-                                                <i className="ti ti-trash fs-7"></i>
-                                            </a>
-
-                                            : <a
-                                                className="text-danger delete ms-2 disabled-status"
-                                            >
-                                                <i className="ti ti-trash fs-7"></i>
-                                            </a>
-                                        } */}
+                                            <i className="ti ti-trash fs-7"></i>
+                                        </a>
                                     </div>
-
                                 )} />
 
                             </DataTable>
@@ -833,7 +734,7 @@ export default function ManageCoustomer() {
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
                     <div className="modal-content border-0">
                         <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
-                            <h6 className="modal-title fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Cancel Request Leave"} </h6>
+                            <h6 className="modal-title fs-4">{selectedLeave?.actionType === "approved" ? 'Are you sure approve leave ?' : "Delete Verified Face"} </h6>
                             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeActionModelFunc() }} />
                         </div>
                         <div className="modal-body">
@@ -865,10 +766,10 @@ export default function ManageCoustomer() {
 
                                                 {/* Confirmation Text */}
                                                 <h5 className="fw-bold mb-2">Are you sure ?</h5>
-                                                <p className="text-muted mb-0">
+                                                {/* <p className="text-muted mb-0">
                                                     Do you really want to
                                                     <span className="fw-semibold "> cancel requested leave</span> ?
-                                                </p>
+                                                </p> */}
                                             </div>
 
                                             {/* Footer Buttons */}
@@ -878,10 +779,10 @@ export default function ManageCoustomer() {
                                                     className="btn btn-danger"
                                                     onClick={closeActionModelFunc}
                                                 >
-                                                    No, Keep Leave
+                                                    No, Keep
                                                 </button>
                                                 <button type="submit" className="btn btn-primary">
-                                                    {selectedLeave?.actionType === "approved" ? 'Yes, Approve Leave' : 'Yes, Cancel Leave'}
+                                                    {selectedLeave?.actionType === "approved" ? 'Yes, Approve' : 'Yes, Cancel'}
                                                 </button>
                                             </div>
                                         </div>

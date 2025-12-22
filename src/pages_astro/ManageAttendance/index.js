@@ -168,9 +168,7 @@ export default function ManageAttendance() {
                         breaks: dates?.breaks,
                     }))
             );
-            const sorted = modified.sort(
-                (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-            );
+            const sorted = modified?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
             setUpdateAttendanceList(sorted);
         } else {
             setUpdateAttendanceList([])
@@ -293,20 +291,23 @@ export default function ManageAttendance() {
     const openAttendanceModel = (attendanceData) => {
         setAttendanceEditModel(true)
         setSelectedAttendance(attendanceData)
-
         const formattedBreaks = attendanceData?.breaks?.map(b => ({
             start: b.start ? dayjs(momentTimeFormate(b.start, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null,
             end: b.end ? dayjs(momentTimeFormate(b.end, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null
         }));
 
         setValue('breaks', formattedBreaks);
-        const selectedObj = customerList?.find((c) => String(c.id) === String(attendanceData?.emp_id));
+        const selectedObj = customerList?.length > 0 && customerList?.find((c) => String(c.id) === String(attendanceData?.emp_id));
         setSelectedEmployee(selectedObj || null);
         setValue(AstroInputTypesEnum?.EMPLOYEE, selectedObj.id)
 
         setValue('dob1', attendanceData?.date ? dayjs(attendanceData?.date).format('DD-MM-YYYY') : null);
         setValue('checkIn', attendanceData?.checkInTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
-        setValue('checkOut', attendanceData?.checkOutTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
+        // setValue('checkOut', attendanceData?.checkOutTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
+
+        setValue('checkOut', attendanceData?.checkInTimes?.length > 0 && attendanceData?.checkOutTimes?.length > 0 && attendanceData.checkOutTimes.length === attendanceData?.checkInTimes?.length
+            ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData?.checkOutTimes[attendanceData?.checkOutTimes.length - 1], "HH:mm:ss")}`, "YYYY-MM-DD HH:mm:ss") : null);
+
     }
 
     const closeAttendanceModel = () => {
@@ -370,23 +371,25 @@ export default function ManageAttendance() {
 
     const handleExportApiCall = async () => {
         dispatch(setLoader(true));
+
         let submitData = {
             search: globalFilterValue
         }
-        const AttendanceExportData = updatedAttendanceList?.map((item, index) => ({
+
+        const AttendanceExportData = updatedAttendanceList?.length > 0 && updatedAttendanceList?.map((item, index) => ({
             id: index + 1,
             // employeeID: `${salary?.emp_id || '-'}`,
             Name: `${item?.name || '-'}`,
             Date: momentDateFormat(item?.date, DateFormat?.DATE_FORMAT) || '-',
             Day: momentDateFormat(item?.date, DateFormat?.DATE_WEEK_NAME_FORMAT) || '-',
-            DayType: item?.type || '-',
             Status: getStatus(item?.status) || "-",
             CheckIN: item?.checkInTimes[0]?.length > 0 ? momentTimeFormate(item?.checkInTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-" || '-',
             CheckOUT: item?.checkOutTimes[0]?.length > 0 ? momentTimeFormate(item?.checkOutTimes[0], TimeFormat.TIME_12_HOUR_FORMAT) || '-' : "-" || '-',
-            WorkingHours: item?.checkInTimes[0]?.length > 0 ? getWorkingHours(item?.checkInTimes[0], item?.checkOutTimes[0], getBreakMinutes(item?.breaks?.length > 0 ? item?.breaks : [] || 0)) || '-' : "-",
-            BreakTime: item.breaks?.length > 0 ? getBreakMinutes(item.breaks) + 'm' : '-' || '-',
-            TotalBreak: item.breaks.length > 0 ? item.breaks.map((b, index) => `Break ${index + 1}: ${momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - ${momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} `).join(" | ") : "N/A",
+            WorkingHours: item?.checkInTimes[0]?.length > 0 ? getWorkingHours(item?.checkInTimes, item?.checkOutTimes) || '-' : "-",
+            // BreakTime: item.breaks?.length > 0 ? getBreakMinutes(item.breaks) + 'm' : '-' || '-',
+            // TotalBreak: item.breaks.length > 0 ? item.breaks.map((b, index) => `Break ${index + 1}: ${momentTimeFormate(b.start, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} - ${momentTimeFormate(b.end, TimeFormat.DATE_TIME_12_HOUR_FORMAT)} `).join(" | ") : "N/A",
         }));
+
         return { code: 1, data: AttendanceExportData }
     };
 
@@ -525,7 +528,7 @@ export default function ManageAttendance() {
                                             </button>
                                         </li>
 
-                                        {customerList?.map((option) => (
+                                        {customerList?.length > 0 && customerList?.map((option) => (
                                             <li key={option.id}>
                                                 <button
                                                     className="dropdown-item text-black-50 p-2"
@@ -695,7 +698,7 @@ export default function ManageAttendance() {
                                 )} /> */}
 
                                 <Column field="checkInTimes"
-                                    header="Work Hours"
+                                    header="Working Hours"
                                     style={{ minWidth: "10rem" }}
                                     body={(rowData) => {
                                         const checkIns = rowData?.checkInTimes || [];
@@ -748,7 +751,7 @@ export default function ManageAttendance() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
                                         {
-                                            getLocalStorageItem(Constatnt?.ROLE_KEY) != '1' && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                            getLocalStorageItem(Constatnt?.ROLE_KEY) != '11' && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
                                                 <i class="ti ti-edit fs-7"></i>
                                             </a>
                                         }
@@ -773,6 +776,7 @@ export default function ManageAttendance() {
 
                         </div>
                     </div>
+
                 </div>
             </div >
 
@@ -922,10 +926,10 @@ export default function ManageAttendance() {
                                                     // { label: "Employee Id", value: selectedEmployee?.employee_id },
                                                     // { label: "Name", value: selectedEmployee?.name },
                                                     // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
-                                                    { label: "Work Hours", value: getWorkingHours(watch('checkIn') ? dayjs(watch('checkIn')).format("HH:mm:ss") : 0, dayjs(watch('checkOut') || dayjs()).format("HH:mm:ss"), getBreakMinutes(watch('breaks') || 0)) || 0 },
-                                                    { label: "Total Break", value: watch('breaks')?.length > 0 ? getBreakMinutes(watch('breaks')) + 'm' : '-' },
+                                                    { label: "Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes || [], selectedAttendance?.checkOutTimes || [], 0) || 0 },
+                                                    // { label: "Total Break", value: watch('breaks')?.length > 0 ? getBreakMinutes(watch('breaks')) + 'm' : '-' },
                                                 ].map((item, index) => (
-                                                    <div className='col-12 col-sm-6 attendance_card'>
+                                                    <div className={`${item.label == "Work Hours" ? "col-12" : "col-12 col-sm-6"} attendance_card`}>
                                                         <div key={index} className="card border-1 zoom-in them-light shadow-sm m-1 ">
                                                             <div className="card-body text-center m-1 p-1">
                                                                 <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
@@ -957,7 +961,7 @@ export default function ManageAttendance() {
                                                 })}
                                                 onChange={(e) => {
                                                     const selectedId = e.target.value;
-                                                    const selectedObj = customerList.find((c) => String(c.id) === String(selectedId));
+                                                    const selectedObj = customerList?.length > 0 && customerList?.find((c) => String(c.id) === String(selectedId));
                                                     console.log('selectedObjselectedObj', selectedObj);
                                                     setSelectedEmployee(selectedObj || null);
                                                     setValue(AstroInputTypesEnum?.EMPLOYEE_ID, selectedObj.id)
@@ -965,7 +969,7 @@ export default function ManageAttendance() {
                                                 disabled
                                             >
                                                 <option value="">Select employee</option>
-                                                {selectOptionCustomer(customerList)}
+                                                {selectOptionCustomer(customerList || [])}
                                             </select>
                                         </div>
                                         <label className="errorc ps-1 pt-1">
