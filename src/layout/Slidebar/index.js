@@ -475,7 +475,7 @@ const Slidebar = () => {
                                 </Link>
                             </li>
 
-                            <li className={`sidebar-item ${path === PATHS.DEPARTNMENT_LIST ? "selected" : ""}`}
+                            {/* <li className={`sidebar-item ${path === PATHS.DEPARTNMENT_LIST ? "selected" : ""}`}
                                 onClick={() => toggleMenu(PATHS.DEPARTNMENT_LIST)}
                             >
                                 <Link to={PATHS.DEPARTNMENT_LIST} className={`sidebar-link ${path === PATHS.DEPARTNMENT_LIST ? "active" : ""}`} aria-expanded="false"
@@ -485,7 +485,7 @@ const Slidebar = () => {
                                     </span>
                                     <span className="hide-menu">Department</span>
                                 </Link>
-                            </li>
+                            </li> */}
 
                             {/* <li className={`sidebar-item ${path === PATHS.ADMIN_LOG ? "selected" : ""}`}
                                 onClick={() => toggleMenu(PATHS.ADMIN_LOG)}
