@@ -45,12 +45,12 @@ const Header = ({ page_name }) => {
                     dispatch(getCustomerListThunk(request)),
                     dispatch(getListDepartnmentThunk({})),
                     dispatch(getListBankDetailsThunk(request)),
-                    dispatch(getlistLeavesThunk(request)),
+                    // dispatch(getlistLeavesThunk(request)),
 
                     dispatch(getlistLeavesRequestThunk({ action: "admin" })),
                     dispatch(getBirthdayAndAnnivarsaryListThunk({ action: "admin" })),
 
-                    dispatch(getEmpLeaveBalanceListThunk(request)),
+                    // dispatch(getEmpLeaveBalanceListThunk(request)),
                     dispatch(getSaturdayListThunk({ year: formatDateDyjs(dayjs(), 'YYYY') })),
                     dispatch(getHolidayListThunk({ year: formatDateDyjs(dayjs(), DateFormat?.DATE_WEEK_NAME_FORMAT_YEAR) })),
                     dispatch(getSalaryListThunk({

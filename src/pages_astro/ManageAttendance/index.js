@@ -7,7 +7,7 @@ import $, { data } from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
 import SubNavbar from '../../layout/SubNavbar';
-import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance } from '../../utils/api.services';
+import { updateLoanDetails, loanDetails, addDisbursementLoan, addLeaves, editAttendance, addAttendance } from '../../utils/api.services';
 import { ExportToCSV, ExportToExcel, ExportToPdf, SWIT_DELETE, SWIT_DELETE_SUCCESS, SWIT_FAILED, TOAST_ERROR, TOAST_SUCCESS } from '../../config/common';
 import profile_image from '../../assets/Images/default.jpg'
 import ReactDatatable from '../../config/ReactDatatable';
@@ -87,6 +87,8 @@ export default function ManageAttendance() {
         { key: "0", value: "Cancelled" },
     ];
 
+    var userDetails = JSON.parse(localStorage.getItem(Constatnt.AUTH_KEY));
+
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [selectedAttendance, setSelectedAttendance] = useState({})
     const [loading, setLoading] = useState(false);
@@ -106,6 +108,8 @@ export default function ManageAttendance() {
     const [is_loding, setIs_loading] = useState(false);
     const [updatedAttendanceList, setUpdateAttendanceList] = useState([]);
     const [attendanceEditModal, setAttendanceEditModel] = useState(false);
+    const [attendanceAddModal, setAttendanceAddModel] = useState(false);
+
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
     useEffect(() => {
@@ -225,53 +229,47 @@ export default function ManageAttendance() {
 
     const onSubmitData = async (data) => {
 
-        dispatch(setLoader(true))
+        dispatch(setLoader(true));
 
         let sendRequest = {
             employee_id: selectedEmployee?.id,
             date: formatDateIncommingDyjs(data?.dob1, DateFormat?.DATE_FORMAT, DateFormat?.DATE_DASH_TIME_FORMAT),
             check_in_time: data?.checkIn ? dayjs(data.checkIn).format("HH:mm") : null,
             check_out_time: data?.checkOut ? dayjs(data.checkOut).format("HH:mm") : null,
-            // breaks: data?.breaks.length > 0 ? data?.breaks : [],
-            breaks: Array.isArray(data?.breaks) && data.breaks.length > 0
-                ? data.breaks.map(b => ({
-                    start: b?.start
-                        ? dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                        : null,
-                    end: b?.end
-                        ? dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm")
-                        : null
-                }))
-                : [],
+            breaks: [],
             lat: "0.000",
             log: "0.000",
-            location_id: "TRACEWAVE",
+            location_id: `TRACEWAVE ADMIN ${userDetails?.email} ${moment.utc().format(DateFormat?.DATE_DOT_TIME_FORMAT)}`,
         };
 
-        console.log('sendRequest', data);
-
         // return
-        editAttendance(sendRequest).then((response) => {
+        addAttendance(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
                 dispatch(setLoader(false))
                 TOAST_SUCCESS(response?.message);
 
-                let updatedList = cloneDeep(updatedAttendanceList); // shallow copy (optional, if immutability needed)
-                let target = updatedList.find(item => item.emp_id == selectedEmployee?.id);
-                if (target) {
-                    target.checkInTimes = data?.checkIn ? [convertToUTC(sendRequest?.date, sendRequest?.check_in_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
-                    target.checkOutTimes = data?.checkOut ? [convertToUTC(sendRequest?.date, sendRequest?.check_out_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
-                    target.breaks = Array.isArray(data?.breaks) && data?.breaks?.length > 0 ? data?.breaks?.map(b => ({
-                        // start: b?.start ? convertToUTC(sendRequest?.date, b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
-                        // end: b?.end ? convertToUTC(sendRequest?.date, b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
-                        start: b?.start ? convertToUTC(sendRequest?.date, dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
-                        end: b?.end ? convertToUTC(sendRequest?.date, dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
-                    })) : [];
-                }
-                console.log("updatedList", updatedList);
-                setUpdateAttendanceList(updatedList);
-
-                closeAttendanceModel()
+                // let updatedList = cloneDeep(updatedAttendanceList); // shallow copy (optional, if immutability needed)
+                // let target = updatedList.find(item => item.emp_id == selectedEmployee?.id);
+                // if (target) {
+                //     target.checkInTimes = data?.checkIn ? [convertToUTC(sendRequest?.date, sendRequest?.check_in_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
+                //     target.checkOutTimes = data?.checkOut ? [convertToUTC(sendRequest?.date, sendRequest?.check_out_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
+                //     target.breaks = Array.isArray(data?.breaks) && data?.breaks?.length > 0 ? data?.breaks?.map(b => ({
+                //         // start: b?.start ? convertToUTC(sendRequest?.date, b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
+                //         // end: b?.end ? convertToUTC(sendRequest?.date, b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
+                //         start: b?.start ? convertToUTC(sendRequest?.date, dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
+                //         end: b?.end ? convertToUTC(sendRequest?.date, dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
+                //     })) : [];
+                // }
+                // console.log("updatedList", updatedList);
+                // setUpdateAttendanceList(updatedList);
+                let request = {
+                    start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
+                    end_date: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
+                    status: selectedOption?.key || "",
+                    emp_leave_company: employeeStatus?.key,
+                };
+                dispatch(getlistAttendanceThunk(request));
+                closeAddAttendanceModel()
             } else {
                 TOAST_ERROR(response?.message)
             }
@@ -312,6 +310,35 @@ export default function ManageAttendance() {
 
     const closeAttendanceModel = () => {
         setAttendanceEditModel(false)
+        setSelectedAttendance({})
+        reset()
+    }
+
+    const openAddAttendanceModel = () => {
+        setAttendanceEditModel(false)
+        setAttendanceAddModel(true)
+        // setSelectedAttendance(attendanceData)
+        // const formattedBreaks = attendanceData?.breaks?.map(b => ({
+        //     start: b.start ? dayjs(momentTimeFormate(b.start, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null,
+        //     end: b.end ? dayjs(momentTimeFormate(b.end, 'HH:mm:ss'), 'HH:mm:ss').format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null
+        // }));
+
+        // setValue('breaks', formattedBreaks);
+        // const selectedObj = customerList?.length > 0 && customerList?.find((c) => String(c.id) === String(attendanceData?.emp_id));
+        // setSelectedEmployee(selectedObj || null);
+        // setValue(AstroInputTypesEnum?.EMPLOYEE, selectedObj.id)
+
+        // setValue('dob1', attendanceData?.date ? dayjs(attendanceData?.date).format('DD-MM-YYYY') : null);
+        // setValue('checkIn', attendanceData?.checkInTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkInTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
+        // // setValue('checkOut', attendanceData?.checkOutTimes?.[0] ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData.checkOutTimes[0], 'HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss') : null);
+
+        // setValue('checkOut', attendanceData?.checkInTimes?.length > 0 && attendanceData?.checkOutTimes?.length > 0 && attendanceData.checkOutTimes.length === attendanceData?.checkInTimes?.length
+        //     ? dayjs(`${attendanceData.date} ${momentTimeFormate(attendanceData?.checkOutTimes[attendanceData?.checkOutTimes.length - 1], "HH:mm:ss")}`, "YYYY-MM-DD HH:mm:ss") : null);
+
+    }
+
+    const closeAddAttendanceModel = () => {
+        setAttendanceAddModel(false)
         setSelectedAttendance({})
         reset()
     }
@@ -375,7 +402,6 @@ export default function ManageAttendance() {
         let submitData = {
             search: globalFilterValue
         }
-
         const AttendanceExportData = updatedAttendanceList?.length > 0 && updatedAttendanceList?.map((item, index) => ({
             id: index + 1,
             // employeeID: `${salary?.emp_id || '-'}`,
@@ -591,19 +617,18 @@ export default function ManageAttendance() {
 
                             {/* Add + Download */}
                             <div className="col-12 col-md-6 col-lg-1 d-flex align-items-end justify-content-between gap-2">
+
                                 {/* Add Button */}
-                                {/* <button
+                                <button
                                     type="button"
                                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
                                     style={{ height: '40px', minWidth: '40px', padding: 0 }}
-                                    onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
+                                    // onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
+                                    onClick={() => { openAddAttendanceModel() }}
                                     title="Add Attendance"
                                 >
                                     <RiAddCircleFill style={{ fontSize: '1rem' }} />
-                                </button> */}
-
-                                {/* Download Button */}
-
+                                </button>
                                 <button
                                     type="button"
                                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
@@ -613,12 +638,12 @@ export default function ManageAttendance() {
                                 >
                                     <FaDownload style={{ fontSize: '0.95rem' }} />
                                 </button>
-
                             </div>
                         </div>
                     </div>
 
                     <div className="card card-body">
+
                         {/* <div className="row border-bottom pb-2"> */}
                         {/* <div className="col-12 col-md-6 col-lg-3">
 
@@ -750,11 +775,11 @@ export default function ManageAttendance() {
 
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
-                                        {
+                                        {/* {
                                             getLocalStorageItem(Constatnt?.ROLE_KEY) != '11' && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
                                                 <i class="ti ti-edit fs-7"></i>
                                             </a>
-                                        }
+                                        } */}
                                         <Link onClick={() => {
                                             if (rowData?.checkInTimes?.length > 0) {
                                                 openModelFunc(rowData);
@@ -906,6 +931,7 @@ export default function ManageAttendance() {
                 )
             }
 
+            {/* for the EDIT Attendance Data  */}
             <div className={`modal custom-modal  ${attendanceEditModal ? "fade show d-block " : "d-none"}`}
                 id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
                 <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
@@ -1077,6 +1103,188 @@ export default function ManageAttendance() {
             </div >
             {
                 attendanceEditModal && (
+                    <div className="modal-backdrop fade show"></div>
+                )
+            }
+            {
+                customModel.isOpen && customModel?.modalType === ModelName.DELETE_MODEL && (
+                    <Model>
+                        <DeleteComponent onConfirm={handleDelete} />
+                    </Model >
+                )
+            }
+
+            {/* for the add Attendance Data  */}
+            <div className={`modal custom-modal  ${attendanceAddModal ? "fade show d-block " : "d-none"}`}
+                id="addnotesmodal" tabIndex={-1} role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
+                <div className="modal-dialog modal-md modal-dialog-centered" role="document" >
+                    <div className="modal-content border-0">
+                        <div className="modal-header bg-primary" style={{ borderRadius: '10px 10px 0px 0px' }}>
+                            <h3 className="modal-title fs-5">{attendanceAddModal ? 'Add Attendance Details' : 'Add Attendance Details'} </h3>
+                            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => { closeAddAttendanceModel() }} />
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="row">
+                                {
+                                    selectedEmployee &&
+                                    <div className="col-12 justify-content-center">
+                                        <div className="mb-3">
+                                            <div className="row">
+                                                {[
+                                                    // { label: "Employee Id", value: selectedEmployee?.employee_id },
+                                                    // { label: "Name", value: selectedEmployee?.name },
+                                                    // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
+                                                    {
+                                                        label: "Working Hours",
+                                                        value: getWorkingHours([dayjs(watch('checkIn')).format("HH:mm:ss")] || [], [dayjs(watch('checkOut')).format("HH:mm:ss")] || [], 0) || 0
+                                                    }
+                                                    // { label: "Total Break", value: watch('breaks')?.length > 0 ? getBreakMinutes(watch('breaks')) + 'm' : '-' },
+                                                ].map((item, index) => (
+                                                    <div className={`col-12 attendance_card`}>
+                                                        <div key={index} className="card border-1 zoom-in them-light shadow-sm m-1 ">
+                                                            <div className="card-body text-center m-1 p-1">
+                                                                <p className="fw-semibold fs-4 text-custom-theam ">{item.label}</p>
+                                                                <h5 className="fw-medium text-dark mb-0 fs-5">
+                                                                    {item.value || '-'}
+                                                                </h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <form onSubmit={handleSubmit(onSubmitData)}>
+                                <div className='row col-12 col-md-12 '>
+
+                                    <div className="mb-3">
+                                        <label htmlFor="gender1" className="form-label fw-semibold">
+                                            Select Employee<span className="text-danger ms-1">*</span>
+                                        </label>
+                                        <div className="input-group border rounded-1">
+                                            <select
+                                                id="gender1"
+                                                className="form-control ps-2 p-2"
+                                                autoComplete="nope"
+                                                {...register(AstroInputTypesEnum.EMPLOYEE, { required: "Select employee" })}
+                                                onChange={(e) => {
+                                                    const selectedId = e.target.value;
+                                                    const selectedObj = customerList?.find((c) => String(c.id) == String(selectedId));
+                                                    setSelectedEmployee(selectedObj || null);
+                                                    setValue(AstroInputTypesEnum?.EMPLOYEE_ID, selectedObj.id)
+                                                    setValue(AstroInputTypesEnum?.EMPLOYEE, selectedObj.id)
+                                                }}
+                                            >
+                                                <option value="">Select employee</option>
+                                                {selectOptionCustomer(customerList || [])}
+                                            </select>
+                                        </div>
+                                        <label className="errorc ps-1 pt-1">
+                                            {errors[AstroInputTypesEnum.EMPLOYEE]?.message}
+                                        </label>
+                                    </div>
+                                    <div className="mb-3">
+                                        <div className="col-12 ">
+                                            <label htmlFor="dob1" className="form-label fw-semibold">
+                                                Date <span className="text-danger ms-1">*</span>
+                                            </label>
+                                            <Controller
+                                                name="dob1"
+                                                control={control}
+                                                rules={{ required: "Date is required" }}
+                                                render={({ field }) => (
+                                                    <DatePicker
+                                                        id="dob1"
+                                                        picker="date"
+                                                        className="form-control custom-datepicker w-100"
+                                                        format={DateFormat?.DATE_FORMAT} // ✅ change format as needed
+                                                        value={field.value ? dayjs(field.value, DateFormat?.DATE_FORMAT) : null}
+                                                        // onChange={(date) => field.onChange(date ? date.toISOString() : null)}                                                        allowClear={false}
+                                                        onChange={(date) => field.onChange(date ? dayjs(date).format(DateFormat?.DATE_FORMAT) : null)}
+                                                    />
+                                                )}
+                                            />
+
+                                            {/* ✅ Error Message */}
+                                            {errors.dob1 && (
+                                                <small className="text-danger">{errors.dob1.message}</small>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <div className='row'>
+                                            <div className="col-12 col-md-6">
+                                                <label htmlFor="checkIn" className="form-label fw-semibold">
+                                                    Check In Time <span className="text-danger ms-1">*</span>
+                                                </label>
+                                                <Controller
+                                                    name="checkIn"
+                                                    control={control}
+                                                    rules={{ required: "Check In time is required" }}
+                                                    render={({ field }) => (
+                                                        <DatePicker
+                                                            {...field}
+                                                            id="checkIn"
+                                                            className="form-control custom-datepicker w-100"
+                                                            picker="time"
+                                                            format={TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT}
+                                                            value={field.value}
+                                                            onChange={(time) => field.onChange(time)}
+                                                            allowClear={false}
+                                                        />
+                                                    )}
+                                                />
+                                                {errors.checkIn && (
+                                                    <span className="text-danger small">{errors.checkIn.message}</span>
+                                                )}
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <label htmlFor="checkOut" className="form-label fw-semibold">
+                                                    Check Out Time <span className="text-danger ms-1">*</span>
+                                                </label>
+                                                <Controller
+                                                    name="checkOut"
+                                                    control={control}
+                                                    rules={{ required: "Check Out time is required" }}
+                                                    render={({ field }) => (
+                                                        <DatePicker
+                                                            {...field}
+                                                            id="checkOut"
+                                                            className="form-control custom-datepicker w-100"
+                                                            picker="time"
+                                                            format={TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT}
+                                                            value={field.value}
+                                                            onChange={(time) => field.onChange(time)}
+                                                            allowClear={false}
+                                                        />
+                                                    )}
+                                                />
+                                                {errors.checkOut && (
+                                                    <span className="text-danger small">{errors.checkOut.message}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="modal-footer justify-content-center mb-3">
+                                    <button type='button' className="btn btn-danger m-2" onClick={() => { closeAddAttendanceModel(); }}>Cancel</button>
+                                    <button type='submit' className="btn btn-primary" >Submit</button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div >
+            {
+                attendanceAddModal && (
                     <div className="modal-backdrop fade show"></div>
                 )
             }

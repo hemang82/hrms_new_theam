@@ -153,6 +153,7 @@ export default function ManageEMISchedule() {
                         setEditData({})
                         closeModelFunc()
                         dispatch(setLoader(false))
+                        fetchData()
                         reset()
                     } else {
                         setIs_Edit(false)
@@ -170,6 +171,7 @@ export default function ManageEMISchedule() {
                         navigat(PATHS?.HOLIDAYS_LIST)
                         setScheduleModel(false)
                         setHolidayDate(dayjs())
+                        fetchData()
                         closeModelFunc();
                         setIs_Add(false)
                         dispatch(setLoader(false))

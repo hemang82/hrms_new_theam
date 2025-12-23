@@ -420,6 +420,7 @@ export const getWorkingHours = (
     checkOutTimes = [],
     breakMinutes = 0
 ) => {
+
     if (!Array.isArray(checkInTimes) || !Array.isArray(checkOutTimes)) {
         return "-";
     }
@@ -460,7 +461,6 @@ export const getWorkingHours = (
 
     return `${hours}h ${minutes}m`;
 };
-
 
 export const getBreakMinutes = (breaks = []) => {
 
