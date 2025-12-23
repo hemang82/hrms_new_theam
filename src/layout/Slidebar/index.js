@@ -504,8 +504,6 @@ const Slidebar = () => {
                                 <span class="hide-menu text-custom-theam">Project</span>
                             </li> */}
 
-
-
                             <li className={`sidebar-item  `} onClick={() => { openModel(dispatch, ModelName.LOGOUT_MODEL) }} style={{ cursor: 'pointer' }}>
                                 <Link className={`sidebar-link`} aria-expanded="false" >
                                     <span>
