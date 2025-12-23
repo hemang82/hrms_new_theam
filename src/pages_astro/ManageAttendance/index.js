@@ -262,14 +262,17 @@ export default function ManageAttendance() {
                 // }
                 // console.log("updatedList", updatedList);
                 // setUpdateAttendanceList(updatedList);
+
                 let request = {
                     start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                     end_date: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                     status: selectedOption?.key || "",
                     emp_leave_company: employeeStatus?.key,
                 };
+
                 dispatch(getlistAttendanceThunk(request));
-                closeAddAttendanceModel()
+                closeAddAttendanceModel();
+                
             } else {
                 TOAST_ERROR(response?.message)
             }

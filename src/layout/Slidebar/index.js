@@ -204,7 +204,7 @@ const Slidebar = () => {
                                     <span>
                                         <LuScanFace style={{ fontSize: '1.2rem' }} />
                                     </span>
-                                    <span className="hide-menu">Veried Face</span>
+                                    <span className="hide-menu">verified Face</span>
                                 </Link>
                             </li>
 

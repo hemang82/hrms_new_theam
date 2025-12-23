@@ -339,7 +339,6 @@ export default function ManageCoustomer() {
                 <SubNavbar title={"Verified Face"} header={'Verified Face'} />
 
                 <div className="widget-content searchable-container list">
-                    {/* --------------------- start Contact ---------------- */}
                     {
                         selectedEmployee &&
                         <div className="col-12 justify-content-center">
@@ -351,9 +350,7 @@ export default function ManageCoustomer() {
                                             { label: "Compoff Leave", value: selectedEmployee?.compoff },
                                             {
                                                 label: "Total Leave",
-                                                value:
-                                                    (Number(selectedEmployee?.casual) || 0) +
-                                                    (Number(selectedEmployee?.compoff) || 0)
+                                                value: (Number(selectedEmployee?.casual) || 0) + (Number(selectedEmployee?.compoff) || 0)
                                             }
                                         ].map((item, index) => (
                                             <div className='col-12 col-sm-6 col-md-3 col-lg-4 attendance_card'>
@@ -383,7 +380,7 @@ export default function ManageCoustomer() {
                                         type="text"
                                         className="form-control ps-5  "
                                         id="input-search"
-                                        placeholder="Search Verified Face ..."
+                                        placeholder="Search verified Face ..."
                                         value={globalFilterValue}
                                         onChange={onGlobalFilterChange}
                                     />
@@ -471,6 +468,7 @@ export default function ManageCoustomer() {
 
                     <div className="card p-3">
                         <div className="table-responsive">
+
                             <DataTable
                                 value={updatedLeaveLeast?.length > 0 ? updatedLeaveLeast : []}
                                 paginator
