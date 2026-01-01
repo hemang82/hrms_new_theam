@@ -74,8 +74,6 @@ export function UpdateLeaveJoinDate(request) {
     return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/update_leave_join_date`, request)
 }
 
-// /api/admin_employee/update_leave_join_date
-
 export function CustomerDetails(request) {
     return AxiosClientApi.post(`/${ADMIN_EMPLOYEE}/emp_details`, request, true)
 }
@@ -107,7 +105,6 @@ export function EditDailyWork(request) {
 }
 
 // ---------------------------- Leave Module  ------------------------------------------------------- 
-
 
 export function listLeaves(request) {
     return AxiosClientApi.post(`/${ADMIN_EMP_LEAVE}/emp_leave_listing`, request)

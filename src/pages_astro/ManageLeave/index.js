@@ -636,10 +636,7 @@ export default function ManageCoustomer() {
                                                             <i className="ti ti-check fs-7"></i>
                                                         </a>
                                                         <a
-                                                            className={`text-danger ${rowData?.status == 1 && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
-                                                                ? "cursor_pointer"
-                                                                : "disabled-status"
-                                                                }`}
+                                                            className={`text-danger ${rowData?.status == 1 && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day") ? "cursor_pointer" : "disabled-status" }`}
                                                             onClick={() => {
                                                                 if (
                                                                     rowData?.status == 1 
