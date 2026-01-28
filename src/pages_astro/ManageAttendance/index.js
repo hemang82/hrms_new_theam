@@ -23,7 +23,7 @@ import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
 import { AstroInputTypesEnum, AttendanceStatus, DateFormat, EMPLOYEE_STATUS, getAttendanceStatusColor, getStatus, InputRegex, LEAVE_TYPE_LIST, PAYMENT_STATUS, STATUS_COLORS, TimeFormat } from '../../config/commonVariable';
-import { RiAddCircleFill, RiUserReceivedLine } from 'react-icons/ri';
+import { RiAddCircleFill, RiRestartLine, RiUserReceivedLine } from 'react-icons/ri';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
@@ -39,6 +39,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import cloneDeep from "lodash/cloneDeep";
 import { FaDownload } from 'react-icons/fa';
+import { GrPowerReset } from 'react-icons/gr';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -51,8 +52,6 @@ export default function ManageAttendance() {
     const dateFormat = 'YYYY-MM-DD';
 
     const [totalRows, setTotalRows] = useState(0);
-
-    const [is_load, setis_load] = useState(false);
 
     const { attendanceList: { data: attendanceList } } = useSelector((state) => state.masterslice);
     const { customerList: { data: customerList }, } = useSelector((state) => state.masterslice);
@@ -97,8 +96,15 @@ export default function ManageAttendance() {
     const [selectedOption, setSelectedOption] = useState({});
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState(-1);
-    const [startDate, setStartDate] = useState(dayjs()); // ✅ start of previous month
-    const [endDate, setEndDate] = useState(dayjs());
+
+    const localStartDate = JSON.parse(localStorage.getItem(Constatnt?.START_DATE)) || null;
+    const localEndDate = JSON.parse(localStorage.getItem(Constatnt?.END_DATE)) || null;
+    const localEMPID = JSON.parse(localStorage.getItem(Constatnt?.EMP_ID)) || null;
+    const localEmpLeaveCompany = JSON.parse(localStorage.getItem(Constatnt?.EMP_LEAVE_COMPANY)) || "0";
+
+
+    const [startDate, setStartDate] = useState(localStartDate ? dayjs(localStartDate) : dayjs().startOf("month")); // ✅ start of previous month
+    const [endDate, setEndDate] = useState(localEndDate ? dayjs(localEndDate) : dayjs());
     const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const [showProofImage, setShowProofImage] = useState(null);
@@ -110,13 +116,13 @@ export default function ManageAttendance() {
 
     useEffect(() => {
         const request = {
-            emp_leave_company: employeeStatus?.key,
+            emp_leave_company: localEmpLeaveCompany ? localEmpLeaveCompany : employeeStatus?.key,
         };
         // if (customerList?.length === 0) {
         dispatch(getCustomerListThunk(request));
         // }
         setSelectedOption({})
-    }, [])
+    }, [localEmpLeaveCompany])
 
     const updatedData = (attendanceList, startDate, endDate) => {
         const start = new Date(startDate);
@@ -181,11 +187,22 @@ export default function ManageAttendance() {
         let request = {
             start_date: startDate ? formatDateDyjs(startDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
             end_date: endDate ? formatDateDyjs(endDate, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
+            employee_id: localEMPID ? localEMPID : "",
             status: selectedOption?.key || "",
-            emp_leave_company: employeeStatus?.key,
+            emp_leave_company: localEmpLeaveCompany ? localEmpLeaveCompany : employeeStatus?.key,
         };
         dispatch(getlistAttendanceThunk(request));
     }, []);
+
+    useEffect(() => {
+
+        const selectedObj = customerList?.find((c) => String(c.id) == String(localEMPID));
+        const employeLeaveCompany = EMPLOYEE_STATUS?.find((c) => String(c.key) == String(localEmpLeaveCompany));
+
+        handleSelect(selectedObj)
+        setEmployeeStatus(employeLeaveCompany)
+
+    }, [customerList ,localEMPID, localEmpLeaveCompany])
 
     const handleDelete = (is_true) => {
         if (is_true) {
@@ -250,8 +267,6 @@ export default function ManageAttendance() {
             location_id: "TRACEWAVE",
         };
 
-        console.log('sendRequest', data);
-
         // return
         editAttendance(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
@@ -315,20 +330,6 @@ export default function ManageAttendance() {
         reset()
     }
 
-    const changeStatusFunction = (data) => {
-        setValue('payment_status', PAYMENT_STATUS.find(item => item.key === data)?.key)
-        const statusExists = selectedAttendance?.status === data;
-        setValue('remarks', statusExists ? selectedAttendance?.remarks : '')
-        const bankDetails = selectedAttendance?.bank_accounts[0]
-        const approvalDetails = selectedAttendance?.approval_details[0]
-        // setValue('payment_status', PAYMENT_STATUS.find(item => item.key === "BANK_TRANSFER")?.key)
-        setValue('approved_amount', Number(approvalDetails?.disbursed_amount || 0).toFixed(2))
-        setValue('bank_name', bankDetails?.bank_name)
-        setValue('account_number', bankDetails?.account_number)
-        setValue('ifsc_code', bankDetails?.ifsc_code)
-        setValue('account_holder_name', bankDetails?.account_holder_name)
-    }
-
     const handleSelect = (option) => {
         setSelectedOption(option);
         setPage(1);
@@ -350,8 +351,6 @@ export default function ManageAttendance() {
     const onChangeApiCalling = async (data) => {
         try {
 
-            console.log('onChangeApiCalling data', data);
-
             const request = {
                 start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 end_date: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
@@ -359,13 +358,11 @@ export default function ManageAttendance() {
                 emp_leave_company: data?.emp_leave_company || "0"
             };
             await dispatch(getlistAttendanceThunk(request));
-
+            await setLocalDateFunction(data?.start_date, data.end_date, data?.employee_id, data?.emp_leave_company)
             const request2 = {
                 emp_leave_company: data?.emp_leave_company || "0",
             };
-            // if (customerList?.length === 0) {
             dispatch(getCustomerListThunk(request2));
-            // }
         } finally {
         }
     };
@@ -394,28 +391,6 @@ export default function ManageAttendance() {
         return { code: 1, data: AttendanceExportData }
     };
 
-    const handleExportToPdfManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code == Codes.SUCCESS) {
-            data.forEach(item => {
-                delete item.id;
-                delete item.TotalBreak;
-                delete item.Day;
-            });
-            ExportToPdf(data, 'Attendance List', 'Attendance List');
-        }
-        dispatch(setLoader(false));
-    };
-
-    const handleExportToCSVManage = async () => {
-        const { code, data } = await handleExportApiCall();
-        if (code == Codes.SUCCESS) {
-
-            ExportToCSV(data, 'Attendance List');
-        }
-        dispatch(setLoader(false));
-    };
-
     const handleExportToExcelManage = async () => {
         const { code, data } = await handleExportApiCall();
         if (code == Codes.SUCCESS) {
@@ -424,13 +399,31 @@ export default function ManageAttendance() {
         dispatch(setLoader(false));
     };
 
-    console.log('selectedOption', selectedOption);
+    const restFunction = (sDate, eDate) => {
+        localStorage.removeItem(Constatnt?.START_DATE);
+        localStorage.removeItem(Constatnt?.END_DATE);
+        localStorage.removeItem(Constatnt?.EMP_LEAVE_COMPANY);
+        localStorage.removeItem(Constatnt?.EMP_ID);
 
-    console.log('customerList attendance', customerList);
+        setStartDate(sDate)
+        setEndDate(eDate)
+        onChangeApiCalling({ start_date: sDate, end_date: eDate });
+    }
+
+    const setLocalDateFunction = (sDate, eDate, emp_id, emp_leave_company) => {
+
+        setStartDate(sDate)
+        setEndDate(eDate)
+
+        emp_leave_company && localStorage.setItem(Constatnt?.EMP_LEAVE_COMPANY, JSON.stringify(emp_leave_company));
+        emp_id && localStorage.setItem(Constatnt?.EMP_ID, JSON.stringify(emp_id));
+        sDate && localStorage.setItem(Constatnt?.START_DATE, JSON.stringify(sDate));
+        eDate && localStorage.setItem(Constatnt?.END_DATE, JSON.stringify(eDate));
+    }
 
     return (
         <>
-            {<Spinner isActive={is_loding} message={'Please Wait'} />}
+            <Spinner isActive={is_loding} message={'Please Wait'} />
             <div className="container-fluid mw-100">
 
                 <SubNavbar title={"Attendance List"} header={'Attendance List'} />
@@ -457,9 +450,18 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-1">
-
+                            <div className="col-12 col-md-6 col-lg-1 d-flex align-items-end justify-content-end">
+                                {/* <button>test</button> */}
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                                    style={{ height: '40px', width: '40px' }}
+                                    title="Reset Filters"
+                                    onClick={() => { restFunction(dayjs().startOf("month"), dayjs()) }} >
+                                    <GrPowerReset style={{ fontSize: '1.1rem' }} />
+                                </button>
                             </div>
+
                             {/* Start Date */}
                             <div className="col-6 col-md-6 col-lg-2">
                                 <label className="d-block mb-1 fw-semibold">Start Date</label>
@@ -556,8 +558,8 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            {/* Status */}
-                            <div className="col-12 col-md-6 col-lg-1">
+                            {/* Status
+                            <div className="col-12 col-md-4 col-lg-1">
                                 <label className="d-block mb-1 fw-semibold">Status</label>
                                 <div className="dropdown w-100">
                                     <button
@@ -583,7 +585,6 @@ export default function ManageAttendance() {
                                                         });
                                                         setEmployeeStatus(option);
                                                         handleSelect({ id: "", name: "All Employees" });
-
                                                     }}
                                                 >
                                                     {option?.value}
@@ -592,10 +593,53 @@ export default function ManageAttendance() {
                                         ))}
                                     </ul>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* Add + Download */}
-                            <div className="col-12 col-md-6 col-lg-1 d-flex align-items-end justify-content-between gap-2">
+                            <div className="col-12 col-md-6 col-lg-2 d-flex align-items-end justify-content-between gap-2">
+                                {/* Status Dropdown */}
+                                <div className="dropdown w-100 w-sm-auto">
+                                    <label className="d-none d-md-block mb-1 fw-semibold">
+                                        Status
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100 text-truncate"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        style={{
+                                            height: '40px',
+                                            minWidth: '80px'
+                                        }}
+                                    >
+                                        {employeeStatus?.value || 'Status'}
+                                    </button>
+
+                                    <ul className="dropdown-menu w-50">
+                                        {EMPLOYEE_STATUS?.map((option) => (
+                                            <li key={option.key}>
+                                                <button
+                                                    type="button"
+                                                    className="dropdown-item text-black-50"
+                                                    onClick={() => {
+                                                        onChangeApiCalling({
+                                                            start_date: startDate,
+                                                            end_date: endDate,
+                                                            emp_leave_company: option?.key,
+                                                            employee_id: ""
+                                                        });
+                                                        setEmployeeStatus(option);
+                                                        handleSelect({ id: "", name: "All Employees" });
+                                                    }}
+                                                >
+                                                    {option.value}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
                                 {/* Add Button */}
                                 <button
                                     type="button"
@@ -1163,7 +1207,6 @@ export default function ManageAttendance() {
                     <div className="modal-backdrop fade show"></div>
                 )
             }
-
             {
                 customModel.isOpen && customModel?.modalType === ModelName.DELETE_MODEL && (
                     <Model>

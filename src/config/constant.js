@@ -41,6 +41,11 @@ const Constatnt = {
     ROLE_KEY: 'ADMIN_role',
     THEME_KEY: 'ADMIN_theme',
 
+    EMP_ID : 'emp_id',
+    EMP_LEAVE_COMPANY : 'emp_leave_company',
+    START_DATE : 'start_date',
+    END_DATE : 'end_date',
+
     ROLE: 'admin',
 }
 

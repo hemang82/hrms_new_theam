@@ -632,18 +632,14 @@ export default function ManageCoustomer() {
                                                             <i className="ti ti-x fs-7"></i>
                                                         </a>
                                                     </>) : (<>
+
                                                         <a className="text-success me-2 disabled-status" >
                                                             <i className="ti ti-check fs-7"></i>
                                                         </a>
-                                                        <a
-                                                            className={`text-danger ${rowData?.status == 1 && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
-                                                                ? "cursor_pointer"
-                                                                : "disabled-status"
-                                                                }`}
+
+                                                        <a className={`text-danger ${rowData?.status == 1 && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_DASH_TIME_FORMAT, true).isAfter(moment(), "day") ? "cursor_pointer" : "disabled-status"}`}
                                                             onClick={() => {
-                                                                if (
-                                                                    rowData?.status == 1 
-                                                                    // && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
+                                                                if (rowData?.status == 1 // && rowData.start_date && moment(rowData.start_date, DateFormat?.DATE_FORMAT).isAfter(moment(), "day")
                                                                 ) {
                                                                     openActionModelFunc(rowData, "cancel");
                                                                 }
