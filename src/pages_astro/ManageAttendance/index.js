@@ -202,7 +202,7 @@ export default function ManageAttendance() {
         handleSelect(selectedObj)
         setEmployeeStatus(employeLeaveCompany)
 
-    }, [customerList ,localEMPID, localEmpLeaveCompany])
+    }, [customerList, localEMPID, localEmpLeaveCompany])
 
     const handleDelete = (is_true) => {
         if (is_true) {
@@ -306,6 +306,7 @@ export default function ManageAttendance() {
     }
 
     const openAttendanceModel = (attendanceData) => {
+
         setAttendanceEditModel(true)
         setSelectedAttendance(attendanceData)
 
@@ -416,7 +417,7 @@ export default function ManageAttendance() {
         setEndDate(eDate)
 
         emp_leave_company && localStorage.setItem(Constatnt?.EMP_LEAVE_COMPANY, JSON.stringify(emp_leave_company));
-        emp_id && localStorage.setItem(Constatnt?.EMP_ID, JSON.stringify(emp_id));
+        emp_id && localStorage.setItem(Constatnt?.EMP_ID, JSON.stringify(emp_id ? emp_id : ""));
         sDate && localStorage.setItem(Constatnt?.START_DATE, JSON.stringify(sDate));
         eDate && localStorage.setItem(Constatnt?.END_DATE, JSON.stringify(eDate));
     }
@@ -801,7 +802,7 @@ export default function ManageAttendance() {
                                 <Column field="status" header="Action" style={{ minWidth: '6rem' }} body={(rowData) => (
                                     <div className="action-btn">
                                         {
-                                            getLocalStorageItem(Constatnt?.ROLE_KEY) != '1' && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
+                                            getLocalStorageItem(Constatnt?.ROLE_KEY) == Constatnt?.ADMIN && <a className="text-custom-theam edit cursor_pointer cursor_pointer me-1" onClick={() => { openAttendanceModel(rowData) }} >
                                                 <i class="ti ti-edit fs-7"></i>
                                             </a>
                                         }
@@ -827,7 +828,6 @@ export default function ManageAttendance() {
 
                         </div>
                     </div>
-
                 </div>
             </div >
 

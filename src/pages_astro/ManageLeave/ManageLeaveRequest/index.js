@@ -556,7 +556,7 @@ export default function ManageCoustomer() {
                                 )} /> */}
 
                                 {
-                                    getLocalStorageItem(Constatnt?.ROLE_KEY) == '1' && <Column
+                                    getLocalStorageItem(Constatnt?.ROLE_KEY) == Constatnt?.ADMIN && <Column
                                         field="status"
                                         header="Action"
                                         style={{ minWidth: "6rem" }}

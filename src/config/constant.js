@@ -31,6 +31,8 @@ const Constatnt = {
     DELETE_ACCOUNT: '3',
     USER_SESSION_EXPIRE: '-1',
 
+
+
     // --------------------------local storage creandtials-----------------------------------------
 
     LOGIN_KEY: "ADMIN_is_login",
@@ -40,6 +42,11 @@ const Constatnt = {
     LANGUAGE_KEY: 'ADMIN_language',
     ROLE_KEY: 'ADMIN_role',
     THEME_KEY: 'ADMIN_theme',
+
+    // -------------------------- Storage Description -----------------------------------------
+
+    ADMIN : '1',
+    SUB_ADMIN : '2',
 
     EMP_ID : 'emp_id',
     EMP_LEAVE_COMPANY : 'emp_leave_company',
