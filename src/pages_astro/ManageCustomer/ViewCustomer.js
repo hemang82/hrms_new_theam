@@ -29,7 +29,6 @@ export default function DetailsCustomer() {
                 }
             }).catch(error => {
                 setIs_loading(false)
-
             });
         }
     }, [userData]);

@@ -18,7 +18,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getCustomerListThunk, setLoader, updateLoanList, getlistAttendanceThunk, updateAttendanceList } from '../../Store/slices/MasterSlice';
 import Constatnt, { AwsFolder, Codes, ModelName, SEARCH_DELAY } from '../../config/constant';
 import useDebounce from '../hooks/useDebounce';
-import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatDateIncommingDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
+import { closeModel, convertToUTC, formatDate, formatDateDyjs, formatDateIncommingDyjs, formatIndianPrice, getBreakMinutes, getFileNameFromUrl, getLoanStatusObject, getLocalStorageItem, getWorkingHours, getWorkingHoursDetails, momentDateFormat, momentTimeFormate, openModel, selectOption, selectOptionCustomer, textInputValidation, truncateWords } from '../../config/commonFunction';
 import Model from '../../component/Model';
 import { DeleteComponent } from '../CommonPages/CommonComponent';
 import Pagination from '../../component/Pagination';
@@ -213,6 +213,7 @@ export default function ManageAttendance() {
             // }
             // updateLoanDetails(submitData).then((response) => {
             //     if (response.status_code === Codes?.SUCCESS) {
+
             //         setis_load(false)
             //         const updatedList = attendanceList?.filter((item) => item.id !== selectedAttendance?.id)
             //         dispatch(updateLoanList({
@@ -267,6 +268,8 @@ export default function ManageAttendance() {
             location_id: "TRACEWAVE",
         };
 
+        console.log("data?.breaks", data?.breaks);
+
         // return
         editAttendance(sendRequest).then((response) => {
             if (response?.code == Codes.SUCCESS) {
@@ -275,25 +278,42 @@ export default function ManageAttendance() {
 
                 let updatedList = cloneDeep(updatedAttendanceList); // shallow copy (optional, if immutability needed)
                 let target = updatedList.find(item => item.emp_id == selectedEmployee?.id);
+
+                console.log("target", target);
+
                 if (target) {
                     target.checkInTimes = data?.checkIn ? [convertToUTC(sendRequest?.date, sendRequest?.check_in_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
                     target.checkOutTimes = data?.checkOut ? [convertToUTC(sendRequest?.date, sendRequest?.check_out_time, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT)] : [];
-                    target.breaks = Array.isArray(data?.breaks) && data?.breaks?.length > 0 ? data?.breaks?.map(b => ({
-                        // start: b?.start ? convertToUTC(sendRequest?.date, b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
-                        // end: b?.end ? convertToUTC(sendRequest?.date, b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
-                        start: b?.start ? convertToUTC(sendRequest?.date, dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
-                        end: b?.end ? convertToUTC(sendRequest?.date, dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
+                    target.breaks = Array.isArray(data?.breaks) && data?.breaks?.length > 0 ? sendRequest?.breaks?.map(b => ({
+
+                        start: b?.start ? convertToUTC(sendRequest?.date, b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
+                        end: b?.end ? convertToUTC(sendRequest?.date, b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
+
+                        // start: b?.start ? convertToUTC(sendRequest?.date, dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null,
+                        // end: b?.end ? convertToUTC(sendRequest?.date, dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT).format(TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT), TimeFormat?.TIME_WITH_SECONDS_24_HOUR_FORMAT) : null
+                        // start: b?.start
+                        //     ? dayjs(b.start, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm:ss")
+                        //     : null,
+                        // end: b?.end
+                        //     ? dayjs(b.end, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT).format("HH:mm:ss")
+                        //     : null
                     })) : [];
                 }
-                console.log("updatedList", updatedList);
+
+                console.log("target updatedList", updatedList);
                 setUpdateAttendanceList(updatedList);
 
-                closeAttendanceModel()
+                closeAttendanceModel();
+
             } else {
                 TOAST_ERROR(response?.message)
             }
+
         })
     }
+
+    console.log("updatedAttendanceList", updatedAttendanceList);
+
 
     const openModelFunc = (data) => {
         setStatusModal(true)
@@ -351,7 +371,6 @@ export default function ManageAttendance() {
 
     const onChangeApiCalling = async (data) => {
         try {
-
             const request = {
                 start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 end_date: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
@@ -420,6 +439,7 @@ export default function ManageAttendance() {
         emp_id && localStorage.setItem(Constatnt?.EMP_ID, JSON.stringify(emp_id ? emp_id : ""));
         sDate && localStorage.setItem(Constatnt?.START_DATE, JSON.stringify(sDate));
         eDate && localStorage.setItem(Constatnt?.END_DATE, JSON.stringify(eDate));
+
     }
 
     return (
@@ -846,7 +866,7 @@ export default function ManageAttendance() {
                                     {[
                                         // { label: "Employee Id", value: selectedEmployee?.employee_id },
                                         { label: "Date", value: momentDateFormat(selectedAttendance?.date, DateFormat?.DATE_FORMAT) || '-' },
-                                        { label: "Total Work Hours", value: getWorkingHours(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-')) || '-' },
+                                        { label: "Total Work Hours", value: getWorkingHoursDetails(selectedAttendance?.checkInTimes?.length > 0 ? selectedAttendance?.checkInTimes[0] : 0, selectedAttendance?.checkOutTimes?.length > 0 ? selectedAttendance?.checkOutTimes[0] : 0, getBreakMinutes(selectedAttendance?.breaks || '-'), selectedAttendance?.date) || '-' },
                                         {
                                             label: "Check In",
                                             value: selectedAttendance?.checkInTimes?.[0]
@@ -954,7 +974,7 @@ export default function ManageAttendance() {
                                                     // { label: "Employee Id", value: selectedEmployee?.employee_id },
                                                     // { label: "Name", value: selectedEmployee?.name },
                                                     // { label: "Gender", value: selectedEmployee?.gender == "M" ? "Male" : selectedEmployee?.gender == "F" ? "Female" : "Other" },
-                                                    { label: "Work Hours", value: getWorkingHours(watch('checkIn') ? dayjs(watch('checkIn')).format("HH:mm:ss") : 0, dayjs(watch('checkOut') || dayjs()).format("HH:mm:ss"), getBreakMinutes(watch('breaks') || 0)) || 0 },
+                                                    { label: "Work Hours", value: getWorkingHoursDetails(watch('checkIn') ? dayjs(watch('checkIn')).format("HH:mm:ss") : 0, dayjs(watch('checkOut') || dayjs()).format("HH:mm:ss"), getBreakMinutes(watch('breaks') || 0)) || 0 },
                                                     { label: "Total Break", value: watch('breaks')?.length > 0 ? getBreakMinutes(watch('breaks')) + 'm' : '-' },
                                                 ].map((item, index) => (
                                                     <div className='col-12 col-sm-6 attendance_card'>
@@ -973,6 +993,7 @@ export default function ManageAttendance() {
                                     </div>
                                 }
                             </div>
+
                             <form onSubmit={handleSubmit(onSubmitData)}>
                                 <div className='row col-12 col-md-12 '>
                                     <div className="mb-3">
@@ -1069,7 +1090,7 @@ export default function ManageAttendance() {
                                                 <Controller
                                                     name="checkOut"
                                                     control={control}
-                                                    rules={{ required: "Check Out time is required" }}
+                                                    // rules={{ required: "Check Out time is required" }}
                                                     render={({ field }) => (
                                                         <DatePicker
                                                             {...field}
@@ -1114,9 +1135,18 @@ export default function ManageAttendance() {
                                                                     picker="time"
                                                                     format={TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT}
                                                                     value={field.value ? dayjs(field.value, TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null}
-                                                                    onChange={(time) =>
-                                                                        field.onChange(time ? dayjs(time).format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null)
-                                                                    }
+                                                                    // onChange={(time) =>
+                                                                    //     field.onChange(time ? dayjs(time).format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null)
+                                                                    // }
+                                                                    onChange={(time) => {
+                                                                        console.log("Selected Time:", time); // 🔥 raw time object
+                                                                        console.log("Formatted Time:", time ? dayjs(time).format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT) : null);
+                                                                        field.onChange(
+                                                                            time
+                                                                                ? dayjs(time).format(TimeFormat?.TIME_WITH_SECONDS_12_HOUR_FORMAT)
+                                                                                : null
+                                                                        );
+                                                                    }}
                                                                     allowClear={false}
                                                                 />
                                                                 {error && (
@@ -1125,6 +1155,7 @@ export default function ManageAttendance() {
                                                             </>
                                                         )}
                                                     />
+
                                                 </div>
 
                                                 <div className="col-12 col-md-6">
@@ -1198,6 +1229,7 @@ export default function ManageAttendance() {
                                     <button type='submit' className="btn btn-primary" >Submit</button>
                                 </div>
                             </form>
+
                         </div>
                     </div>
                 </div>

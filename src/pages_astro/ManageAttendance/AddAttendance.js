@@ -259,7 +259,6 @@ export default function AddCustomer() {
                                         <h5 className="text-secondary mb-0 fw-semibold fs-5">Employee Attendance Details</h5>
                                     </div>
 
-                                    {console.log('getWorkingHours', getBreakMinutes(watch('breaks')))}
                                     <div className="row">
                                         {[
                                             // { label: "Employee Id", value: selectedEmployee?.employee_id },

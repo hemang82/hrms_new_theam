@@ -412,7 +412,57 @@ export const getWorkingHours = (startTime, endTime, breakMinutes = 0) => {
     const hours = Math.floor(duration.asHours());
     const minutes = duration.minutes();
 
-    return `${hours}h ${minutes}m`;
+    return `${hours ? `${hours}h ${minutes}m` : '-'}`;
+
+};
+
+export const getWorkingHoursDetails = (startTime, endTime, breakMinutes = 0, cuurentDate) => {
+    console.log(
+        "getWorkingHoursDetails",
+        "startTime",
+        startTime,
+        "endTime",
+        endTime,
+        "breakMinutes",
+        breakMinutes,
+        "cuurentDate",
+        cuurentDate
+    );
+
+    if (!startTime) return "-";
+
+    const today = moment().format("YYYY-MM-DD");
+
+    const start = moment.utc(startTime, "HH:mm:ss");
+    let end;
+
+    if (endTime) {
+        end = moment.utc(endTime, "HH:mm:ss");
+        if (end.isBefore(start)) {
+            end.add(1, "day");
+        }
+    } else {
+        // 🔥 Main logic
+        if (cuurentDate === today) {
+            end = moment.utc(); // current time use
+        } else {
+            return "-"; // biji date hoy to show "-"
+        }
+    }
+
+    // Total duration
+    let duration = moment.duration(end.diff(start));
+
+    // Subtract break minutes
+    duration = moment.duration(
+        duration.asMinutes() - breakMinutes,
+        "minutes"
+    );
+
+    const hours = Math.floor(duration.asHours());
+    const minutes = duration.minutes();
+
+    return hours || minutes ? `${hours}h ${minutes}m` : "-";
 };
 
 export const getBreakMinutes = (breaks = []) => {
