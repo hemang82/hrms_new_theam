@@ -53,13 +53,21 @@ export default function ManageSalary() {
     const [page, setPage] = useState(1);
     const [employeeStatus, setEmployeeStatus] = useState(EMPLOYEE_STATUS[0]);
 
+    const INTERN_FILTER_OPTIONS = [
+        { key: "", value: "All Types" },
+        { key: "0", value: "Permanent" },
+        { key: "1", value: "Intern" }
+    ];
+    const [internStatus, setInternStatus] = useState(INTERN_FILTER_OPTIONS[0]);
+
     const hasInitialLoaded = useRef(false);
 
-    const fetchData = async () => {
+    const fetchData = async (selectedDate = startDate, is_intern = internStatus.key) => {
         const request = {
-            "month": startDate ? formatDateDyjs(startDate, 'MM') : null,
-            "year": startDate ? formatDateDyjs(startDate, 'YYYY') : null,
-            emp_leave_company: "0"
+            "month": selectedDate ? formatDateDyjs(selectedDate, 'MM') : null,
+            "year": selectedDate ? formatDateDyjs(selectedDate, 'YYYY') : null,
+            emp_leave_company: "0",
+            is_intern: is_intern
         }
         await dispatch(getSalaryListThunk(request));
     };
@@ -206,9 +214,10 @@ export default function ManageSalary() {
 
     const onChangeApiCalling = (data) => {
         const request = {
-            month: startDate ? formatDateDyjs(startDate, 'MM') : null,
-            year: startDate ? formatDateDyjs(startDate, 'YYYY') : null,
-            emp_leave_company: data?.emp_leave_company ? data?.emp_leave_company : "0"
+            month: data?.hasOwnProperty('date') ? (data.date ? formatDateDyjs(data.date, 'MM') : null) : (startDate ? formatDateDyjs(startDate, 'MM') : null),
+            year: data?.hasOwnProperty('date') ? (data.date ? formatDateDyjs(data.date, 'YYYY') : null) : (startDate ? formatDateDyjs(startDate, 'YYYY') : null),
+            emp_leave_company: data?.hasOwnProperty('emp_leave_company') ? data.emp_leave_company : "0",
+            is_intern: data?.hasOwnProperty('is_intern') ? data.is_intern : (internStatus?.key || "")
         };
         dispatch(getSalaryListThunk(request));
     };
@@ -218,10 +227,9 @@ export default function ManageSalary() {
             <div className="container-fluid mw-100">
                 <SubNavbar title={"Salary List"} header={'Salary List'} />
                 <div className="widget-content searchable-container list">
-                    <div className="card card-body mb-2 p-3">
-                        <div className="row g-3 ">
-                            <div className="col-12 col-md-6 col-lg-6">
-                                <div className="position-relative w-50">
+                    <div className="card card-body mb-2 p-3">                        <div className="row g-3 ">
+                            <div className="col-12 col-md-6 col-lg-3">
+                                <div className="position-relative w-100">
                                     <input
                                         type="text"
                                         className="form-control ps-5 "
@@ -234,9 +242,42 @@ export default function ManageSalary() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-2 ">
-
+                            <div className="col-12 col-md-6 col-lg-1 ">
                             </div>
+
+                            {/* Intern Filter Dropdown */}
+                            <div className="col-12 col-md-6 col-lg-2">
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {internStatus?.value || 'All Types'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        {INTERN_FILTER_OPTIONS?.map((option) => (
+                                            <li key={option.key}>
+                                                <a
+                                                    className="dropdown-item cursor_pointer text-black-50"
+                                                    onClick={() => {
+                                                        setInternStatus(option);
+                                                        onChangeApiCalling({
+                                                            is_intern: option.key
+                                                        });
+                                                    }}
+                                                >
+                                                    {option.value}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
                             <div className="col-12 col-md-6 col-lg-2">
                                 {/* <label className="form-label fw-semibold mb-1">Date Filter</label> */}
                                 <DatePicker
@@ -253,7 +294,7 @@ export default function ManageSalary() {
                                 />
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-1 mb-2 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-2 mb-2 mb-md-0">
                                 {/* <label className="form-label fw-semibold mb-1">Status</label> */}
                                 <div className="btn-group w-100">
                                     <button
@@ -286,7 +327,7 @@ export default function ManageSalary() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-1 ">
+                            <div className="col-12 col-md-6 col-lg-2 ">
                                 <button
                                     className="btn btn-info dropdown-toggle w-100 w-md-auto "
                                     type="button"

@@ -56,6 +56,7 @@ export default function DetailsCustomer() {
                                         { label: "Joining Date", value: formatDate(userDetails?.joining_date, DateFormat?.DATE_FORMAT) },
                                         { label: "Name", value: userDetails?.name },
                                         { label: "Gender", value: userDetails?.gender == "M" ? "Male" : userDetails?.gender == "F" ? "Female" : "Other" },
+                                        { label: "Employee Type", value: userDetails?.is_intern == "1" ? "Intern" : "Permanent" },
                                         { label: "Email Address", value: userDetails?.email },
                                         { label: "Mobile Number", value: `+91 ${userDetails?.phone_number}` },
                                         { label: "Date Of Birth", value: formatDate(userDetails?.birth_date, DateFormat?.DATE_FORMAT) },

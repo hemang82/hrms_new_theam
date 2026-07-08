@@ -57,6 +57,7 @@ export default function AddCustomer() {
                     setValue(AstroInputTypesEnum?.SENIOR_NAME, responseDetails?.senior_name);
                     setValue(AstroInputTypesEnum?.DESIGNATION, responseDetails?.designation);
                     setSelectedJoiningDate(responseDetails?.joining_date ? dayjs(responseDetails.joining_date) : null)
+                    setValue(AstroInputTypesEnum?.IS_INTERN, responseDetails?.is_intern !== undefined && responseDetails?.is_intern !== null ? responseDetails.is_intern.toString() : '0');
                     dispatch(setLoader(false))
                 }
             })
@@ -99,6 +100,7 @@ export default function AddCustomer() {
                 senior_name: data[AstroInputTypesEnum.SENIOR_NAME],
                 department: data[AstroInputTypesEnum.DEPARTMENT],
                 joining_date: formatDateDyjs(selectedJoiningDate, DateFormat?.DATE_DASH_TIME_FORMAT),
+                is_intern: data[AstroInputTypesEnum.IS_INTERN],
                 profile_photo: 'test.jpg',
             }
             if (userData) {
@@ -231,6 +233,8 @@ export default function AddCustomer() {
                                                     </label>
                                                 </div>
 
+
+
                                                 <div className="mb-4">
                                                     <label htmlFor="lastname" className="form-label fw-semibold">
                                                         Designation <span className="text-danger ms-1">*</span>
@@ -304,34 +308,54 @@ export default function AddCustomer() {
                                                     </label>
                                                 </div>
 
-                                                <div className="mb-4">
-                                                    <label htmlFor="gender1" className="form-label fw-semibold">
-                                                        Department<span className="text-danger ms-1">*</span>
-                                                    </label>
-                                                    <div className="input-group border rounded-1">
-                                                        <select
-                                                            id="gender1"
-                                                            className="form-control ps-2 p-2"
-                                                            autoComplete="nope"
-                                                            // value={userData?.department || ""}
-                                                            // defaultValue={userData?.department || ""}
-                                                            {...register(AstroInputTypesEnum.DEPARTMENT, {
-                                                                required: "Select department",
-                                                            })}
-                                                        >
-                                                            <option value="">Select department</option>
-                                                            {/* {departnmentlistArray?.length > 0 && */}
-                                                            {departnmentlistArray?.map((dept, index) => (
-                                                                <option key={index} value={dept?.id}>
-                                                                    {dept?.dept_name}
-                                                                </option>
-                                                            ))}
-                                                            {/* } */}
-                                                        </select>
+                                                <div className="row mb-4 g-3">
+                                                    <div className="col-12 col-md-6">
+                                                        <label htmlFor="gender1" className="form-label fw-semibold">
+                                                            Department<span className="text-danger ms-1">*</span>
+                                                        </label>
+                                                        <div className="input-group border rounded-1">
+                                                            <select
+                                                                id="gender1"
+                                                                className="form-control ps-2 p-2"
+                                                                autoComplete="nope"
+                                                                {...register(AstroInputTypesEnum.DEPARTMENT, {
+                                                                    required: "Select department",
+                                                                })}
+                                                            >
+                                                                <option value="">Select department</option>
+                                                                {departnmentlistArray?.map((dept, index) => (
+                                                                    <option key={index} value={dept?.id}>
+                                                                        {dept?.dept_name}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <label className="errorc ps-1 pt-1">
+                                                            {errors[AstroInputTypesEnum.DEPARTMENT]?.message}
+                                                        </label>
                                                     </div>
-                                                    <label className="errorc ps-1 pt-1">
-                                                        {errors[AstroInputTypesEnum.DEPARTMENT]?.message}
-                                                    </label>
+
+                                                    <div className="col-12 col-md-6">
+                                                        <label htmlFor="employeeType" className="form-label fw-semibold">
+                                                            Employee Type <span className="text-danger ms-1">*</span>
+                                                        </label>
+                                                        <div className="input-group border rounded-1">
+                                                            <select
+                                                                className="form-control ps-2"
+                                                                autoComplete="nope"
+                                                                {...register(AstroInputTypesEnum.IS_INTERN, {
+                                                                    required: "Please Select Employee Type",
+                                                                })}
+                                                            >
+                                                                <option value="">Select Employee Type</option>
+                                                                <option value="0">Permanent</option>
+                                                                <option value="1">Intern</option>
+                                                            </select>
+                                                        </div>
+                                                        <label className="errorc ps-1 pt-1">
+                                                            {errors[AstroInputTypesEnum.IS_INTERN]?.message}
+                                                        </label>
+                                                    </div>
                                                 </div>
 
 

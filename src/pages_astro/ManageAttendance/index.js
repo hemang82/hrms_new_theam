@@ -93,6 +93,12 @@ export default function ManageAttendance() {
     const debounce = useDebounce(globalFilterValue, SEARCH_DELAY);
     const [filters, setFilters] = useState({ global: { value: '' } });
     const [statusModal, setStatusModal] = useState(false);
+    const INTERN_FILTER_OPTIONS = [
+        { key: "", value: "All Types" },
+        { key: "0", value: "Permanent" },
+        { key: "1", value: "Intern" }
+    ];
+    const [internStatus, setInternStatus] = useState(INTERN_FILTER_OPTIONS[0]);
     const [selectedOption, setSelectedOption] = useState({});
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState(-1);
@@ -190,6 +196,7 @@ export default function ManageAttendance() {
             employee_id: localEMPID ? localEMPID : "",
             status: selectedOption?.key || "",
             emp_leave_company: localEmpLeaveCompany ? localEmpLeaveCompany : employeeStatus?.key,
+            is_intern: internStatus?.key || "",
         };
         dispatch(getlistAttendanceThunk(request));
     }, []);
@@ -375,7 +382,8 @@ export default function ManageAttendance() {
                 start_date: data?.start_date ? formatDateDyjs(data.start_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 end_date: data?.end_date ? formatDateDyjs(data.end_date, DateFormat.DATE_LOCAL_DASH_TIME_FORMAT) : null,
                 employee_id: data?.employee_id || "",
-                emp_leave_company: data?.emp_leave_company || "0"
+                emp_leave_company: data?.emp_leave_company || "0",
+                is_intern: data?.hasOwnProperty('is_intern') ? data.is_intern : (internStatus?.key || "")
             };
             await dispatch(getlistAttendanceThunk(request));
             await setLocalDateFunction(data?.start_date, data.end_date, data?.employee_id, data?.emp_leave_company)
@@ -427,7 +435,8 @@ export default function ManageAttendance() {
 
         setStartDate(sDate)
         setEndDate(eDate)
-        onChangeApiCalling({ start_date: sDate, end_date: eDate });
+        setInternStatus(INTERN_FILTER_OPTIONS[0])
+        onChangeApiCalling({ start_date: sDate, end_date: eDate, is_intern: "" });
     }
 
     const setLocalDateFunction = (sDate, eDate, emp_id, emp_leave_company) => {
@@ -457,7 +466,8 @@ export default function ManageAttendance() {
                         <div className="row g-2 align-items-end">
 
                             {/* Search */}
-                            <div className="col-12 col-md-6 col-lg-3">
+                            <div className="col-12 col-md-6 col-lg-2">
+                                <label className="d-block mb-1 fw-semibold">Search</label>
                                 <div className="position-relative mt-2 mt-lg-0">
                                     <input
                                         type="text"
@@ -469,18 +479,6 @@ export default function ManageAttendance() {
                                     />
                                     <i className="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3" />
                                 </div>
-                            </div>
-
-                            <div className="col-12 col-md-6 col-lg-1 d-flex align-items-end justify-content-end">
-                                {/* <button>test</button> */}
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
-                                    style={{ height: '40px', width: '40px' }}
-                                    title="Reset Filters"
-                                    onClick={() => { restFunction(dayjs().startOf("month"), dayjs()) }} >
-                                    <GrPowerReset style={{ fontSize: '1.1rem' }} />
-                                </button>
                             </div>
 
                             {/* Start Date */}
@@ -579,59 +577,59 @@ export default function ManageAttendance() {
                                 </div>
                             </div>
 
-                            {/* Status
-                            <div className="col-12 col-md-4 col-lg-1">
-                                <label className="d-block mb-1 fw-semibold">Status</label>
+                            {/* Employee Type Filter */}
+                            <div className="col-12 col-md-6 col-lg-2">
+                                <label className="d-block mb-1 fw-semibold text-truncate" title="Employee Type">Employee Type</label>
                                 <div className="dropdown w-100">
-                                    <button
-                                        type="button"
-                                        className="btn btn-info dropdown-toggle w-100"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                        style={{ height: '40px' }}
-                                    >
-                                        {employeeStatus?.value || 'Select Status'}
-                                    </button>
-                                    <ul className="dropdown-menu w-100">
-                                        {EMPLOYEE_STATUS?.map((option) => (
-                                            <li key={option.key}>
-                                                <a
-                                                    className="dropdown-item text-black-50 cursor_pointer"
-                                                    onClick={() => {
-                                                        onChangeApiCalling({
-                                                            start_date: startDate,
-                                                            end_date: endDate,
-                                                            emp_leave_company: option?.key,
-                                                            employee_id: ""
-                                                        });
-                                                        setEmployeeStatus(option);
-                                                        handleSelect({ id: "", name: "All Employees" });
-                                                    }}
-                                                >
-                                                    {option?.value}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div> */}
-
-                            {/* Add + Download */}
-                            <div className="col-12 col-md-6 col-lg-2 d-flex align-items-end justify-content-between gap-2">
-                                {/* Status Dropdown */}
-                                <div className="dropdown w-100 w-sm-auto">
-                                    <label className="d-none d-md-block mb-1 fw-semibold">
-                                        Status
-                                    </label>
-
                                     <button
                                         type="button"
                                         className="btn btn-info dropdown-toggle w-100 text-truncate"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {internStatus?.value || 'All Types'}
+                                    </button>
+                                    <ul className="dropdown-menu w-100">
+                                        {INTERN_FILTER_OPTIONS?.map((option) => (
+                                            <li key={option.key}>
+                                                <button
+                                                    type="button"
+                                                    className="dropdown-item text-black-50"
+                                                    onClick={() => {
+                                                        setInternStatus(option);
+                                                        onChangeApiCalling({
+                                                            start_date: startDate,
+                                                            end_date: endDate,
+                                                            employee_id: selectedOption?.id || "",
+                                                            emp_leave_company: employeeStatus?.key || "0",
+                                                            is_intern: option.key
+                                                        });
+                                                    }}
+                                                >
+                                                    {option.value}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Status + Action Buttons */}
+                            <div className="col-12 col-md-6 col-lg-2 d-flex align-items-end justify-content-between gap-1">
+                                {/* Status Dropdown */}
+                                <div className="dropdown flex-grow-1" style={{ minWidth: '70px' }}>
+                                    <label className="d-none d-md-block mb-1 fw-semibold text-truncate">
+                                        Status
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100 text-truncate px-1"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
                                         style={{
-                                            height: '40px',
-                                            minWidth: '80px'
+                                            height: '40px'
                                         }}
                                     >
                                         {employeeStatus?.value || 'Status'}
@@ -642,7 +640,7 @@ export default function ManageAttendance() {
                                             <li key={option.key}>
                                                 <button
                                                     type="button"
-                                                    className="dropdown-item text-black-50"
+                                                    className="dropdown-item text-black-50 px-2"
                                                     onClick={() => {
                                                         onChangeApiCalling({
                                                             start_date: startDate,
@@ -661,26 +659,36 @@ export default function ManageAttendance() {
                                     </ul>
                                 </div>
 
+                                {/* Reset Button */}
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                                    style={{ height: '40px', width: '32px', padding: 0 }}
+                                    title="Reset Filters"
+                                    onClick={() => { restFunction(dayjs().startOf("month"), dayjs()) }} >
+                                    <GrPowerReset style={{ fontSize: '0.9rem' }} />
+                                </button>
+
                                 {/* Add Button */}
                                 <button
                                     type="button"
-                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
-                                    style={{ height: '40px', minWidth: '40px', padding: 0 }}
+                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                                    style={{ height: '40px', width: '32px', padding: 0 }}
                                     onClick={() => navigat(PATHS.ADD_ATTENDANCE)}
                                     title="Add Attendance"
                                 >
-                                    <RiAddCircleFill style={{ fontSize: '1rem' }} />
+                                    <RiAddCircleFill style={{ fontSize: '0.95rem' }} />
                                 </button>
 
                                 {/* Download Button */}
                                 <button
                                     type="button"
-                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center flex-fill"
-                                    style={{ height: '40px', minWidth: '40px', padding: 0 }}
+                                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                                    style={{ height: '40px', width: '32px', padding: 0 }}
                                     onClick={handleExportToExcelManage}
                                     title="Download"
                                 >
-                                    <FaDownload style={{ fontSize: '0.95rem' }} />
+                                    <FaDownload style={{ fontSize: '0.85rem' }} />
                                 </button>
                             </div>
 

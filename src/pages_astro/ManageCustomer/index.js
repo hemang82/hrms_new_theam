@@ -35,6 +35,15 @@ export default function ManageCoustomer() {
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const debounce = useDebounce(globalFilterValue, SEARCH_DELAY);
 
+    const [internFilter, setInternFilter] = useState("all");
+
+    const filteredCustomerList = (customerList || []).filter(item => {
+        if (internFilter === "all") return true;
+        if (internFilter === "intern") return item.is_intern == "1" || item.is_intern === true;
+        if (internFilter === "permanent") return item.is_intern == "0" || item.is_intern === false || !item.is_intern;
+        return true;
+    });
+
     const fetchData = async () => {
         const request = {
             emp_leave_company: employeeStatus?.key
@@ -186,11 +195,38 @@ export default function ManageCoustomer() {
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-lg-6 mb-3 mb-md-0 mb-2">
+                            <div className="col-12 col-md-6 col-lg-3 mb-3 mb-md-0 mb-2">
+                            </div>
+
+                            {/* Intern Filter Dropdown */}
+                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
+                                <div className="btn-group w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-info dropdown-toggle w-100"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        style={{ height: '40px' }}
+                                    >
+                                        {internFilter === "all" ? "All Types" : internFilter === "intern" ? "Intern" : "Permanent"}
+                                    </button>
+                                    <ul className="dropdown-menu w-100 border">
+                                        <li>
+                                            <a className="dropdown-item cursor_pointer text-black-50" onClick={() => setInternFilter("all")}>All Types</a>
+                                        </li>
+                                        <li>
+                                            <a className="dropdown-item cursor_pointer text-black-50" onClick={() => setInternFilter("permanent")}>Permanent</a>
+                                        </li>
+                                        <li>
+                                            <a className="dropdown-item cursor_pointer text-black-50" onClick={() => setInternFilter("intern")}>Intern</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
 
                             {/* Status Dropdown */}
-                            <div className="col-12 col-md-6 col-lg-1 mb-3 mb-md-0">
+                            <div className="col-12 col-md-6 col-lg-2 mb-3 mb-md-0">
                                 <div className="btn-group w-100">
                                     <button
                                         type="button"
@@ -243,13 +279,13 @@ export default function ManageCoustomer() {
                     <div className="card card-body">
                         <div className="table-responsive">
                             <DataTable
-                                value={customerList}
+                                value={filteredCustomerList}
                                 paginator
                                 rows={15}
                                 globalFilter={globalFilterValue}
                                 rowsPerPageOptions={
-                                    customerList?.length > 50
-                                        ? [20, 30, 50, customerList?.length]
+                                    filteredCustomerList?.length > 50
+                                        ? [20, 30, 50, filteredCustomerList?.length]
                                         : [20, 30, 40]
                                 }
                                 currentPageReportTemplate='Showing {first} to {last} of {totalRecords} entries'
@@ -285,6 +321,12 @@ export default function ManageCoustomer() {
 
                                 <Column field="email" header="Email" style={{ minWidth: '12rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData.email || '-'}</span>
+                                )} />
+
+                                <Column field="is_intern" header="Type" style={{ minWidth: '8rem' }} body={(rowData) => (
+                                    <span className={`badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2 ${rowData?.is_intern == "1" ? STATUS_COLORS.WARNING : STATUS_COLORS.SUCCESS}`}>
+                                        {rowData?.is_intern == "1" ? "Int." : "Perm."}
+                                    </span>
                                 )} />
 
                                 <Column field="emp_leave_company" data-pc-section="root" sortable header="Status" style={{ minWidth: '6rem' }} body={(rowData) => (
