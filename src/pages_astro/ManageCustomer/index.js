@@ -35,7 +35,7 @@ export default function ManageCoustomer() {
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const debounce = useDebounce(globalFilterValue, SEARCH_DELAY);
 
-    const [internFilter, setInternFilter] = useState("all");
+    const [internFilter, setInternFilter] = useState("permanent");
 
     const filteredCustomerList = (customerList || []).filter(item => {
         if (internFilter === "all") return true;
@@ -336,7 +336,7 @@ export default function ManageCoustomer() {
                                                 <span className="p-tag-value" data-pc-section="value">Active</span>
                                             </span>
                                         ) : (
-                                            // onClick={() => { handleStatus(rowData?.id, "0") }}
+                                            // onClick={() => { handleSta   tus(rowData?.id, "0") }}
                                             <span className={`p-tag p-component badge status_font text-light fw-semibold px-3 rounded-4 py-2 me-2 cursor_pointer ${STATUS_COLORS.DANGER}`} data-pc-name="tag" data-pc-section="root" onClick={() => { openLeaveModelFunc(rowData) }}  >
                                                 <span className="p-tag-value" data-pc-section="value">Inactive</span>
                                             </span>
@@ -444,6 +444,7 @@ export default function ManageCoustomer() {
                     </div>
                 </div>
             </div >
+            
             {
                 addEmployeeLeaveModal && (
                     <div className="modal-backdrop fade show"></div>

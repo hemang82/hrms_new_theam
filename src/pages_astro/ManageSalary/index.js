@@ -26,6 +26,8 @@ import { DateFormat, EMPLOYEE_STATUS, STATUS_COLORS } from '../../config/commonV
 import { IoAddCircleOutline } from 'react-icons/io5';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
+import { jsPDF } from "jspdf";
+import { FaDownload } from 'react-icons/fa';
 
 export default function ManageSalary() {
 
@@ -58,7 +60,7 @@ export default function ManageSalary() {
         { key: "0", value: "Permanent" },
         { key: "1", value: "Intern" }
     ];
-    const [internStatus, setInternStatus] = useState(INTERN_FILTER_OPTIONS[0]);
+    const [internStatus, setInternStatus] = useState(INTERN_FILTER_OPTIONS[1]);
 
     const hasInitialLoaded = useRef(false);
 
@@ -136,6 +138,171 @@ export default function ManageSalary() {
                 }
             });
         }
+    };
+
+    const downloadSalarySlip = (salary) => {
+        const doc = new jsPDF();
+        const monthYear = startDate ? formatDateDyjs(startDate, 'MMMM YYYY') : dayjs().format('MMMM YYYY');
+
+        // Font settings
+        doc.setFont("helvetica", "normal");
+
+        // 1. Header Border and Title
+        doc.setDrawColor(180, 180, 180);
+        doc.setLineWidth(0.5);
+        doc.rect(10, 10, 190, 277); // Outer page border
+
+        // Company Name
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(30, 41, 59); // Sleek slate color
+        doc.text("TRACEWAVE TRANSPARENCY", 105, 25, { align: "center" });
+
+        // Subtitle
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text("Employee Salary Slip", 105, 31, { align: "center" });
+
+        // Divider Line
+        doc.setDrawColor(226, 232, 240);
+        doc.line(15, 36, 195, 36);
+
+        // Salary Slip Month Title
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setTextColor(15, 23, 42);
+        doc.text(`Salary Slip for the Month of: ${monthYear}`, 15, 45);
+
+        // 2. Employee Details Block (Table format or Box)
+        doc.setDrawColor(203, 213, 225);
+        doc.rect(15, 52, 180, 28); // Employee Details Box
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(71, 85, 105);
+        doc.text("Employee ID:", 20, 60);
+        doc.text("Employee Name:", 20, 70);
+
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(15, 23, 42);
+        doc.text(salary?.employee_id || "-", 55, 60);
+        doc.text(salary?.name || "-", 55, 70);
+
+        // Right side of Employee details
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(71, 85, 105);
+        doc.text("Payable Days:", 115, 60);
+        doc.text("Status:", 115, 70);
+
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(15, 23, 42);
+        doc.text(String(salary?.payableDays || "-"), 150, 60);
+        doc.text(salary?.is_active ? "Active" : "Active", 150, 70);
+
+        // 3. Attendance Details Section
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setTextColor(30, 41, 59);
+        doc.text("Attendance & Leave Details", 15, 95);
+
+        // Attendance Table Grid
+        // Headers
+        doc.setFillColor(241, 245, 249);
+        doc.rect(15, 100, 180, 8, "F");
+        doc.setDrawColor(203, 213, 225);
+        doc.rect(15, 100, 180, 24); // Table box
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(71, 85, 105);
+        doc.text("Full Days (FD)", 18, 105);
+        doc.text("Half Days (HD)", 45, 105);
+        doc.text("Absences (AB)", 72, 105);
+        doc.text("Off Days (OD)", 99, 105);
+        doc.text("Sundays (SUN)", 126, 105);
+        doc.text("Leaves (BD/CL/CO)", 153, 105);
+
+        // Divider in table
+        doc.line(15, 108, 195, 108);
+
+        // Values
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(15, 23, 42);
+        doc.text(String(salary?.fullDays ?? 0), 18, 116);
+        doc.text(String(salary?.halfDays ?? 0), 45, 116);
+        doc.text(String(salary?.absences ?? 0), 72, 116);
+        doc.text(String(salary?.offDayCount ?? 0), 99, 116);
+        doc.text(String(salary?.sundays ?? 0), 126, 116);
+
+        const leavesCount = (Number(salary?.birthdayLeave || salary?.BirthdayLeave || 0) + Number(salary?.casualLeave || 0) + Number(salary?.compOffLeave || 0));
+        doc.text(String(leavesCount), 153, 116);
+
+        // Vertical Grid lines
+        doc.line(42, 100, 42, 124);
+        doc.line(69, 100, 69, 124);
+        doc.line(96, 100, 96, 124);
+        doc.line(123, 100, 123, 124);
+        doc.line(150, 100, 150, 124);
+
+        // 4. Salary & Earnings Details Section
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setTextColor(30, 41, 59);
+        doc.text("Salary & Payment Summary", 15, 140);
+
+        // Box
+        doc.rect(15, 145, 180, 40);
+
+        // Grid lines
+        doc.line(110, 145, 110, 185); // Middle vertical line
+        doc.line(15, 153, 195, 153); // Horizontal header line
+
+        // Box Headers
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(71, 85, 105);
+        doc.text("Earnings Description", 20, 150);
+        doc.text("Amount (INR)", 115, 150);
+
+        // Content
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(15, 23, 42);
+        doc.text("Basic Monthly Salary", 20, 161);
+        doc.text(`Rs. ${salary?.monthlySalary || "0.00"}`, 115, 161);
+
+        doc.text("Leave Without Pay (LWP) Deductions", 20, 171);
+        const lwpCount = Number(salary?.LWPLeave || salary?.LWP || 0);
+        const dailyRate = Number(salary?.monthlySalary || 0) / 30;
+        const deduction = (lwpCount * dailyRate).toFixed(2);
+        doc.text(`Rs. ${lwpCount > 0 ? deduction : "0.00"} (LWP: ${lwpCount})`, 115, 171);
+
+        // Net Payable Box
+        doc.setFillColor(241, 245, 249);
+        doc.rect(15, 185, 180, 10, "F");
+        doc.rect(15, 185, 180, 10); // Border
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(30, 41, 59);
+        doc.text("Net Payable Salary:", 20, 191);
+        doc.text(`Rs. ${salary?.totalSalary || "0.00"}`, 115, 191);
+
+        // 5. Signature Section
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(71, 85, 105);
+        doc.text("Date of Issue: " + dayjs().format("DD-MM-YYYY"), 15, 230);
+
+        doc.text("Signature of the Employee", 35, 260);
+        doc.line(20, 255, 80, 255);
+
+        doc.text("Authorized Signatory", 145, 260);
+        doc.line(130, 255, 190, 255);
+
+        // Save
+        const fileName = `Salary_Slip_${salary?.name?.replace(/\s+/g, "_")}_${monthYear.replace(/\s+/g, "_")}.pdf`;
+        doc.save(fileName);
     };
 
     const onGlobalFilterChange = (e) => {
@@ -468,6 +635,22 @@ export default function ManageSalary() {
                                 <Column field="totalSalary" header="PayableSalary" style={{ minWidth: '8rem' }} body={(rowData) => (
                                     <span className='me-2'>{rowData?.totalSalary}</span>
                                 )} />
+
+                                {/* <Column
+                                    header="Action"
+                                    style={{ minWidth: '6rem', textAlign: 'center' }}
+                                    body={(rowData) => (
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-info d-flex align-items-center justify-content-center mx-auto"
+                                            style={{ height: '32px', width: '32px', padding: 0 }}
+                                            onClick={() => downloadSalarySlip(rowData)}
+                                            title="Download Salary Slip"
+                                        >
+                                            <FaDownload style={{ fontSize: '0.85rem' }} />
+                                        </button>
+                                    )}
+                                /> */}
 
                             </DataTable>
 

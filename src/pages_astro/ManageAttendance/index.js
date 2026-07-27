@@ -98,7 +98,7 @@ export default function ManageAttendance() {
         { key: "0", value: "Permanent" },
         { key: "1", value: "Intern" }
     ];
-    const [internStatus, setInternStatus] = useState(INTERN_FILTER_OPTIONS[0]);
+    const [internStatus, setInternStatus] = useState(INTERN_FILTER_OPTIONS[1]);
     const [selectedOption, setSelectedOption] = useState({});
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState(-1);
@@ -135,59 +135,40 @@ export default function ManageAttendance() {
         start.setHours(0, 0, 0, 0); // normalize start date
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999); // include full day for end date
-        const modified = attendanceList.flatMap((item) =>
-            item?.dates
-                ?.filter((dates) => {
+        const modified = [];
+        for (let i = 0; i < attendanceList.length; i++) {
+            const item = attendanceList[i];
+            if (item?.dates) {
+                for (let j = 0; j < item.dates.length; j++) {
+                    const dates = item.dates[j];
                     const currentDate = new Date(dates?.date);
-                    return currentDate >= start && currentDate <= end;
-                }).map((dates) => ({
-                    emp_id: item?.emp_id,
-                    name: item?.name,
-                    date: dates?.date,
-                    type: dates?.type,
-                    status: dates?.status,
-                    checkInTimes: dates?.checkInTimes,
-                    checkOutTimes: dates?.checkOutTimes,
-                    breaks: dates?.breaks,
-                }))
-        );
-        const sorted = modified.sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
+                    if (currentDate >= start && currentDate <= end) {
+                        modified.push({
+                            emp_id: item?.emp_id,
+                            name: item?.name,
+                            date: dates?.date,
+                            dateMs: currentDate.getTime(), // Parse timestamp once
+                            type: dates?.type,
+                            status: dates?.status,
+                            checkInTimes: dates?.checkInTimes,
+                            checkOutTimes: dates?.checkOutTimes,
+                            breaks: dates?.breaks,
+                        });
+                    }
+                }
+            }
+        }
+        const sorted = modified.sort((a, b) => b.dateMs - a.dateMs); // High-performance numeric sort
         setUpdateAttendanceList(sorted);
     }
 
     useEffect(() => {
         if (attendanceList && attendanceList?.length > 0 && startDate && endDate) {
-            // updatedData(attendanceList, startDate, endDate)
-            const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0); // normalize start date
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); // include full day for end date
-            const modified = attendanceList.flatMap((item) =>
-                item?.dates
-                    ?.filter((dates) => {
-                        const currentDate = new Date(dates?.date);
-                        return currentDate >= start && currentDate <= end;
-                    }).map((dates) => ({
-                        emp_id: item?.emp_id,
-                        name: item?.name,
-                        date: dates?.date,
-                        type: dates?.type,
-                        status: dates?.status,
-                        checkInTimes: dates?.checkInTimes,
-                        checkOutTimes: dates?.checkOutTimes,
-                        breaks: dates?.breaks,
-                    }))
-            );
-            const sorted = modified.sort(
-                (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-            );
-            setUpdateAttendanceList(sorted);
+            updatedData(attendanceList, startDate, endDate);
         } else {
             setUpdateAttendanceList([])
         }
-    }, [attendanceList, employeeStatus]);
+    }, [attendanceList, employeeStatus, startDate, endDate]);
 
     useEffect(() => {
         let request = {
@@ -435,8 +416,8 @@ export default function ManageAttendance() {
 
         setStartDate(sDate)
         setEndDate(eDate)
-        setInternStatus(INTERN_FILTER_OPTIONS[0])
-        onChangeApiCalling({ start_date: sDate, end_date: eDate, is_intern: "" });
+        setInternStatus(INTERN_FILTER_OPTIONS[1])
+        onChangeApiCalling({ start_date: sDate, end_date: eDate, is_intern: "0" });
     }
 
     const setLocalDateFunction = (sDate, eDate, emp_id, emp_leave_company) => {
@@ -554,25 +535,32 @@ export default function ManageAttendance() {
                                             </button>
                                         </li>
 
-                                        {customerList?.map((option) => (
-                                            <li key={option.id}>
-                                                <button
-                                                    className="dropdown-item text-black-50 p-2"
-                                                    type="button"
-                                                    onClick={() => {
-                                                        onChangeApiCalling({
-                                                            start_date: startDate,
-                                                            end_date: endDate,
-                                                            employee_id: option?.id,
-                                                            emp_leave_company: employeeStatus?.key
-                                                        });
-                                                        handleSelect(option);
-                                                    }}
-                                                >
-                                                    {option?.name}
-                                                </button>
-                                            </li>
-                                        ))}
+                                        {(customerList || [])
+                                            .filter(item => {
+                                                if (!internStatus || internStatus.key === "") return true;
+                                                if (internStatus.key === "1") return item.is_intern == "1" || item.is_intern === true;
+                                                if (internStatus.key === "0") return item.is_intern == "0" || item.is_intern === false || !item.is_intern;
+                                                return true;
+                                            })
+                                            .map((option) => (
+                                                <li key={option.id}>
+                                                    <button
+                                                        className="dropdown-item text-black-50 p-2"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            onChangeApiCalling({
+                                                                start_date: startDate,
+                                                                end_date: endDate,
+                                                                employee_id: option?.id,
+                                                                emp_leave_company: employeeStatus?.key
+                                                            });
+                                                            handleSelect(option);
+                                                        }}
+                                                    >
+                                                        {option?.name}
+                                                    </button>
+                                                </li>
+                                            ))}
                                     </ul>
                                 </div>
                             </div>
@@ -601,10 +589,11 @@ export default function ManageAttendance() {
                                                         onChangeApiCalling({
                                                             start_date: startDate,
                                                             end_date: endDate,
-                                                            employee_id: selectedOption?.id || "",
+                                                            employee_id: "",
                                                             emp_leave_company: employeeStatus?.key || "0",
                                                             is_intern: option.key
                                                         });
+                                                        handleSelect({ id: "", name: "All Employees" });
                                                     }}
                                                 >
                                                     {option.value}

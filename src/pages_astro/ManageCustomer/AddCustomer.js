@@ -30,7 +30,11 @@ export default function AddCustomer() {
         clearErrors,
         trigger,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            [AstroInputTypesEnum.IS_INTERN]: '0'
+        }
+    });
 
     useEffect(() => {
         departnmentList().then((response) => {
